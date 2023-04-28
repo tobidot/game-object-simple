@@ -1,0 +1,112 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema",
+    "$id": "https://example.com/product.schema.json",
+    "title": "Project",
+    "description": "Describe a project",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "description": "A unique id for this project"
+        },
+        "title": {
+            "type": "string",
+            "description": "The title of the project"
+        },
+        "informal": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "description": "A rough description of the Project"
+                },
+                "categories": {
+                    "type": "array",
+                    "description": "Categories for this project",
+                    "items": {
+                        "type": "string"
+                    },
+                    "uniqueItems": true
+                },
+                "readme": {
+                    "type": "string",
+                    "description": "A url to the readme for this project"
+                }
+            },
+            "required": [
+                "description",
+                "categories"
+            ]
+        },
+        "execution": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "website",
+                        "download"
+                    ]
+                },
+                "path": {
+                    "type": "string"
+                }
+            }
+        },
+        "development": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "draft",
+                        "in_progress",
+                        "finished"
+                    ]
+                },
+                "drafted_at": {
+                    "type": "string",
+                    "format": "date"
+                }
+            }
+        },
+        "history": {
+            "type": "array",
+            "items": {
+                "properties": {
+                    "type": {
+                        "oneOf": [
+                            {
+                                "type": "string",
+                                "pattern": "v.+"
+                            },
+                            {
+                                "type": "string",
+                                "enum": [
+                                    "draft",
+                                    "mvp",
+                                    "published"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "code": {
+            "type": "object",
+            "properties": {
+                "repository": {
+                    "type": "string"
+                },
+                "language": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "required": [
+        "title",
+        "informal"
+    ]
+}
