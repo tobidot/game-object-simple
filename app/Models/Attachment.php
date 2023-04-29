@@ -31,12 +31,15 @@ use Illuminate\Support\Carbon;
  * @property string $url
  * @method static Builder|Attachment whereUrl($value)
  * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CodeRelease> $codeReleases
+ * @property-read int|null $code_releases_count
+ * @mixin \Eloquent
  */
 class Attachment extends Model
 {
     use HasFactory;
 
-    public function code_releases(): MorphToMany
+    public function codeReleases(): MorphToMany
     {
         return $this->morphedByMany(CodeRelease::class, 'attachable');
     }

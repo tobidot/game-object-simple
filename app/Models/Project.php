@@ -32,12 +32,15 @@ use Illuminate\Support\Carbon;
  * @property int $publish_state_id
  * @method static Builder|Project wherePublishStateId($value)
  * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CodeRelease> $codeReleases
+ * @property-read int|null $code_releases_count
+ * @mixin \Eloquent
  */
 class Project extends Model
 {
     use HasFactory;
 
-    public function code_releases() : HasMany
+    public function codeReleases() : HasMany
     {
         return $this->hasMany(CodeRelease::class);
     }

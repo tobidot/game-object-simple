@@ -25,7 +25,6 @@ Route::get('/imprint', [PageController::class, 'imprint'])
 Route::get('/pages', [PageController::class, 'index'])
     ->name('pages');
 Route::get('/pages/{page}', [PageController::class, 'show'])
-    ->whereNumber('page')
     ->name('page');
 //
 Route::get('/projects', [ProjectController::class, 'index'])

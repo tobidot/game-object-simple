@@ -1,0 +1,60 @@
+@import "../globals/variables";
+
+// Header
+header {
+    display: flex;
+    height: 5rem;
+    padding: 1rem;
+    margin-bottom: -0.5rem;
+
+    color: $text-color-dark;
+    // background-color: $background-color-light;
+    background: linear-gradient(0deg, transparent, #eee 0.5rem);
+
+    align-items: center;
+    justify-content: space-between;
+
+    .logo {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100px;
+        justify-content: center;
+        align-items: center;
+
+        &__text {
+
+        }
+
+        &__image {
+            height: calc( 100% - 1rem);
+            width: auto;
+        }
+    }
+
+    .title {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    .navigation {
+        ul {
+            list-style: none;
+            display: flex;
+            margin: 0;
+
+            li {
+                margin-left: 1rem;
+
+                a {
+                    &:hover,
+                    &[aria-current="page"] {
+                        color: $primary-color;
+                        text-decoration: underline;
+                    }
+                }
+            }
+        }
+    }
+}

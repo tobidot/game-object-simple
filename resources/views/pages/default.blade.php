@@ -11,7 +11,7 @@
     <x-slot name="title">
         {{$page->title}}
     </x-slot>
-    <p>
+    <div class="page-content">
         {!! $page->content !!}
-    </p>
+    </div>
 </x-layouts.app>

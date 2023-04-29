@@ -2,38 +2,39 @@
 
 namespace App\Models;
 
+use Barryvdh\LaravelIdeHelper\Eloquent;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\Page
  *
  * @property int $id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string $uri
  * @property string $title
  * @property string $content
  * @property int $publish_state_id
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LogEvent> $log_events
- * @property-read int|null $log_events_count
- * @property-read \App\Models\LuPublishState $publish_state
- * @method static \Illuminate\Database\Eloquent\Builder|Page newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Page newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Page query()
- * @method static \Illuminate\Database\Eloquent\Builder|Page whereContent($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Page whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Page whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Page wherePublishStateId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Page whereTitle($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Page whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Page whereUri($value)
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LogEvent> $log_events
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LogEvent> $log_events
- * @mixin \Eloquent
+ * @property-read Collection<int, LogEvent> $logEvents
+ * @property-read LuPublishState $publishState
+ * @method static Builder|Page newModelQuery()
+ * @method static Builder|Page newQuery()
+ * @method static Builder|Page query()
+ * @method static Builder|Page whereContent($value)
+ * @method static Builder|Page whereCreatedAt($value)
+ * @method static Builder|Page whereId($value)
+ * @method static Builder|Page wherePublishStateId($value)
+ * @method static Builder|Page whereTitle($value)
+ * @method static Builder|Page whereUpdatedAt($value)
+ * @method static Builder|Page whereUri($value)
+ * @mixin Eloquent
  */
 class Page extends Model
 {
@@ -41,7 +42,7 @@ class Page extends Model
 
 
     public $with = [
-        'publish_state'
+        'publishState'
     ];
 
     public function getRouteKeyName() : string
@@ -49,11 +50,11 @@ class Page extends Model
         return 'uri';
     }
 
-    public function publish_state() : BelongsTo {
+    public function publishState() : BelongsTo {
         return $this->belongsTo(LuPublishState::class);
     }
 
-    public function log_events(): MorphMany {
+    public function logEvents(): MorphMany {
         return $this->morphMany(LogEvent::class,'loggable' );
     }
 }

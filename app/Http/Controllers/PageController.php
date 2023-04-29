@@ -21,7 +21,7 @@ class PageController extends Controller
     }
 
     public function show(Page $page) : View {
-        if ($page->publish_state->id !== PublishState::PUBLISHED->value) {
+        if ($page->publishState->id !== PublishState::PUBLISHED->value) {
             abort(404);
         }
         return view('pages.default', [

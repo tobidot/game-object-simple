@@ -79,7 +79,7 @@ class Page extends Resource
                 ->required()
                 ->withFiles('media-library')
                 ->alwaysShow(),
-            MorphMany::make(__('Log Events'), 'log_events', LogEvent::class),
+            MorphMany::make(__('Log Events'), 'logEvents', LogEvent::class),
         ];
     }
 
