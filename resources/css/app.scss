@@ -2,5 +2,9 @@
 @import "globals/mixins";
 @import "globals/globals";
 
+@import "components/archive";
+@import "components/excerpt";
 @import "components/navigation";
+
+@import "pages/default";
 @import "pages/pages";

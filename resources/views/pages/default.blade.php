@@ -7,11 +7,11 @@
  */
 @endphp
 
-<x-layouts.app>
+<x-layouts.app class="page">
     <x-slot name="title">
         {{$page->title}}
     </x-slot>
-    <div class="page-content">
+    <div class="page__content">
         {!! $page->content !!}
     </div>
 </x-layouts.app>

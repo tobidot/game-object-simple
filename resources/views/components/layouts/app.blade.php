@@ -38,7 +38,7 @@
         </x-navigation>
     </nav>
 </header>
-<main>
+<main {{$attributes->merge([])}}>
     {{ $slot }}
 </main>
 <footer>

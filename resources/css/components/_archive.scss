@@ -1,0 +1,15 @@
+@import "../globals/variables";
+
+.archive {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+
+    &__item {
+        padding: 2rem;
+        border-radius: 0.5rem;
+        background-color: $background-color-dark;
+        color: $text-color-light;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    }
+}

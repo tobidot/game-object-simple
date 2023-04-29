@@ -19,6 +19,11 @@ a {
     text-decoration: none;
 }
 
+main {
+    min-height: calc(100dvh - 5rem - 3rem + 0.5rem );
+    padding: 1rem;
+}
+
 // Footer
 footer {
     display: flex;
