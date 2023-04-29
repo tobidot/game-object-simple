@@ -22,13 +22,16 @@
         "ext-zip": "*",
         "binarytorch/larecipe": "^2.6",
         "binarytorch/larecipe-swagger": "^0.2.0",
+        "doctrine/dbal": "*",
         "emilianotisato/nova-tinymce": "^2.0",
         "guzzlehttp/guzzle": "^7.2",
-        "laravel/framework": "^9.19",
+        "laravel/framework": "^10",
         "laravel/nova": "~4.0",
-        "laravel/sanctum": "^3.0",
+        "laravel/passport": "*",
+        "laravel/sanctum": "*",
         "laravel/tinker": "^2.7",
         "livewire/livewire": "^2.11",
+        "spatie/laravel-ignition": "*",
         "tobidot/lookup-enum": "^0.0.1"
     },
     "require-dev": {
@@ -38,8 +41,7 @@
         "laravel/sail": "^1.0.1",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^6.1",
-        "phpunit/phpunit": "^9.5.10",
-        "spatie/laravel-ignition": "^1.0"
+        "phpunit/phpunit": "^9.5.10"
     },
     "autoload": {
         "psr-4": {

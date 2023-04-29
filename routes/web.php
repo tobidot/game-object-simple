@@ -39,6 +39,3 @@ Route::get('/code_release/{code_release}', [CodeReleaseController::class, 'show'
     ->name('code_release');
 
 //
-Route::get('/todos', function () {
-    return view('todos');
-});

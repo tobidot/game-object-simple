@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
         \App\Models\User::factory()->create([
             'name' => 'Admin',
             'email' => 'object.name@live.de',
-            'password' => bcrypt('object.pass'),
+            'password' => bcrypt('password'),
         ]);
     }
 }
