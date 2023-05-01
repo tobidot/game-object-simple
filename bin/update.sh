@@ -5,6 +5,6 @@ git pull
 # run the migrations
 /opt/RZphp82/bin/php-cli artisan migrate --force
 # install npm dependencies
-npm ci
+npm install --save false
 # build the assets
 npm run build
