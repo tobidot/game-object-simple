@@ -4,4 +4,5 @@
 main.page {
     @include page-centered;
     @include page-like;
+    @include page-teaser;
 }

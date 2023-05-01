@@ -45,7 +45,7 @@ class UploadRelease extends Action
             $release = new CodeRelease();
             $release->version = $version;
             $release->completeness = $release->fun = $release->complexity = 0;
-            $project->releases()->save($release);
+            $project->codeReleases()->save($release);
             //
             $attachment = AppHelper::resolve(AttachmentService::class)
                 ->createFromUploadedZipFile(
@@ -76,7 +76,7 @@ class UploadRelease extends Action
         $resource_id = $request->resourceId ?? $request->viaResource ?? $request->resources;
         $project = Project::query()->find($resource_id);
         $default_version_tag = "0.0.1";
-        $latest_release = $project->code_releases()->latest('created_at')->first();
+        $latest_release = $project->codeReleases()->latest('created_at')->first();
         if ($latest_release instanceof CodeRelease) {
             $previous_version = $latest_release->version;
             $pattern = "/(\d+\.\d+\.)(\d+)/";

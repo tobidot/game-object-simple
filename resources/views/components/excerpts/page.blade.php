@@ -1,4 +1,7 @@
-@php use App\Models\Page; @endphp
+@php
+    use App\Models\Page;
+    use App\Helpers\ViewHelper;
+@endphp
 @props([
     'model',
 ])
@@ -17,13 +20,13 @@ $page = $model;
         <p>
             {{ substr( strip_tags( html_entity_decode( str_replace("<br>"," ", $page->content) ) ) , 0, 255) }}
         </p>
+        <x-link :href="route('page', ['page'=>$page])">
+            {{__("Read More")}}
+        </x-link>
     </div>
     <div class="excerpt__background">
         @isset($page->thumbnail)
-            <img src="/storage/{{$page->thumbnail}}" alt="cover">
+            <img src="{{ViewHelper::mediaUrl($page->thumbnail)}}" alt="cover">
         @endif
     </div>
-    <x-link :href="route('page', ['page'=>$page])">
-        {{__("Read More")}}
-    </x-link>
 </div>

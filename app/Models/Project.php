@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Barryvdh\LaravelIdeHelper\Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -19,6 +20,8 @@ use Illuminate\Support\Carbon;
  * @property string $description
  * @property int $publish_state_is
  * @property int $state_id
+ * @property-read Collection<int, CodeRelease> $codeReleases
+ * @property-read int|null $code_releases_count
  * @method static Builder|Project newModelQuery()
  * @method static Builder|Project newQuery()
  * @method static Builder|Project query()
@@ -32,9 +35,6 @@ use Illuminate\Support\Carbon;
  * @property int $publish_state_id
  * @method static Builder|Project wherePublishStateId($value)
  * @mixin Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CodeRelease> $codeReleases
- * @property-read int|null $code_releases_count
- * @mixin \Eloquent
  */
 class Project extends Model
 {

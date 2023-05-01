@@ -68,3 +68,18 @@
             transparent 100%
         );
 }
+
+@mixin page-teaser {
+    .page {
+        &__teaser {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            img {
+                width: min(100%, auto);
+                max-height: 200px;
+            }
+        }
+    }
+}

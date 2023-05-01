@@ -73,7 +73,7 @@ class Project extends Resource
             })
                 ->exceptOnForms()
                 ->asHtml(),
-            HasMany::make(__('Releases'), 'code_releases', CodeRelease::class),
+            HasMany::make(__('Releases'), 'codeReleases', CodeRelease::class),
         ];
     }
 

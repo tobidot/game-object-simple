@@ -3,6 +3,7 @@
 namespace App\Nova;
 
 use App\Helpers\NovaHelper;
+use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\MorphToMany;
@@ -45,6 +46,9 @@ class CodeRelease extends Resource
     {
         return [
             ID::make()->sortable(),
+            BelongsTo::make(__('Project'), 'project', Project::class)
+                ->rules(['required'])
+                ->required(),
             DateTime::make(__('Created at'), 'created_at')
                 ->rules(['required'])
                 ->required(),
