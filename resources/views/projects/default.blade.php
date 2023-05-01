@@ -1,4 +1,7 @@
-@php use App\Models\Project; @endphp
+@php
+    use App\Models\Project;
+    use App\Helpers\ViewHelper;
+@endphp
 @props([
     'project'
 ])
@@ -12,18 +15,21 @@
     <x-slot name="title">
         {{ $project->title }}
     </x-slot>
+    <div class="project__teaser">
+        <img src="{{ViewHelper::mediaUrl($project->thumbnail)}}" alt="{{$project->title}} - Teaser">
+    </div>
     <div class="project__content">
         {!! $project->description !!}
     </div>
-    @if($project->code_releases)
+    @if($project->codeReleases !== null && $project->codeReleases->count() > 0)
         <div class="project__releases">
             <h2>
                 Releases
             </h2>
             <ul>
-                @foreach($project->code_releases as $release)
+                @foreach($project->codeReleases as $release)
                     {{$release->version}} :
-                    <x-link :href="route('code_release', ['code_release' => $release])" target="_blank">
+                    <x-link :href="route('code-release', ['codeRelease' => $release])" target="_blank">
                         Play
                     </x-link>
                 @endforeach

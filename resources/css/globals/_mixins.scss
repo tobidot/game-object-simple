@@ -51,13 +51,12 @@
 ) {
     max-width: 1024px;
     margin: auto;
-    background:
-        /* Fade out to the bottom*/
+    background: /* Fade out to the bottom*/
         linear-gradient(0deg,
             $background-color 0px,
             transparent 10px,
         ),
-        /* bars left and right */
+            /* bars left and right */
         linear-gradient(90deg,
             transparent 0px,
             $border-color 5px,
@@ -69,17 +68,13 @@
         );
 }
 
-@mixin page-teaser {
-    .page {
-        &__teaser {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+@mixin teaser {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-            img {
-                width: min(100%, auto);
-                max-height: 200px;
-            }
-        }
+    img {
+        width: min(100%, auto);
+        max-height: 200px;
     }
 }

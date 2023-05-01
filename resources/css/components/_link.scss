@@ -1,0 +1,10 @@
+@import "../globals/variables";
+
+.link {
+    color: $primary-color;
+    font-weight: bold;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}

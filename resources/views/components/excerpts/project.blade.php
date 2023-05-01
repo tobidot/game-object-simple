@@ -7,6 +7,7 @@
 ])
 <?php
 $project = $model;
+$latest_release = $project->codeReleases->first();
 /**
  * @var Project $project
  */
@@ -20,13 +21,20 @@ $project = $model;
         <p>
             {{ substr( strip_tags( html_entity_decode( str_replace("<br>"," ", $project->description) ) ) , 0, 255) }}
         </p>
-        <x-link :href="route('project', ['project'=>$project])">
-            {{__("Read More")}}
-        </x-link>
+        <div class="excerpt__actions">
+            @if($latest_release !== null)
+                <x-link :href="route('code-release', ['codeRelease' => $latest_release])"  target="_blank">
+                    {{__("Try it out")}} ({{$latest_release->version}})
+                </x-link>
+            @endif
+            <x-link :href="route('project', ['project'=>$project])">
+                {{__("Read More")}}
+            </x-link>
+        </div>
     </div>
     <div class="excerpt__background">
-        @isset($page->thumbnail)
-            <img src="{{ViewHelper::mediaUrl($page->thumbnail)}}" alt="cover">
+        @isset($project->thumbnail)
+            <img src="{{ViewHelper::mediaUrl($project->thumbnail)}}" alt="cover">
         @endif
     </div>
 </div>

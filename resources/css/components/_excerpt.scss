@@ -2,6 +2,7 @@
 
 .excerpt {
     position: relative;
+    height: 100%;
 
     h3 {
         font-size: 1.5rem;
@@ -14,14 +15,9 @@
         margin-bottom: 1rem;
     }
 
-
-    .link {
-        color: $primary-color;
-        font-weight: bold;
-
-        &:hover {
-            text-decoration: underline;
-        }
+    &__actions {
+        display: flex;
+        flex-direction: column;
     }
 
     &__background {

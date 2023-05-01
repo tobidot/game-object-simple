@@ -30,12 +30,12 @@ Route::get('/pages/{page}', [PageController::class, 'show'])
 //
 Route::get('/projects', [ProjectController::class, 'index'])
     ->name('projects');
-Route::get('/project/{project}', [ProjectController::class, 'show'])
+Route::get('/projects/{project}', [ProjectController::class, 'show'])
     ->whereNumber('project')
     ->name('project');
 //
-Route::get('/code_release/{code_release}', [CodeReleaseController::class, 'show'])
-    ->whereNumber('code_release')
-    ->name('code_release');
+Route::get('/code-releases/{codeRelease}', [CodeReleaseController::class, 'show'])
+    ->whereNumber('codeRelease')
+    ->name('code-release');
 
 //
