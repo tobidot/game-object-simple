@@ -1,7 +1,7 @@
 @import "../globals/variables";
 @import "../globals/mixins";
 
-main.page {
+main.project {
     @include page-centered;
     @include page-like;
 }

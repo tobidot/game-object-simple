@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id()->index();
             $table->timestamps();
             $table->string('title', 255);
+            $table->string('thumbnail', 511)->nullable();
             $table->text('description');
             // publish
             $table->foreignId('publish_state_id')

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('uri', 255)->index();
             $table->string('title', 511);
             $table->longText('content');
+            $table->string('thumbnail', 511)->nullable();
             $table->foreignId('publish_state_id')
                 ->index()
                 ->references('id')

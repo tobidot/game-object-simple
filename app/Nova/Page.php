@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\MorphMany;
 use Laravel\Nova\Fields\MorphToMany;
 use Laravel\Nova\Fields\Select;
@@ -66,19 +67,35 @@ class Page extends Resource
                 ->required()
                 ->help('the uri part to find this page at')
                 ->onlyOnForms(),
-            Text::make(__('Uri'), function() {
-                    $page = $this->resource;
-                    if (!($page instanceof  \App\Models\Page)) return '-';
-                    $url = route('page', ['page' => $page]);
-                    return "<a class='link-default' href='$url' target='_blank'>Open Page: $url</a>";
-                })
+            Text::make(__('Uri'), function () {
+                $page = $this->resource;
+                if (!($page instanceof \App\Models\Page)) return '-';
+                $url = route('page', ['page' => $page]);
+                return "<a class='link-default' href='$url' target='_blank'>Open Page: $url</a>";
+            })
                 ->exceptOnForms()
                 ->asHtml(),
+            Image::make(__('Thumbnail'), 'thumbnail')
+                ->rules(['nullable'])
+                ->nullable(),
             Trix::make(__('Content'), 'content')
                 ->rules(['required', 'string', 'max:65535'])
                 ->required()
                 ->withFiles('media-library')
-                ->alwaysShow(),
+                ->alwaysShow()
+                ->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
+                    $value = $request->input($attribute);
+                    if (is_string($attribute)) {
+                        $value =  str_replace(['<h1>', '</h1>'], ['<h2>', '</h2>'], $value);
+                    }
+                    $model->{$attribute} = $value;
+                })
+                ->resolveUsing(function () {
+                    $value = $this->content ?? '';
+                    if (!is_string($value)) return $value;
+                    return str_replace(['<h2>', '</h2>'], ['<h1>', '</h1>'], $value);
+                })
+            ,
             MorphMany::make(__('Log Events'), 'logEvents', LogEvent::class),
         ];
     }

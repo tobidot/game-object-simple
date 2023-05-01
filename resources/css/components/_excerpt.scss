@@ -1,6 +1,8 @@
 @import "../globals/variables";
 
 .excerpt {
+    position: relative;
+
     h3 {
         font-size: 1.5rem;
         margin-top: 0;
@@ -12,6 +14,7 @@
         margin-bottom: 1rem;
     }
 
+
     .link {
         color: $primary-color;
         font-weight: bold;
@@ -19,5 +22,29 @@
         &:hover {
             text-decoration: underline;
         }
+    }
+
+    &__background {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        left: 0;
+        display: flex;
+        width: calc(100% + 1rem);
+        height: calc(100% + 1rem);
+        margin: -0.5rem;
+        opacity: 0.3;
+        overflow: hidden;
+
+        img {
+            margin: auto;
+            width: 100%;
+            height: auto;
+        }
+    }
+
+    &__content {
+        position: relative;
+        z-index: 20;
     }
 }

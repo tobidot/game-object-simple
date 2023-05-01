@@ -3,30 +3,32 @@
     'project'
 ])
 @php
-/**
- * @var Project $project
- */
+    /**
+     * @var Project $project
+     */
 @endphp
 
-<x-layouts.app>
+<x-layouts.app class="project">
     <x-slot name="title">
         {{ $project->title }}
     </x-slot>
-    <p>
+    <div class="project__content">
         {!! $project->description !!}
-    </p>
+    </div>
     @if($project->code_releases)
-        <h3>
-            Releases
-        </h3>
-        <ul>
-            @foreach($project->code_releases as $release)
-                {{$release->version}} :
-                <x-link :href="route('code_release', ['code_release' => $release])" target="_blank">
-                    Play
-                </x-link>
-            @endforeach
-        </ul>
+        <div class="project__releases">
+            <h2>
+                Releases
+            </h2>
+            <ul>
+                @foreach($project->code_releases as $release)
+                    {{$release->version}} :
+                    <x-link :href="route('code_release', ['code_release' => $release])" target="_blank">
+                        Play
+                    </x-link>
+                @endforeach
+            </ul>
+        </div>
     @endif
 
 </x-layouts.app>

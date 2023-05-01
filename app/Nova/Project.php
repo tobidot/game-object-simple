@@ -9,6 +9,7 @@ use App\Nova\Actions\UploadRelease;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -52,6 +53,9 @@ class Project extends Resource
             Text::make(__('Title'), 'title')
                 ->rules(['required'])
                 ->required(),
+            Image::make(__('Thumbnail'), 'thumbnail')
+                ->rules(['nullable'])
+                ->nullable(),
             Trix::make(__('Description'), 'description')
                 ->rules(['required'])
                 ->required(),

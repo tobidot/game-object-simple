@@ -1,7 +1,4 @@
-<x-layouts.app>
-    <x-slot name="title">
-        Imprint
-    </x-slot>
+<x-layouts.app class="page imprint" title="Imprint">
     <p>
         Owner: Tobias Gepp <br>
         Email: object.name[at]live.de <br>

@@ -24,7 +24,7 @@
 <body class="view-{{$viewName ?? 'unknown'}}">
 <header>
     <div class="logo">
-        <img class="logo__image" src="{{asset('logo-dark-stroke.png')}}" alt="logo">
+        <img class="logo__image" width="853" height="426" src="{{asset('logo-dark-stroke.png')}}" alt="logo">
         <span class="logo__text">
             {{config('app.name')}}
         </span>
@@ -32,11 +32,9 @@
     <h1 class="title">
          {{$title}}
     </h1>
-    <nav>
-        <x-navigation>
+    <x-navigation>
 
-        </x-navigation>
-    </nav>
+    </x-navigation>
 </header>
 <main {{$attributes->merge([])}}>
     {{ $slot }}
