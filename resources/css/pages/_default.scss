@@ -8,5 +8,8 @@ main.page {
         &__teaser {
             @include teaser;
         }
+        &__content {
+            @include trix-content;
+        }
     }
 }
