@@ -35,6 +35,7 @@ class AttachmentService
         $zip = new \ZipArchive();
         $zip->open($local_file_path);
         $extracted = $zip->extractTo($local_folder_path);
+        $disk->setVisibility($disk_file_path, 'public');
         if ($extracted === false) {
             throw new DummyException("Could not unzip file");
         }

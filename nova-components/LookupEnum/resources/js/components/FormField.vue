@@ -46,6 +46,7 @@
                 class="w-full"
                 :select-classes="{ 'form-input-border-error': hasError }"
                 :options="field.options"
+                :value="value"
                 :disabled="currentlyIsReadonly"
             >
                 <option value="" selected :disabled="!field.nullable">
@@ -88,12 +89,13 @@ export default {
     }),
 
     created() {
-        if (this.field.value) {
+        console.log( this.field.options, this.field.value);
+        if (!!this.field.value) {
             let selectedOption = find(
                 this.field.options,
-                v => v.value == this.field.value
-            )
-
+                v => Number(v.value) === Number(this.field.value)
+            );
+            console.log(selectedOption);
             this.$nextTick(() => {
                 this.selectOption(selectedOption)
             })
@@ -154,7 +156,7 @@ export default {
         handleChange(value) {
             let selectedOption = find(
                 this.field.options,
-                v => v.value == value
+                v => Number(v.value) === Number(value)
             )
             if (value === "new") {
                 this.make_new = true;

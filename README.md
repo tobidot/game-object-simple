@@ -12,6 +12,7 @@ Go to strato server and run the update script at `./bin/update.sh`.
 
 The update script
 ```bash
+bash
 git pull && composer install && php artisan migrate --force && npm install && npm run build
 ```
 
