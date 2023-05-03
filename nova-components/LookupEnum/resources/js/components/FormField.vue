@@ -46,7 +46,7 @@
                 class="w-full"
                 :select-classes="{ 'form-input-border-error': hasError }"
                 :options="field.options"
-                selected="field.value"
+                :selected="field.value"
                 :disabled="currentlyIsReadonly"
             >
                 <option value="" selected :disabled="!field.nullable">
