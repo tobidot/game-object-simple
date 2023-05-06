@@ -16,6 +16,7 @@ use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\ActionFields;
 use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\Image;
+use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use function GuzzleHttp\Promise\inspect;
@@ -39,12 +40,17 @@ class UploadRelease extends Action
         if (!($project instanceof Project)) {
             return Action::danger("Action only applicable to Projects");
         }
-        $version = $fields->version;
-        $zip = $fields->zip;
-        DB::transaction(function () use ($version, $project, $zip) {
+        $version = $fields->version ?? '0.0.1';
+        $zip = $fields->zip ?? null;
+        if (empty($zip)) {
+            return Action::danger("No Zip File Uploaded");
+        }
+        DB::transaction(function () use ($version, $project, $zip, $fields) {
             $release = new CodeRelease();
             $release->version = $version;
-            $release->completeness = $release->fun = $release->complexity = 0;
+            $release->completeness = $fields->completeness ?? 0;
+            $release->fun = $fields->fun ?? 0;
+            $release->complexity = $fields->complexity ?? 0;
             $project->codeReleases()->save($release);
             //
             $attachment = AppHelper::resolve(AttachmentService::class)
@@ -96,6 +102,21 @@ class UploadRelease extends Action
             Text::make(__('Version'), 'version')
                 ->rules(['required', 'regex:/\d+\.\d+\.\d+/'])
                 ->default($default_version_tag)
+                ->required(),
+            Number::make(__("Fun"), 'fun')
+                ->min(0)->max(10)->step(1)
+                ->rules(['required', 'numeric', 'min:0', 'max:10'])
+                ->default(0)
+                ->required(),
+            Number::make(__("Complexity"), 'complexity')
+                ->min(0)->max(10)->step(1)
+                ->rules(['required', 'numeric', 'min:0', 'max:10'])
+                ->default(0)
+                ->required(),
+            Number::make(__("Completeness"), 'completeness')
+                ->min(0)->max(10)->step(1)
+                ->rules(['required', 'numeric', 'min:0', 'max:10'])
+                ->default(0)
                 ->required(),
         ];
     }
