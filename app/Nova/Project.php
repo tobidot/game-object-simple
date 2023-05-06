@@ -81,6 +81,11 @@ class Project extends Resource
                         $value = str_replace(['<h1>', '</h1>'], ['<h2>', '</h2>'], $value);
                     }
                     $model->{$attribute} = $value;
+                })
+                ->resolveUsing(function () {
+                    $value = $this->content ?? '';
+                    if (!is_string($value)) return $value;
+                    return str_replace(['<h2>', '</h2>'], ['<h1>', '</h1>'], $value);
                 }),
             HasMany::make(__('Releases'), 'codeReleases', CodeRelease::class),
         ];
