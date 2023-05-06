@@ -56,7 +56,7 @@ class UploadRelease extends Action
             $attachment = AppHelper::resolve(AttachmentService::class)
                 ->createFromUploadedZipFile(
                     $zip,
-                    "public/releases",
+                    "releases",
                     "releases",
                 );
             $release->attachments()->save(

@@ -20,12 +20,16 @@ class AttachmentService
         string       $path_prefix,
         string       $url_prefix,
     ) : Attachment {
-        $disk = Storage::disk('local');
+        $disk = Storage::disk('public');
         $uuid = Str::uuid();
         $zip_name = $file->getClientOriginalName();
         $zip_base_name = substr($zip_name, 0, strpos($zip_name, '.'));
         $zip_folder_path = "$zip_base_name-$uuid";
-        $disk_file_path = $file->storeAs("$path_prefix/$zip_folder_path", $zip_name);
+        $disk_file_path = $file->storeAs("$path_prefix/$zip_folder_path", $zip_name, [
+            'disk' => 'public',
+            'visibility' => 'public',
+            'directory_visibility' => 'public'
+        ]);
         if ($disk_file_path === false) {
             throw new DummyException("Failed to store zip file as attachment");
         }
@@ -35,11 +39,16 @@ class AttachmentService
         $zip = new \ZipArchive();
         $zip->open($local_file_path);
         $extracted = $zip->extractTo($local_folder_path);
-        $disk->setVisibility($disk_file_path, 'public');
         if ($extracted === false) {
             throw new DummyException("Could not unzip file");
         }
         $zip->close();
+        // make them public
+        $disk->setVisibility($disk_file_path, 'public');
+        $files = $disk->allFiles($disk_file_path);
+        foreach ($files as $file) {
+            $disk->setVisibility($file, 'public');
+        }
         //
         $attachment = new Attachment();
         $attachment->url = "/$url_prefix/$zip_folder_path";
