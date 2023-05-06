@@ -58,7 +58,9 @@ class Page extends Resource
                 ->rules(['required', 'string', 'max:255'])
                 ->required()
                 ->asHtml(),
-            //NovaHelper::makeEnum(__('Publish State'), 'publish_state_id', PublishState::class),
+            Image::make(__('Thumbnail'), 'thumbnail')
+                ->rules(['nullable'])
+                ->nullable(),
             LookupEnum::make(__('Publish State Enum'), 'publish_state_id')
                 ->table('lu_publish_states')
                 ->displayUsingLabels(),
@@ -75,9 +77,6 @@ class Page extends Resource
             })
                 ->exceptOnForms()
                 ->asHtml(),
-            Image::make(__('Thumbnail'), 'thumbnail')
-                ->rules(['nullable'])
-                ->nullable(),
             Trix::make(__('Content'), 'content')
                 ->rules(['required', 'string', 'max:65535'])
                 ->required()

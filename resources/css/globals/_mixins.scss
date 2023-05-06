@@ -88,11 +88,22 @@
         justify-content: center;
         align-items: center;
 
-        img {
+        > a {
+            display: table;
             width: auto;
-            max-width: 100%;
-            max-height: 300px;
+            img {
+                width: auto;
+                height: 100%;
+                max-width: 100%;
+                max-height: 300px;
+            }
+            figcaption {
+                display: table-caption;
+                caption-side: bottom;
+                text-align: center;
+            }
         }
+
     }
 
     strong {
@@ -103,5 +114,6 @@
         border: dashed;
         padding: 0.25rem;
         background: #22a;
+        overflow-x: auto;
     }
 }

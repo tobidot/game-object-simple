@@ -56,18 +56,6 @@ class Project extends Resource
             Image::make(__('Thumbnail'), 'thumbnail')
                 ->rules(['nullable'])
                 ->nullable(),
-            Trix::make(__('Description'), 'description')
-                ->rules(['required', 'string', 'max:65535'])
-                ->required()
-                ->withFiles('media-library')
-                ->alwaysShow()
-                ->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
-                    $value = $request->input($attribute);
-                    if (is_string($attribute)) {
-                        $value = str_replace(['<h1>', '</h1>'], ['<h2>', '</h2>'], $value);
-                    }
-                    $model->{$attribute} = $value;
-                }),
             LookupEnum::make(__('Publish State'), 'publish_state_id')
                 ->table(PublishState::table())
                 ->displayUsingLabels(),
@@ -82,6 +70,18 @@ class Project extends Resource
             })
                 ->exceptOnForms()
                 ->asHtml(),
+            Trix::make(__('Description'), 'description')
+                ->rules(['required', 'string', 'max:65535'])
+                ->required()
+                ->withFiles('media-library')
+                ->alwaysShow()
+                ->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
+                    $value = $request->input($attribute);
+                    if (is_string($attribute)) {
+                        $value = str_replace(['<h1>', '</h1>'], ['<h2>', '</h2>'], $value);
+                    }
+                    $model->{$attribute} = $value;
+                }),
             HasMany::make(__('Releases'), 'codeReleases', CodeRelease::class),
         ];
     }
