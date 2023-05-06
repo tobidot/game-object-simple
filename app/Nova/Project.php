@@ -57,17 +57,26 @@ class Project extends Resource
                 ->rules(['nullable'])
                 ->nullable(),
             Trix::make(__('Description'), 'description')
-                ->rules(['required'])
-                ->required(),
+                ->rules(['required', 'string', 'max:65535'])
+                ->required()
+                ->withFiles('media-library')
+                ->alwaysShow()
+                ->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
+                    $value = $request->input($attribute);
+                    if (is_string($attribute)) {
+                        $value = str_replace(['<h1>', '</h1>'], ['<h2>', '</h2>'], $value);
+                    }
+                    $model->{$attribute} = $value;
+                }),
             LookupEnum::make(__('Publish State'), 'publish_state_id')
                 ->table(PublishState::table())
                 ->displayUsingLabels(),
             LookupEnum::make(__('Project State'), 'state_id')
                 ->table(ProjectState::table())
                 ->displayUsingLabels(),
-            Text::make(__('Uri'), function() {
+            Text::make(__('Uri'), function () {
                 $project = $this->resource;
-                if (!($project instanceof  \App\Models\Project)) return '-';
+                if (!($project instanceof \App\Models\Project)) return '-';
                 $url = route('project', ['project' => $project]);
                 return "<a class='link-default' href='$url' target='_blank'>Open Page: $url</a>";
             })
