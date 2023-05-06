@@ -83,7 +83,7 @@ class Project extends Resource
                     $model->{$attribute} = $value;
                 })
                 ->resolveUsing(function () {
-                    $value = $this->content ?? '';
+                    $value = $this->description ?? '';
                     if (!is_string($value)) return $value;
                     return str_replace(['<h2>', '</h2>'], ['<h1>', '</h1>'], $value);
                 }),
