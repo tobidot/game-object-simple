@@ -18,6 +18,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     {
         parent::boot();
         Nova::script('trix-adjust', resource_path('js/nova-trix-adjust.js'));
+        Nova::style('trix-adjust', resource_path('css/nova-trix-adjust.css'));
     }
 
     /**

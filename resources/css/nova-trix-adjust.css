@@ -1,0 +1,11 @@
+.trix-content strong,
+.prose strong{
+    text-shadow: 3px 3px 3px black;
+}
+
+.trix-content pre,
+.prose pre {
+    border: dashed;
+    padding: 0.25rem;
+    background: #22a;
+}
