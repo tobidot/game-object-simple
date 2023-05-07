@@ -18,7 +18,7 @@ class Controller extends BaseController
     {
         $page = Page::query()->where('slug', 'home')->first();
         if($page) {
-            return view('pages.show', ['page' => $page]);
+            return view('pages.default', ['page' => $page]);
         }
         return view('statics.home');
     }
