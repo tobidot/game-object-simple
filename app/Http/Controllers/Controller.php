@@ -16,7 +16,7 @@ class Controller extends BaseController
 
     public function home(): View
     {
-        $page = Page::query()->where('slug', 'home')->first();
+        $page = Page::query()->where('uri', '=', 'home')->first();
         if($page) {
             return view('pages.default', ['page' => $page]);
         }
