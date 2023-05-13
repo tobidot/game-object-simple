@@ -35,6 +35,7 @@ class Excerpt extends Component
         $type = Str::snake($this->type, '-');
         $parts = array_filter(array($model, $type));
         do {
+            $parts[count($parts) - 1] = Str::singular($parts[count($parts) - 1]);
             $special_view = "components.excerpts." . implode('.', $parts);
             if (view()->exists($special_view)) {
                 return view($special_view);
