@@ -34,13 +34,13 @@ HTML;
     /**
      * Get the url for a model
      *
-     * @param string $model
+     * @param Model $model
      * @return string
      */
     public static function modelUrl(Model $model): string
     {
         $name = Str::camel(class_basename($model));
-        $folder = Str::camel(Str::plural(class_basename($model)));
+        $folder = Str::snake(Str::plural(class_basename($model)), '-');
         return route(
             $folder . '.show', [
                 $name => $model

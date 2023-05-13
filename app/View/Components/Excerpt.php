@@ -31,8 +31,8 @@ class Excerpt extends Component
      */
     public function render(): View
     {
-        $model = Str::slug(class_basename($this->model), '-');
-        $type = Str::slug($this->type, '-');
+        $model = Str::snake(Str::plural( class_basename($this->model)), '-');
+        $type = Str::snake($this->type, '-');
         $parts = array_filter(array($model, $type));
         do {
             $special_view = "components.excerpts." . implode('.', $parts);

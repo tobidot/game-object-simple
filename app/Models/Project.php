@@ -61,7 +61,7 @@ class Project extends Model
 
     public function codeReleases() : HasMany
     {
-        return $this->hasMany(CodeRelease::class);
+        return $this->hasMany(CodeRelease::class)->orderByDesc('created_at');
     }
 
     public function projects() : BelongsToMany

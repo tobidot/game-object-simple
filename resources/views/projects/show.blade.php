@@ -37,6 +37,14 @@
         </div>
     @endif
 
+    @if($project->codeReleases->first() !== null)
+        <div class="project__main-release">
+            <div class="archive__item">
+                <x-excerpt :model="$project->codeReleases->first()" type="button"></x-excerpt>
+            </div>
+        </div>
+    @endif
+
     <div class="project__content">
         {!! $project->description !!}
     </div>
@@ -46,14 +54,13 @@
             <h2>
                 Releases
             </h2>
-            <ul>
+            <div class="archive archive--button">
                 @foreach($project->codeReleases as $related)
-                    {{$related->version}} :
-                    <x-link :href="route('code-release', ['codeRelease' => $related])" target="_blank">
-                        Play
-                    </x-link>
+                    <div class="archive__item">
+                        <x-excerpt :model="$related" type="button"></x-excerpt>
+                    </div>
                 @endforeach
-            </ul>
+            </div>
         </div>
     @endif
 

@@ -36,6 +36,6 @@ Route::get('/projects/{project}', [ProjectController::class, 'show'])
 //
 Route::get('/code-releases/{codeRelease}', [CodeReleaseController::class, 'show'])
     ->whereNumber('codeRelease')
-    ->name('code-release');
+    ->name('code-releases.show');
 
 //

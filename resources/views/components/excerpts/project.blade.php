@@ -12,7 +12,7 @@
  * @var CodeRelease $latestRelease
  */
 $project = $model;
-$latest_release = $project->codeReleases()->latest()->first();
+$latestRelease = $project->codeReleases()->latest()->first();
 ?>
 
 <div class="excerpt">
