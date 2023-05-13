@@ -12,6 +12,7 @@ class PageController extends Controller
     public function index(): View
     {
         $pages = Page::query()
+            ->orderByDesc('created_at')
             ->limit(24)
             ->get();
         return view('pages.index', [

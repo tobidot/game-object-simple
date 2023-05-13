@@ -10,6 +10,7 @@ class ProjectController extends Controller
 {
     public function index(): View {
         $projects = Project::query()
+            ->orderByDesc('created_at')
             ->limit(24)
             ->get();
         return view('projects.index', [
@@ -19,9 +20,6 @@ class ProjectController extends Controller
 
     public function show(Project $project) : \Illuminate\Contracts\View\View
     {
-//        if ($project->publish_state_id !== PublishState::PUBLISHED->value  && !auth()->check()) {
-//            abort(404);
-//        }
         $relatedItems = $project->projects->merge($project->pages)->sortByDesc('created_at');
         $relatingItems = $project->relatingProjects->sortByDesc('created_at');
         return view('projects.show', [
