@@ -1,12 +1,16 @@
 @php use App\Helpers\ViewHelper; @endphp
-@php use App\Models\Page; @endphp
+@php use App\Models\Page;use App\Models\Project;use Illuminate\Database\Eloquent\Collection; @endphp
 @props([
     'page',
+    'relatedItems' => collect([]),
+    'relatingItems' => collect([]),
 ])
 @php
-/**
- * @var Page $page
- */
+    /**
+     * @var Page $page
+     * @var Collection<Project|Page> $relatedItems
+     * @var Collection<Page> $relatingItems
+     */
 @endphp
 
 <x-layouts.app class="page">
@@ -18,7 +22,37 @@
             {!! ViewHelper::mediaImageHtml($page->thumbnail, $page->title . ' - Teaser') !!}
         @endisset
     </div>
+
+    @if($relatingItems !== null && $relatingItems->count() > 0)
+        <div class="project__relating">
+            <div class="archive archive--button">
+                @foreach($relatingItems as $item)
+                    <div class="archive__item">
+                        <x-excerpt :model="$item" type="button"></x-excerpt>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     <div class="page__content">
         {!! $page->content !!}
     </div>
+
+    @if($relatedItems !== null && $relatedItems->count() > 0)
+        <div class="project__related">
+            <h2>
+                Related
+            </h2>
+
+            <div class="archive">
+                @foreach($relatedItems as $item)
+                    <div class="archive__item">
+                        <x-excerpt :model="$item"></x-excerpt>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
 </x-layouts.app>

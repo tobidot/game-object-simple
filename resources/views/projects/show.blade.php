@@ -40,6 +40,7 @@
     <div class="project__content">
         {!! $project->description !!}
     </div>
+
     @if($project->codeReleases !== null && $project->codeReleases->count() > 0)
         <div class="project__releases">
             <h2>

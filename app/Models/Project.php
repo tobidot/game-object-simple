@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\PublishState;
+use App\Models\Scopes\VisibleScope;
 use Barryvdh\LaravelIdeHelper\Eloquent;
 use Database\Factories\ProjectFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -51,6 +53,12 @@ class Project extends Model
 {
     use HasFactory;
 
+    protected static function booted()
+    {
+        parent::booted();
+        self::addGlobalScope(new VisibleScope());
+    }
+
     public function codeReleases() : HasMany
     {
         return $this->hasMany(CodeRelease::class);
@@ -71,4 +79,10 @@ class Project extends Model
         return $this->belongsToMany(Project::class, 'project_project', 'related_project_id', 'project_id');
     }
 
+    /**
+     * scopePublished
+     */
+    public function scopePublished(Builder $query) : Builder {
+        return $query->where('publish_state_id', PublishState::PUBLISHED);
+    }
 }

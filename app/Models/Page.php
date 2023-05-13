@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\VisibleScope;
 use Barryvdh\LaravelIdeHelper\Eloquent;
 use Database\Factories\PageFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -56,6 +57,12 @@ class Page extends Model
     public $with = [
         'publishState'
     ];
+
+    protected static function booted()
+    {
+        parent::booted();
+        self::addGlobalScope(new VisibleScope());
+    }
 
     public function getRouteKeyName(): string
     {
