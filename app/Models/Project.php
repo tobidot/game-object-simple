@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Barryvdh\LaravelIdeHelper\Eloquent;
+use Database\Factories\ProjectFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
@@ -35,6 +37,15 @@ use Illuminate\Support\Carbon;
  * @property int $publish_state_id
  * @method static Builder|Project wherePublishStateId($value)
  * @mixin Eloquent
+ * @property string|null $thumbnail
+ * @property-read Collection<int, Page> $pages
+ * @property-read int|null $pages_count
+ * @property-read Collection<int, Project> $projects
+ * @property-read int|null $projects_count
+ * @property-read Collection<int, Project> $relatingProjects
+ * @property-read int|null $relating_projects_count
+ * @method static ProjectFactory factory($count = null, $state = [])
+ * @method static Builder|Project whereThumbnail($value)
  */
 class Project extends Model
 {
@@ -44,4 +55,20 @@ class Project extends Model
     {
         return $this->hasMany(CodeRelease::class);
     }
+
+    public function projects() : BelongsToMany
+    {
+        return $this->belongsToMany(Project::class, 'project_project', 'project_id', 'related_project_id');
+    }
+
+    public function pages() : BelongsToMany
+    {
+        return $this->belongsToMany(Page::class);
+    }
+
+    public function relatingProjects() : BelongsToMany
+    {
+        return $this->belongsToMany(Project::class, 'project_project', 'related_project_id', 'project_id');
+    }
+
 }

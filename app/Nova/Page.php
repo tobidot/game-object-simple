@@ -6,6 +6,7 @@ use App\Enums\PublishState;
 use App\Helpers\NovaHelper;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Image;
@@ -32,7 +33,7 @@ class Page extends Resource
      *
      * @var string
      */
-    public static $title = 'id';
+    public static $title = 'title';
 
     /**
      * The columns that should be searched.
@@ -40,7 +41,7 @@ class Page extends Resource
      * @var array
      */
     public static $search = [
-        'id',
+        'id', 'title'
     ];
 
     /**
@@ -61,9 +62,12 @@ class Page extends Resource
             Image::make(__('Thumbnail'), 'thumbnail')
                 ->rules(['nullable'])
                 ->nullable(),
-            LookupEnum::make(__('Publish State Enum'), 'publish_state_id')
-                ->table('lu_publish_states')
-                ->displayUsingLabels(),
+            NovaHelper::makeEnum('Publish State', 'publish_state_id', PublishState::class)
+                ->rules(['required'])
+                ->required(),
+//            LookupEnum::make(__('Publish State Enum'), 'publish_state_id')
+//                ->table('lu_publish_states')
+//                ->displayUsingLabels(),
             Text::make(__('Uri'), 'uri')
                 ->rules(['required', 'string', 'regex:/[a-z0-9\/]+/'])
                 ->required()
@@ -72,7 +76,7 @@ class Page extends Resource
             Text::make(__('Uri'), function () {
                 $page = $this->resource;
                 if (!($page instanceof \App\Models\Page)) return '-';
-                $url = route('page', ['page' => $page]);
+                $url = route('pages.show', ['page' => $page]);
                 return "<a class='link-default' href='$url' target='_blank'>Open Page: $url</a>";
             })
                 ->exceptOnForms()
@@ -96,6 +100,8 @@ class Page extends Resource
                 })
             ,
             MorphMany::make(__('Log Events'), 'logEvents', LogEvent::class),
+            BelongsToMany::make(__('Pages'), 'pages', Page::class),
+            BelongsToMany::make(__('Projects'), 'projects', Project::class),
         ];
     }
 

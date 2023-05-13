@@ -44,6 +44,9 @@ use Laravel\Nova\Fields\MorphedByMany;
  * @method static Builder|CodeRelease whereUpdatedAt($value)
  * @method static Builder|CodeRelease whereVersion($value)
  * @mixin Eloquent
+ * @property-read Collection<int, \App\Models\Attachment> $attachments
+ * @property-read \App\Models\Project $project
+ * @mixin \Eloquent
  */
 class CodeRelease extends Model
 {

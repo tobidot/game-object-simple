@@ -26,6 +26,7 @@ class NovaHelper
 //        return LookupEnum::make();
         /** @var LookupEnumTrait $enum */
         return Select::make($label,$key)
-            ->options($enum::options());
+            ->options($enum::options())
+            ->displayUsingLabels();
     }
 }

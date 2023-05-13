@@ -7,6 +7,8 @@ use App\Enums\PublishState;
 use App\Helpers\NovaHelper;
 use App\Nova\Actions\UploadRelease;
 use Illuminate\Http\Request;
+use Laravel\Nova\Exceptions\HelperNotSupported;
+use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Image;
@@ -22,14 +24,14 @@ class Project extends Resource
      *
      * @var class-string<\App\Models\Project>
      */
-    public static $model = \App\Models\Project::class;
+    public static string $model = \App\Models\Project::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = 'id';
+    public static $title = 'title';
 
     /**
      * The columns that should be searched.
@@ -37,7 +39,7 @@ class Project extends Resource
      * @var array
      */
     public static $search = [
-        'id',
+        'id', 'title'
     ];
 
     /**
@@ -45,6 +47,7 @@ class Project extends Resource
      *
      * @param NovaRequest $request
      * @return array
+     * @throws HelperNotSupported
      */
     public function fields(NovaRequest $request): array
     {
@@ -56,16 +59,22 @@ class Project extends Resource
             Image::make(__('Thumbnail'), 'thumbnail')
                 ->rules(['nullable'])
                 ->nullable(),
-            LookupEnum::make(__('Publish State'), 'publish_state_id')
-                ->table(PublishState::table())
-                ->displayUsingLabels(),
-            LookupEnum::make(__('Project State'), 'state_id')
-                ->table(ProjectState::table())
-                ->displayUsingLabels(),
+            NovaHelper::makeEnum('Publish State', 'publish_state_id', PublishState::class)
+                ->rules(['required'])
+                ->required(),
+            NovaHelper::makeEnum('Project State', 'state_id', ProjectState::class)
+                ->rules(['required'])
+                ->required(),
+//            LookupEnum::make(__('Publish State'), 'publish_state_id')
+//                ->table(PublishState::table())
+//                ->displayUsingLabels(),
+//            LookupEnum::make(__('Project State'), 'state_id')
+//                ->table(ProjectState::table())
+//                ->displayUsingLabels(),
             Text::make(__('Uri'), function () {
                 $project = $this->resource;
                 if (!($project instanceof \App\Models\Project)) return '-';
-                $url = route('project', ['project' => $project]);
+                $url = route('projects.show', ['project' => $project]);
                 return "<a class='link-default' href='$url' target='_blank'>Open Page: $url</a>";
             })
                 ->exceptOnForms()
@@ -88,6 +97,8 @@ class Project extends Resource
                     return str_replace(['<h2>', '</h2>'], ['<h1>', '</h1>'], $value);
                 }),
             HasMany::make(__('Releases'), 'codeReleases', CodeRelease::class),
+            BelongsToMany::make(__('Pages'), 'pages', Page::class),
+            BelongsToMany::make(__('Projects'), 'projects', Project::class),
         ];
     }
 

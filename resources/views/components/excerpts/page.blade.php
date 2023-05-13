@@ -26,7 +26,7 @@ $page = $model;
     </div>
     <div class="excerpt__background">
         @isset($page->thumbnail)
-            <img src="{{ViewHelper::mediaUrl($page->thumbnail)}}" alt="cover">
+            {!! ViewHelper::mediaImageHtml($model->thumbnail, 'cover') !!}
         @endif
     </div>
 </div>

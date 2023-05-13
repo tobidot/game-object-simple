@@ -27,14 +27,14 @@ $latest_release = $project->codeReleases->first();
                     {{__("Try it out")}} ({{$latest_release->version}})
                 </x-link>
             @endif
-            <x-link :href="route('project', ['project'=>$project])">
+            <x-link :href="route('projects.show', ['project'=>$project])">
                 {{__("Read More")}}
             </x-link>
         </div>
     </div>
     <div class="excerpt__background">
         @isset($project->thumbnail)
-            <img src="{{ViewHelper::mediaUrl($project->thumbnail)}}" alt="cover">
+            {!! ViewHelper::mediaImageHtml($model->thumbnail, 'cover') !!}
         @endif
     </div>
 </div>

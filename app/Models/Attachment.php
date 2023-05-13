@@ -33,6 +33,7 @@ use Illuminate\Support\Carbon;
  * @mixin Eloquent
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CodeRelease> $codeReleases
  * @property-read int|null $code_releases_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CodeRelease> $codeReleases
  * @mixin \Eloquent
  */
 class Attachment extends Model

@@ -16,23 +16,31 @@ class Excerpt extends Component
      * @return void
      */
     public function __construct(
-        public Model $model
+        public Model   $model,
+        public ?string $type = null,
     )
     {
     }
 
     /**
      * Get the view / contents that represent the component.
+     * first try to find a special view for this model and type
+     * drop the model first, then the type, then just use the default
      *
      * @return View
      */
-    public function render() : View
+    public function render(): View
     {
-        $special = Str::slug( class_basename($this->model),'-' );
-        $special_view = "components.excerpts.$special";
-        if (view()->exists($special_view)) {
-            return view($special_view);
-        }
+        $model = Str::slug(class_basename($this->model), '-');
+        $type = Str::slug($this->type, '-');
+        $parts = array_filter(array($model, $type));
+        do {
+            $special_view = "components.excerpts." . implode('.', $parts);
+            if (view()->exists($special_view)) {
+                return view($special_view);
+            }
+            array_shift($parts);
+        } while (!empty($parts));
         return view('components.excerpts.default');
     }
 }

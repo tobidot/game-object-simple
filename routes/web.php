@@ -26,13 +26,13 @@ Route::get('/pages', [PageController::class, 'index'])
     ->name('pages');
 Route::get('/pages/{page}', [PageController::class, 'show'])
     ->where('page', '.*')
-    ->name('page');
+    ->name('pages.show');
 //
 Route::get('/projects', [ProjectController::class, 'index'])
     ->name('projects');
 Route::get('/projects/{project}', [ProjectController::class, 'show'])
     ->whereNumber('project')
-    ->name('project');
+    ->name('projects.show');
 //
 Route::get('/code-releases/{codeRelease}', [CodeReleaseController::class, 'show'])
     ->whereNumber('codeRelease')

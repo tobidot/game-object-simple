@@ -24,8 +24,12 @@ class PageController extends Controller
         if ($page->publishState->id !== PublishState::PUBLISHED->value) {
             abort(404);
         }
-        return view('pages.default', [
-            'page' => $page
+        $relatedItems = $page->projects->merge($page->pages)->sortByDesc('created_at');
+        $relatingItems = $page->relatingPages->sortByDesc('created_at');
+        return view('pages.show', [
+            'page' => $page,
+            'relatedItems' => $relatedItems,
+            'relatingItems' => $relatingItems,
         ]);
     }
 

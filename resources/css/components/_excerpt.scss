@@ -4,13 +4,15 @@
     position: relative;
     height: 100%;
 
-    h3 {
-        font-size: 1.5rem;
-        margin-top: 0;
-        margin-bottom: 1rem;
+    &__title {
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
     }
 
-    p {
+    &__content {
         font-size: 1.2rem;
         margin-bottom: 1rem;
     }
@@ -42,5 +44,44 @@
     &__content {
         position: relative;
         z-index: 20;
+    }
+
+    &--button {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+
+        .excerpt {
+            // Override font-size to make it more compact
+            &__title {
+                display: flex;
+                margin: 0;
+                flex: 0 0 auto;
+                justify-content: center;
+                align-items: center;
+                max-width: calc( 100% - 6rem );
+
+                h3 {
+                    white-space: normal;
+                    font-size: 1.3rem;
+                    margin: 0;
+                }
+            }
+
+            &__content {
+                font-size: 1rem;
+            }
+
+            &__image {
+                flex: 1 1 auto;
+                height: auto;
+                margin: 0 1rem 0 0;
+                img {
+                    width: 100%;
+                    height: auto;
+                }
+            }
+        }
     }
 }

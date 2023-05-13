@@ -23,8 +23,12 @@ class ProjectController extends Controller
         if ($project->publish_state_id !== PublishState::PUBLISHED->value) {
             abort(404);
         }
-        return view('projects.default', [
-            'project' => $project
+        $relatedItems = $project->projects->merge($project->pages)->sortByDesc('created_at');
+        $relatingItems = $project->relatingProjects->sortByDesc('created_at');
+        return view('projects.show', [
+            'project' => $project,
+            'relatedItems' => $relatedItems,
+            'relatingItems' => $relatingItems,
         ]);
     }
 

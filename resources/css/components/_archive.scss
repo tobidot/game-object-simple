@@ -12,4 +12,16 @@
         color: $text-color-light;
         box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
     }
+
+    &--button {
+        // Override grid-template-columns to make it more compact
+        grid-template-columns: repeat(auto-fit, minmax(200px, 33%));
+
+        .archive {
+            &__item {
+                // Override padding to make it more compact
+                padding: 1rem;
+            }
+        }
+    }
 }

@@ -14,7 +14,9 @@
         {{$page->title}}
     </x-slot>
     <div class="page__teaser">
-        <img src="{{ViewHelper::mediaUrl($page->thumbnail)}}" alt="{{$page->title}} - Teaser">
+        @isset($page->thumbnail)
+            {!! ViewHelper::mediaImageHtml($page->thumbnail, $page->title . ' - Teaser') !!}
+        @endisset
     </div>
     <div class="page__content">
         {!! $page->content !!}

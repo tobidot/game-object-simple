@@ -4,7 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 
-class TypeException extends Exception
+class TypeException extends \Exception
 {
 
     public string $value_type;
