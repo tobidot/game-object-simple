@@ -20,7 +20,7 @@ $page = $model;
         <p>
             {{ substr( strip_tags( html_entity_decode( str_replace("<br>"," ", $page->content) ) ) , 0, 255) }}
         </p>
-        <x-link :href="route('page', ['page'=>$page])">
+        <x-link :href="route('pages.show', ['page'=>$page])">
             {{__("Read More")}}
         </x-link>
     </div>
