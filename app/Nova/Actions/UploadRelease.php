@@ -106,17 +106,17 @@ class UploadRelease extends Action
             Number::make(__("Fun"), 'fun')
                 ->min(0)->max(10)->step(1)
                 ->rules(['required', 'numeric', 'min:0', 'max:10'])
-                ->default(0)
+                ->default($latest_release->fun ?? 0)
                 ->required(),
             Number::make(__("Complexity"), 'complexity')
                 ->min(0)->max(10)->step(1)
                 ->rules(['required', 'numeric', 'min:0', 'max:10'])
-                ->default(0)
+                ->default($latest_release->complexity ?? 0)
                 ->required(),
             Number::make(__("Completeness"), 'completeness')
                 ->min(0)->max(10)->step(1)
                 ->rules(['required', 'numeric', 'min:0', 'max:10'])
-                ->default(0)
+                ->default($latest_release->completeness ?? 0)
                 ->required(),
         ];
     }
