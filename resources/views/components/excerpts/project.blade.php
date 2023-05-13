@@ -25,7 +25,7 @@ $latestRelease = $project->codeReleases()->latest()->first();
         </p>
         <div class="excerpt__actions">
             @if($latestRelease !== null)
-                <x-link :href="route('code-release', ['codeRelease' => $latestRelease])" target="_blank">
+                <x-link :href="route('code-releases.show', ['codeRelease' => $latestRelease])" target="_blank">
                     {{__("Try it out")}} ({{$latestRelease->version}})
                 </x-link>
             @endif
