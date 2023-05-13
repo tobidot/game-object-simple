@@ -1,16 +1,18 @@
 @php
     use App\Helpers\ViewHelper;
-    use App\Models\Project;
+    use App\Models\CodeRelease;use App\Models\Project;
 @endphp
 @props([
     'model',
+    'latestRelease' => null,
 ])
 <?php
-$project = $model;
-$latest_release = $project->codeReleases->first();
 /**
  * @var Project $project
+ * @var CodeRelease $latestRelease
  */
+$project = $model;
+$latest_release = $project->codeReleases()->latest()->first();
 ?>
 
 <div class="excerpt">
@@ -22,9 +24,9 @@ $latest_release = $project->codeReleases->first();
             {{ substr( strip_tags( html_entity_decode( str_replace("<br>"," ", $project->description) ) ) , 0, 255) }}
         </p>
         <div class="excerpt__actions">
-            @if($latest_release !== null)
-                <x-link :href="route('code-release', ['codeRelease' => $latest_release])"  target="_blank">
-                    {{__("Try it out")}} ({{$latest_release->version}})
+            @if($latestRelease !== null)
+                <x-link :href="route('code-release', ['codeRelease' => $latestRelease])" target="_blank">
+                    {{__("Try it out")}} ({{$latestRelease->version}})
                 </x-link>
             @endif
             <x-link :href="route('projects.show', ['project'=>$project])">
