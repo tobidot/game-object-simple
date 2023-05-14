@@ -15,7 +15,8 @@
 
     &--button {
         // Override grid-template-columns to make it more compact
-        grid-template-columns: repeat(auto-fit, minmax(200px, 33%));
+        grid-template-columns: repeat(auto-fit, minmax(200px, 0.333fr));
+        justify-content: center;
 
         .archive {
             &__item {
