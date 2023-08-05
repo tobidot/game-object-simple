@@ -39,6 +39,20 @@ header {
         font-weight: bold;
     }
 
+    .meta {
+        display: flex;
+        padding: 0.125rem;
+
+        font-size: 0.75rem;
+        line-height: 1.5rem;
+        font-weight: bold;
+        text-align: right;
+
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
     .navigation {
         &__list {
             list-style: none;

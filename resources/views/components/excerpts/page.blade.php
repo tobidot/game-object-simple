@@ -16,6 +16,11 @@ $page = $model;
     <div class="excerpt__content">
         <h3>
             {{$page->title}}
+            @isset($page->created_at)
+                <small>
+                    {{ $page->created_at->setTimezone(new DateTimeZone("Europe"))->format('Y-m-d') }}
+                </small>
+            @endisset
         </h3>
         <p>
             {{ substr( strip_tags( html_entity_decode( str_replace("<br>"," ", $page->content) ) ) , 0, 255) }}

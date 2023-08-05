@@ -19,6 +19,9 @@
     <x-slot name="title">
         {{ $project->title }}
     </x-slot>
+    <x-slot name="meta">
+        {{ $project->created_at->setTimezone(new DateTimeZone("Europe"))->format('Y-m-d') }}
+    </x-slot>
     <div class="project__teaser">
         @isset($project->thumbnail)
             {!! ViewHelper::mediaImageHtml($project->thumbnail, $project->title . ' - Teaser') !!}

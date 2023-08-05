@@ -19,6 +19,11 @@ $latestRelease = $project->codeReleases()->latest()->first();
     <div class="excerpt__content">
         <h3>
             {{$project->title}}
+            @isset($project->created_at)
+                <small>
+                    {{ $project->created_at->setTimezone(new DateTimeZone("Europe"))->format('Y-m-d') }}
+                </small>
+            @endisset
         </h3>
         <p>
             {{ substr( strip_tags( html_entity_decode( str_replace("<br>"," ", $project->description) ) ) , 0, 255) }}

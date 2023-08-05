@@ -15,7 +15,10 @@
 
 <x-layouts.app class="page">
     <x-slot name="title">
-        {{$page->title}}
+        {{ $page->title }}
+    </x-slot>
+    <x-slot name="meta">
+        {{ $page->created_at->setTimezone(new DateTimeZone("Europe"))->format('Y-m-d') }}
     </x-slot>
     <div class="page__teaser">
         @isset($page->thumbnail)

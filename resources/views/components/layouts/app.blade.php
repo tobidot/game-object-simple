@@ -10,7 +10,7 @@
  */
 @endphp
 
-    <!doctype html>
+<!doctype html>
 <html lang="en" >
 <head>
     <meta charset="UTF-8">
@@ -30,8 +30,11 @@
         </span>
     </div>
     <h1 class="title">
-         {{$title}}
+        {!! $title !!}
     </h1>
+    <div class="meta">
+        {!! $meta ?? '' !!}
+    </div>
     <x-navigation>
 
     </x-navigation>
