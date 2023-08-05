@@ -18,7 +18,7 @@ $page = $model;
             {{$page->title}}
             @isset($page->created_at)
                 <small>
-                    {{ $page->created_at->setTimezone(new DateTimeZone("Europe"))->format('Y-m-d') }}
+                    {{ $page->created_at->setTimezone(new DateTimeZone("Europe/Berlin"))->format('Y-m-d') }}
                 </small>
             @endisset
         </h3>

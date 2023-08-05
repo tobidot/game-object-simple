@@ -14,7 +14,7 @@
             {{$model->title }}
             @isset($model->created_at)
                 <small>
-                    {{ $model->created_at->setTimezone(new DateTimeZone("Europe"))->format('Y-m-d') }}
+                    {{ $model->created_at->setTimezone(new DateTimeZone("Europe/Berlin"))->format('Y-m-d') }}
                 </small>
             @endisset
         </h3>

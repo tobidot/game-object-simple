@@ -18,7 +18,7 @@
         {{ $page->title }}
     </x-slot>
     <x-slot name="meta">
-        {{ $page->created_at->setTimezone(new DateTimeZone("Europe"))->format('Y-m-d') }}
+        {{ $page->created_at->setTimezone(new DateTimeZone("Europe/Berlin"))->format('Y-m-d') }}
     </x-slot>
     <div class="page__teaser">
         @isset($page->thumbnail)

@@ -21,7 +21,7 @@ $latestRelease = $project->codeReleases()->latest()->first();
             {{$project->title}}
             @isset($project->created_at)
                 <small>
-                    {{ $project->created_at->setTimezone(new DateTimeZone("Europe"))->format('Y-m-d') }}
+                    {{ $project->created_at->setTimezone(new DateTimeZone("Europe/Berlin"))->format('Y-m-d') }}
                 </small>
             @endisset
         </h3>
