@@ -32,14 +32,12 @@
     <h1 class="title">
         {!! $title !!}
     </h1>
-    <div class="meta">
-        {!! $meta ?? '' !!}
-    </div>
     <x-navigation>
 
     </x-navigation>
 </header>
 <main {{$attributes->merge([])}}>
+    {!! $meta ?? '' !!}
     {{ $slot }}
 </main>
 <footer>

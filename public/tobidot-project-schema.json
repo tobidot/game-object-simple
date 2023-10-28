@@ -103,6 +103,12 @@
                     "type": "string"
                 }
             }
+        },
+        "folders": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
         }
     },
     "required": [
