@@ -13,6 +13,27 @@
             "type": "string",
             "description": "The title of the project"
         },
+        "rating": {
+            "type": "object",
+            "properties": {
+                "completeness": {
+                    "type": "number",
+                    "description": "A number between 0 and 100 representing the completeness of the project"
+                },
+                "complexity": {
+                    "type": "number",
+                    "description": "A number between 0 and 100 representing the complexity of the project"
+                },
+                "interesting": {
+                    "type": "number",
+                    "description": "A number between 0 and 100 representing the interestingness of the project"
+                },
+                "fun": {
+                    "type": "number",
+                    "description": "A number between 0 and 100 representing the fun of the project"
+                }
+            }
+        },
         "informal": {
             "type": "object",
             "properties": {
