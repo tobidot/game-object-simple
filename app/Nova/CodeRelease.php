@@ -3,6 +3,8 @@
 namespace App\Nova;
 
 use App\Helpers\NovaHelper;
+use App\Nova\Metrics\ViewsPerDay;
+use Laravel\Nova\Exceptions\HelperNotSupported;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\ID;
@@ -55,6 +57,11 @@ class CodeRelease extends Resource
             Text::make(__('Version'), 'version')
                 ->rules(['required','string', 'regex:/\d+\.\d+\.\d+/'])
                 ->required(),
+            Text::make(__('View Count'), function () {
+                $resource = $this->resource;
+                if (!($resource instanceof self::$model)) return '-';
+                return  $resource->views()->count();
+            })->exceptOnForms(),
             $this->makeRating(__('Completeness'), 'completeness'),
             $this->makeRating(__('Fun'), 'fun'),
             $this->makeRating(__('Complexity'), 'complexity'),
@@ -78,12 +85,16 @@ class CodeRelease extends Resource
     /**
      * Get the cards available for the request.
      *
-     * @param  NovaRequest  $request
+     * @param NovaRequest $request
      * @return array
+     * @throws HelperNotSupported
      */
     public function cards(NovaRequest $request) : array
     {
-        return [];
+        return [
+            (new ViewsPerDay(self::$model)),
+            (new ViewsPerDay(self::$model))->onlyOnDetail(),
+        ];
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Nova\Dashboards;
 
+use App\Nova\Metrics\ViewsPerDay;
 use Laravel\Nova\Cards\Help;
 use Laravel\Nova\Dashboards\Main as Dashboard;
 
@@ -17,6 +18,7 @@ class Main extends Dashboard
     {
         return [
 //            new Help,
+            new ViewsPerDay()
         ];
     }
 }

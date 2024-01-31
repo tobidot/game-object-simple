@@ -67,7 +67,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      */
     public function tools() : array
     {
-        return [];
+        return [
+            \Laravel\Nova\LogViewer\LogViewer::make(),
+        ];
     }
 
     /**

@@ -4,7 +4,9 @@ namespace App\Nova;
 
 use App\Enums\PublishState;
 use App\Helpers\NovaHelper;
+use App\Nova\Metrics\ViewsPerDay;
 use Illuminate\Http\Request;
+use Laravel\Nova\Exceptions\HelperNotSupported;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\HasMany;
@@ -81,6 +83,11 @@ class Page extends Resource
             })
                 ->exceptOnForms()
                 ->asHtml(),
+            Text::make(__('View Count'), function () {
+                $resource = $this->resource;
+                if (!($resource instanceof self::$model)) return '-';
+                return $resource->views()->count();
+            })->exceptOnForms(),
             Trix::make(__('Content'), 'content')
                 ->rules(['required', 'string', 'max:65535'])
                 ->required()
@@ -89,7 +96,7 @@ class Page extends Resource
                 ->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
                     $value = $request->input($attribute);
                     if (is_string($attribute)) {
-                        $value =  str_replace(['<h1>', '</h1>'], ['<h2>', '</h2>'], $value);
+                        $value = str_replace(['<h1>', '</h1>'], ['<h2>', '</h2>'], $value);
                     }
                     $model->{$attribute} = $value;
                 })
@@ -110,10 +117,14 @@ class Page extends Resource
      *
      * @param NovaRequest $request
      * @return array
+     * @throws HelperNotSupported
      */
     public function cards(NovaRequest $request): array
     {
-        return [];
+        return [
+            (new ViewsPerDay(self::$model)),
+            (new ViewsPerDay(self::$model))->onlyOnDetail(),
+        ];
     }
 
     /**

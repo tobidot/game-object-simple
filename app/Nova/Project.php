@@ -6,7 +6,9 @@ use App\Enums\ProjectState;
 use App\Enums\PublishState;
 use App\Helpers\NovaHelper;
 use App\Nova\Actions\UploadRelease;
+use App\Nova\Metrics\ViewsPerDay;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Laravel\Nova\Exceptions\HelperNotSupported;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\HasMany;
@@ -79,6 +81,11 @@ class Project extends Resource
             })
                 ->exceptOnForms()
                 ->asHtml(),
+            Text::make(__('View Count'), function () {
+                $resource = $this->resource;
+                if (!($resource instanceof self::$model)) return '-';
+                return  $resource->views()->count();
+            })->exceptOnForms(),
             Trix::make(__('Description'), 'description')
                 ->rules(['required', 'string', 'max:65535'])
                 ->required()
@@ -107,10 +114,14 @@ class Project extends Resource
      *
      * @param NovaRequest $request
      * @return array
+     * @throws HelperNotSupported
      */
     public function cards(NovaRequest $request): array
     {
-        return [];
+        return [
+            (new ViewsPerDay(self::$model)),
+            (new ViewsPerDay(self::$model))->onlyOnDetail(),
+        ];
     }
 
     /**

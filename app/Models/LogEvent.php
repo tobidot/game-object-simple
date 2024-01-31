@@ -29,7 +29,6 @@ use Illuminate\Support\Carbon;
  * @method static Builder|LogEvent whereTypeId($value)
  * @method static Builder|LogEvent whereUpdatedAt($value)
  * @mixin Eloquent
- * @mixin \Eloquent
  */
 class LogEvent extends Model
 {
