@@ -94,8 +94,8 @@ class Page extends Model
         return $this->belongsToMany(Page::class, 'page_page', 'related_page_id', 'page_id');
     }
 
-    public function views(): MorphToMany
+    public function views(): MorphMany
     {
-        return $this->morphToMany(View::class, 'viewable');
+        return $this->morphMany(View::class, 'viewable');
     }
 }
