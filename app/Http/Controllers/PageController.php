@@ -13,6 +13,7 @@ class PageController extends Controller
 
     public function index(): View
     {
+        AppHelper::resolve(ViewService::class)->associate(Page::class);
         $pages = Page::query()
             ->orderByDesc('created_at')
             ->limit(24)
