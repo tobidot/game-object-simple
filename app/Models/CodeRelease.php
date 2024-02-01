@@ -72,4 +72,9 @@ class CodeRelease extends Model
     {
         return $this->morphMany(View::class, 'viewable');
     }
+
+    public function getTitleAttribute(): string
+    {
+        return $this->version . ' - ' . $this->project->title;
+    }
 }

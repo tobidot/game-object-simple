@@ -18,6 +18,16 @@ class PageSeeder extends Seeder
      */
     public function run(): void
     {
+
+        $home = Page::query()->where('uri', 'home')->first();
+        if ($home === null) {
+            Page::factory()->create([
+                'title' => 'Home',
+                'uri' => 'home',
+                'publish_state_id' => PublishState::PUBLISHED,
+            ]);
+        }
+
         $pages = Page::factory()->count(10)->create();
         for ($i = 0; $i < 3; ++$i) {
             $pages[$i]->publish_state_id = PublishState::PUBLISHED->value;
