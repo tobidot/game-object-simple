@@ -58,4 +58,11 @@
         </div>
     @endif
 
+    <div class="page__comments">
+        <h2>
+            Comments
+        </h2>
+        <x-comments.list :comments="$page->comments"></x-comments.list>
+        <x-comments.form :commentable="$page"></x-comments.form>
+    </div>
 </x-layouts.app>

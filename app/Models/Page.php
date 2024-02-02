@@ -98,4 +98,9 @@ class Page extends Model
     {
         return $this->morphMany(View::class, 'viewable');
     }
+
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
 }

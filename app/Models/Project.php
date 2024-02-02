@@ -26,6 +26,7 @@ use Illuminate\Support\Carbon;
  * @property string $description
  * @property int $publish_state_is
  * @property int $state_id
+ * @@property-read Collection<int, Comment> $comments
  * @property-read Collection<int, CodeRelease> $codeReleases
  * @property-read int|null $code_releases_count
  * @method static Builder|Project newModelQuery()
@@ -50,6 +51,7 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $relating_projects_count
  * @method static ProjectFactory factory($count = null, $state = [])
  * @method static Builder|Project whereThumbnail($value)
+ *
  */
 class Project extends Model
 {
@@ -61,22 +63,22 @@ class Project extends Model
         self::addGlobalScope(new VisibleScope());
     }
 
-    public function codeReleases() : HasMany
+    public function codeReleases(): HasMany
     {
         return $this->hasMany(CodeRelease::class)->orderByDesc('created_at');
     }
 
-    public function projects() : BelongsToMany
+    public function projects(): BelongsToMany
     {
         return $this->belongsToMany(Project::class, 'project_project', 'project_id', 'related_project_id');
     }
 
-    public function pages() : BelongsToMany
+    public function pages(): BelongsToMany
     {
         return $this->belongsToMany(Page::class);
     }
 
-    public function relatingProjects() : BelongsToMany
+    public function relatingProjects(): BelongsToMany
     {
         return $this->belongsToMany(Project::class, 'project_project', 'related_project_id', 'project_id');
     }
@@ -86,10 +88,16 @@ class Project extends Model
         return $this->morphMany(View::class, 'viewable');
     }
 
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
     /**
      * scopePublished
      */
-    public function scopePublished(Builder $query) : Builder {
+    public function scopePublished(Builder $query): Builder
+    {
         return $query->where('publish_state_id', PublishState::PUBLISHED);
     }
 

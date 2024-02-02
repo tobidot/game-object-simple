@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CodeReleaseController;
+use App\Http\Controllers\CommentsController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProjectController;
@@ -46,4 +47,7 @@ Route::middleware([
         ->whereNumber('codeRelease')
         ->name('code-releases.show');
 
+    // Comments
+    Route::post('/comments', [CommentsController::class, 'store'])
+        ->name('comments.store');
 });

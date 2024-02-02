@@ -11,9 +11,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Laravel\Nova\Exceptions\HelperNotSupported;
 use Laravel\Nova\Fields\BelongsToMany;
+use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Image;
+use Laravel\Nova\Fields\MorphMany;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -103,7 +105,9 @@ class Project extends Resource
                     if (!is_string($value)) return $value;
                     return str_replace(['<h2>', '</h2>'], ['<h1>', '</h1>'], $value);
                 }),
+            Boolean::make(__('Allow Comments'), 'allow_comments'),
             HasMany::make(__('Releases'), 'codeReleases', CodeRelease::class),
+            MorphMany::make(__('Comments'), 'comments', Comment::class),
             BelongsToMany::make(__('Pages'), 'pages', Page::class),
             BelongsToMany::make(__('Projects'), 'projects', Project::class),
         ];

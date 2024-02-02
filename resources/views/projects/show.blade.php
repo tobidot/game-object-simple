@@ -20,7 +20,12 @@
         {{ $project->title }}
     </x-slot>
     <x-slot name="meta">
-        {{ $project->created_at->setTimezone(new DateTimeZone("Europe/Berlin"))->format('Y-m-d') }}
+        <div class="meta__created-at">
+             <h4 class="meta__label">posted</h4> {{ $project->created_at->setTimezone(new DateTimeZone("Europe/Berlin"))->format('Y-m-d') }}
+        </div>
+        <div class="meta__updated-at">
+            <h4 class="meta__label">updated</h4> {{ $project->updated_at->setTimezone(new DateTimeZone("Europe/Berlin"))->format('Y-m-d') }}
+        </div>
     </x-slot>
     <div class="project__teaser">
         @isset($project->thumbnail)
@@ -84,5 +89,12 @@
         </div>
     @endif
 
+    <div class="project__comments">
+        <h2>
+            Comments
+        </h2>
+        <x-comments.list :comments="$project->comments"></x-comments.list>
+        <x-comments.form :commentable="$project"></x-comments.form>
+    </div>
 </x-layouts.app>
 

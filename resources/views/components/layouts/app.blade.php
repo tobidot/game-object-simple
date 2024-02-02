@@ -37,7 +37,9 @@
     </x-navigation>
 </header>
 <main {{$attributes->merge([])}}>
-    {!! $meta ?? '' !!}
+    <div class="meta">
+        {!! $meta ?? '' !!}
+    </div>
     {{ $slot }}
 </main>
 <footer>

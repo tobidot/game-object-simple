@@ -5,6 +5,7 @@
 }
 
 // Global styles
+html,
 body {
     background-color: $background-color;
     color: $text-color;
@@ -12,11 +13,22 @@ body {
     font-size: 16px;
     margin: 0;
     padding: 0;
+
+    @media (max-width: 1024px) {
+        font-size: 14px;
+    }
+    @media (max-width: 480px) {
+        font-size: 12px;
+    }
 }
 
 a {
     color: $primary-color;
     text-decoration: none;
+}
+
+header {
+
 }
 
 main {

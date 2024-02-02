@@ -1,11 +1,13 @@
 @import "globals/variables";
 @import "globals/mixins";
 @import "globals/globals";
+@import "globals/layout";
 
 @import "components/archive";
 @import "components/excerpt";
 @import "components/link";
 @import "components/navigation";
+@import "components/comments";
 
 @import "statics/imprint";
 @import "pages/default";

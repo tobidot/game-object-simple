@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Exceptions\HelperNotSupported;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\BelongsToMany;
+use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Image;
@@ -104,9 +105,10 @@ class Page extends Resource
                     $value = $this->content ?? '';
                     if (!is_string($value)) return $value;
                     return str_replace(['<h2>', '</h2>'], ['<h1>', '</h1>'], $value);
-                })
-            ,
+                }),
+            Boolean::make(__('Allow Comments'), 'allow_comments')->default(true),
             MorphMany::make(__('Log Events'), 'logEvents', LogEvent::class),
+            MorphMany::make(__('Comments'), 'comments', Comment::class),
             BelongsToMany::make(__('Pages'), 'pages', Page::class),
             BelongsToMany::make(__('Projects'), 'projects', Project::class),
         ];
