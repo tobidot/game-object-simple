@@ -21,7 +21,7 @@
         <div class="excerpt__title">
             @isset($model->title)
                 <h3>
-                    {{$model->title}}
+                    Try out: v{{$model->title}}
                 </h3>
             @endisset
         </div>
