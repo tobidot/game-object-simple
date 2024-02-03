@@ -25,8 +25,45 @@ class ViewsPerUrl extends Partition
      * @param NovaRequest $request
      * @return mixed
      */
-    public function calculate(NovaRequest $request) : PartitionResult
+    public function calculate(NovaRequest $request): PartitionResult
     {
+
+//        $views = \App\Models\View::query()->
+//        select('viewable_id', 'viewable_type', 'url')->
+//        addSelect(DB::raw('COUNT(*) as count'))->
+//        groupBy('viewable_id', 'viewable_type', 'url')->
+//        orderBy('count', 'desc')->
+//        with('viewable')->
+//        get();
+//
+//
+//        $median = $views->median('count');
+//
+//        $better_views = $views->
+//        sortBy('count', SORT_REGULAR, true)->
+//        where('count', '>', $median);
+//
+//        $groups = $better_views->mapWithKeys(function (\App\Models\View $view) {
+//            if ($view->viewable !== null) {
+//                $name = $view->viewable->title ?? 'Untitled';
+//            } else {
+//                $name = parse_url($view->url)['path'] ?? '/';
+//            }
+//            if (strlen($name) > 32) {
+//                $name = substr($name, 0, 32) . '...';
+//            }
+//            $count = $view->count ?? 0;
+//            return [
+//                $name => $count
+//            ];
+//        });
+//
+//        $p = new \Laravel\Nova\Metrics\PartitionResult($groups->toArray());
+//        // create hue colors for each group
+//        $count = $groups->count();
+//        $colors = $groups->values()->map(
+//            fn($_,$index)=> "hsl(" . (360 / $count * $index) . ", 100%, 50%)"
+//        )->toArray();
 
 
         $views = View::query()
@@ -35,11 +72,15 @@ class ViewsPerUrl extends Partition
             ->groupBy('viewable_id', 'viewable_type', 'url')
             ->orderBy('count', 'desc')
             ->with('viewable')
-            ->get()
-            ->sortBy('count', SORT_REGULAR, true)
-            ->take(5);
+            ->get();
 
-        $groups = $views->mapWithKeys(function (View $view) {
+        $median = $views->median('count');
+
+        $better_views = $views
+            ->sortBy('count', SORT_REGULAR, true)
+            ->where('count', '>', $median);
+
+        $groups = $better_views->mapWithKeys(function (View $view) {
             if ($view->viewable !== null) {
                 $name = $view->viewable->title ?? 'Untitled';
             } else {
@@ -54,7 +95,14 @@ class ViewsPerUrl extends Partition
             ];
         });
 
-        return $this->result($groups->toArray());
+
+        $count = $groups->count();
+        $colors = $groups->values()->map(
+            fn($_,$index)=> "hsl(" . (360 / $count * $index) . ", 100%, 50%)"
+        )->toArray();
+
+        return (new PartitionResult($groups->toArray()))
+            ->$colors($colors);
     }
 
     /**
@@ -62,9 +110,9 @@ class ViewsPerUrl extends Partition
      *
      * @return Carbon
      */
-    public function cacheFor() : Carbon
+    public function cacheFor(): Carbon
     {
-         return now()->addMinutes(5);
+        return now()->addMinutes(5);
     }
 
     /**
@@ -72,7 +120,7 @@ class ViewsPerUrl extends Partition
      *
      * @return string
      */
-    public function uriKey() : string
+    public function uriKey(): string
     {
         return 'views-per-url';
     }
