@@ -102,7 +102,7 @@ class ViewsPerUrl extends Partition
         )->toArray();
 
         return (new PartitionResult($groups->toArray()))
-            ->$colors($colors);
+            ->colors($colors);
     }
 
     /**
