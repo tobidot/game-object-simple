@@ -19,6 +19,14 @@ use Laravel\Nova\Metrics\PartitionResult;
  */
 class ViewsPerUrl extends Partition
 {
+    public function __construct($component = null)
+    {
+        parent::__construct($component);
+        $this->width('1/2');
+        $this->height(300);
+        $this->fixedHeight();
+    }
+
     /**
      * Calculate the value of the metric.
      *

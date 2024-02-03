@@ -20,7 +20,7 @@ class Main extends Dashboard
         return [
 //            new Help,
             new ViewsPerDay(),
-            new ViewsPerUrl(),
+            (new ViewsPerUrl()),
         ];
     }
 }
