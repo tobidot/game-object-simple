@@ -34,9 +34,10 @@ class ViewsPerUrl extends Partition
             ->addSelect(DB::raw('COUNT(*) as count'))
             ->groupBy('viewable_id', 'viewable_type', 'url')
             ->orderBy('count', 'desc')
-            ->limit(25)
             ->with('viewable')
-            ->get();
+            ->get()
+            ->sortBy('count', SORT_REGULAR, true)
+            ->take(5);
 
         $groups = $views->mapWithKeys(function (View $view) {
             if ($view->viewable !== null) {
