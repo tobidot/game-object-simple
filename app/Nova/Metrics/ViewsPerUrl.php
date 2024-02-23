@@ -23,8 +23,6 @@ class ViewsPerUrl extends Partition
     {
         parent::__construct($component);
         $this->width('1/2');
-        $this->height(300);
-        $this->fixedHeight();
     }
 
     /**
@@ -83,10 +81,11 @@ class ViewsPerUrl extends Partition
             ->get();
 
         $median = $views->median('count');
+        $average = $views->average('count');
 
         $better_views = $views
-            ->sortBy('count', SORT_REGULAR, true)
-            ->where('count', '>', $median);
+            ->sortBy('count', SORT_NUMERIC, true)
+            ->where('count', '>', $average);
 
         $groups = $better_views->mapWithKeys(function (View $view) {
             if ($view->viewable !== null) {
@@ -101,7 +100,7 @@ class ViewsPerUrl extends Partition
             return [
                 $name => $count
             ];
-        });
+        })->sortDesc();
 
 
         $count = $groups->count();
