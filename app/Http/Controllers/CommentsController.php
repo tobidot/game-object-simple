@@ -6,6 +6,7 @@ use App\Mail\NewComment;
 use App\Models\Comment;
 use App\Models\Page;
 use App\Models\Project;
+use App\Rules\CustomCaptcha;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,7 +25,7 @@ class CommentsController extends Controller
             'content' => ['required', 'string', 'max:2048'],
             'commentable_type' => ['required', 'string', Rule::in([Page::class, Project::class])],
             'commentable_id' => ['required', 'integer'],
-//            'captcha' => ['required', new CustomCaptcha()],
+            'captcha' => [new CustomCaptcha()],
         ]);
 
         $commentable = $params['commentable_type']::find($params['commentable_id']);

@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Helpers\AppHelper;
+use App\Services\CaptchaService;
 use App\Services\Models\ViewService;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -27,8 +29,13 @@ class AppServiceProvider extends ServiceProvider
     {
         // get the called view name inside the layout
         View::composer('*', function (\Illuminate\View\View $view) {
-            if (!empty(View::shared('viewName'))) return ;
-            View::share('viewName', $view->getName());
+            if (empty(View::shared('viewName'))) {
+                View::share('viewName', $view->getName());
+            }
+            $captcha_service = AppHelper::resolve(CaptchaService::class);
+            if ($captcha_service->isCaptchaRequired()) {
+                View::share('captcha', $captcha_service->generateCaptcha());
+            };
         });
     }
 }

@@ -2,39 +2,44 @@
 
 namespace App\Rules;
 
+use App\Helpers\AppHelper;
+use App\Services\CaptchaService;
+use Carbon\Carbon;
+use Closure;
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Facades\Log;
 
-class CustomCaptcha implements Rule
+class CustomCaptcha implements ValidationRule
 {
     /**
-     * Create a new rule instance.
+     * Indicates whether the rule should be implicit.
      *
-     * @return void
+     * @var bool
      */
-    public function __construct()
-    {
-        //
-    }
+    public bool $implicit = true;
 
-    /**
-     * Determine if the validation rule passes.
-     *
-     * @param  string  $attribute
-     * @param  mixed  $value
-     * @return bool
-     */
-    public function passes($attribute, $value) : bool
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        return true; // Replace this with your own captcha validation logic
-    }
-
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message() : string
-    {
-        return 'You are a robot.';
+        $captcha_service = AppHelper::resolve(CaptchaService::class);
+        if ($value === null) {
+            if ($captcha_service->isCaptchaRequired()) {
+                $fail('The captcha is required.');
+                return;
+            }
+            // no captcha required and not provided => pass
+            return ;
+        }
+        $token = intval($value['token']);
+        $minutes = Carbon::createFromTimestamp($token)->diffInMinutes(now());
+        if ($minutes > 60) {
+            $fail( 'The captcha has expired.');
+            return;
+        }
+        $solution = $value['solution'];
+        if (!$captcha_service->isCaptchaSolved($token, $solution)) {
+            $fail( 'CAPTCHA failed.');
+        }
+        $captcha_service->markSessionAsSolvedCaptcha();
     }
 }

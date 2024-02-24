@@ -59,6 +59,19 @@
         grid-template-columns: subgrid;
         grid-template-rows: auto;
         grid-column: span 8;
+
+        &:fullscreen {
+            width: 100%;
+
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: 1fr auto auto 1fr;
+
+            .comment-form {
+                &__captcha-image, &__label, &__input, &__field {
+                    grid-column: span 4;
+                }
+            }
+        }
     }
 
     &__label {
@@ -69,10 +82,32 @@
 
         justify-content: center;
         align-items: center;
+        &.narrow {
+            grid-column: span 1;
+        }
+        &.wrap{
+            white-space: normal;
+        }
     }
 
     &__input {
         grid-column: span 2;
+    }
+
+    &__captcha-image {
+        position: relative;
+        width: 100%;
+        margin: 0;
+        grid-column: span 3;
+        > img {
+            width: 100%;
+            height: auto;
+        }
+        > a {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
     }
 
     &__field {
@@ -81,6 +116,18 @@
         align-items: center;
         grid-column: span 4;
         grid-template-columns: subgrid;
+
+        &.column {
+            flex-direction: column;
+            .comment-form {
+                &__label {
+                    grid-column: span 4;
+                }
+                &__input {
+                    grid-column: span 4;
+                }
+            }
+        }
 
         &.full {
             grid-column: span 8;
@@ -104,6 +151,27 @@
         font-weight: bold;
         padding: 0.125rem;
     }
+
+    &__errors {
+        grid-column: 1/-1;
+        display: flex;
+        width: 100%;
+        padding: 0.25rem;
+        margin: 0;
+        gap: 0.25rem;
+
+        list-style: none;
+
+        flex-direction: column;
+    }
+
+    &__error {
+        display: flex;
+        width: 100%;
+        background: red;
+    }
+
+
 
     @include tablet {
 
@@ -163,3 +231,4 @@
 #comment-title {
     font-size: 1.75rem;
 }
+
