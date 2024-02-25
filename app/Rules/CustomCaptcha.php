@@ -39,6 +39,7 @@ class CustomCaptcha implements ValidationRule
         $solution = $value['solution'];
         if (!$captcha_service->isCaptchaSolved($token, $solution)) {
             $fail( 'CAPTCHA failed.');
+            return ;
         }
         $captcha_service->markSessionAsSolvedCaptcha();
     }
