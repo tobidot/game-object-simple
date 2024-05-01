@@ -48,7 +48,11 @@
     @if($project->codeReleases->first() !== null)
         <div class="project__main-release">
             <div class="archive__item">
-                <x-excerpt :model="$project->codeReleases->first()" type="button"></x-excerpt>
+                <a href="{{route('projects.proxy', ['project'=>$project, 'path' => 'index.html'])}}"
+                   target="_blank"
+                   style="display: flex; justify-content: center; align-items: center; font-size: 1.35rem;">
+                    Latest Version
+                </a>
             </div>
         </div>
     @endif
