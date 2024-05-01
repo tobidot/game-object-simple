@@ -6,6 +6,7 @@ use App\Helpers\AppHelper;
 use App\Models\CodeRelease;
 use App\Models\Project;
 use App\Services\Models\AttachmentService;
+use App\Services\Models\ProjectService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -46,28 +47,13 @@ class UploadRelease extends Action
         if (empty($zip)) {
             return Action::danger("No Zip File Uploaded");
         }
-        DB::transaction(function () use ($version, $project, $zip, $fields) {
-            $release = new CodeRelease();
-            $release->version = $version;
-            $release->completeness = $fields->completeness ?? 0;
-            $release->fun = $fields->fun ?? 0;
-            $release->complexity = $fields->complexity ?? 0;
-            $project->codeReleases()->save($release);
-            //
-            $attachment = AppHelper::resolve(AttachmentService::class)
-                ->createFromUploadedZipFile(
-                    $zip,
-                    "releases",
-                    "releases",
-                );
-            $release->attachments()->save(
-                $attachment,
-                [
-                    'relation' => 'code',
-                ],
-                true
+        AppHelper::resolve(ProjectService::class)
+            ->release(
+                $project, $zip, $version,
+                $fields->completeness ?? null,
+                $fields->fun ?? null,
+                $fields->complexity ?? null,
             );
-        });
         return Action::message("Release Uploaded");
     }
 

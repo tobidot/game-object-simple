@@ -1,0 +1,45 @@
+### Upload a new release
+# Upload the data/c.zip to a project
+POST {{host}}/api/v1/projects/1/releases
+Authorization: Bearer {{api_token}}
+Accept: application/json
+Content-Disposition: form-data; name="file"; filename="c.zip"
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="zip"; filename="c.zip"
+Content-Type: application/zip
+
+< ./data/c.zip
+--WebAppBoundary--
+
+> {%
+    client.test("Response status is 200", function() {
+        client.assert(response.status === 200, "response status is 200");
+    });
+    client.test("Response content is set", function() {
+        client.assert(response.body.hasOwnProperty("message"), "expected response to have a message property");
+        client.assert(response.body.hasOwnProperty("redirect"), "expected response to have a redirect property");
+    });
+%}
+
+
+### Upload a new release unauthorized
+# Upload the data/c.zip to a project
+POST {{host}}/api/v1/projects/1/releases
+Accept: application/json
+Content-Disposition: form-data; name="file"; filename="c.zip"
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="zip"; filename="c.zip"
+Content-Type: application/zip
+
+< ./data/c.zip
+--WebAppBoundary--
+
+> {%
+    client.test("Response status is 200", function() {
+        client.assert(response.status === 401, "response status is 401");
+    });
+%}

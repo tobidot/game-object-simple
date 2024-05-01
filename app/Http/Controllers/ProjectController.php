@@ -6,10 +6,14 @@ use App\Enums\PublishState;
 use App\Helpers\AppHelper;
 use App\Models\CodeRelease;
 use App\Models\Project;
+use App\Services\Models\ProjectService;
 use App\Services\Models\ViewService;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -60,4 +64,32 @@ class ProjectController extends Controller
         ]), 302);
     }
 
+    /**
+     * @throws ValidationException
+     */
+    public function release(Project $project): JsonResponse
+    {
+        $validator = Validator::make(request()->all(), [
+            'zip' => ['required', 'file'],
+            'version' => ['sometimes', 'string', 'regex:/^\d+\.\d+\.\d+$/', 'max:255'],
+            'completeness' => ['sometimes', 'integer', 'min:0', 'max:10'],
+            'fun' => ['sometimes', 'integer', 'min:0', 'max:10'],
+            'complexity' => ['sometimes', 'integer', 'min:0', 'max:10'],
+        ]);
+        $params = $validator->validate();
+        AppHelper::resolve(ProjectService::class)
+            ->release(
+                $project,
+                $params['zip'],
+                $params['version'] ?? null,
+                $params['completeness'] ?? null,
+                $params['fun'] ?? null,
+                $params['complexity'] ?? null
+            );
+        return response()->json([
+            'message' => 'Project released successfully',
+            'version' => $project->codeReleases()->latest()->first()->version ?? '0.0.1',
+            'redirect' => route('projects.proxy', ['project' => $project->id, 'path' => 'index.html'])
+        ]);
+    }
 }
