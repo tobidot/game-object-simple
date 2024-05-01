@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Barryvdh\LaravelIdeHelper\Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -30,11 +31,9 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Attachment whereUpdatedAt($value)
  * @property string $url
  * @method static Builder|Attachment whereUrl($value)
- * @mixin Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CodeRelease> $codeReleases
+ * @property-read Collection<int, CodeRelease> $codeReleases
  * @property-read int|null $code_releases_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CodeRelease> $codeReleases
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class Attachment extends Model
 {

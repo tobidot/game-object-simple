@@ -42,10 +42,22 @@ Route::middleware([
     Route::get('/projects/{project}', [ProjectController::class, 'show'])
         ->whereNumber('project')
         ->name('projects.show');
+    Route::get('/projects/{project}/proxy', [ProjectController::class, 'proxyIndex'])
+        ->whereNumber('project');
+    Route::get('/projects/{project}/proxy/{path}', [ProjectController::class, 'proxy'])
+        ->whereNumber('project')
+        ->where('path', '.*')
+        ->name('projects.proxy');
     //
     Route::get('/code-releases/{codeRelease}', [CodeReleaseController::class, 'show'])
         ->whereNumber('codeRelease')
         ->name('code-releases.show');
+    Route::get('/code-releases/{codeRelease}/proxy', [CodeReleaseController::class, 'proxyIndex'])
+        ->whereNumber('codeRelease');
+    Route::get('/code-releases/{codeRelease}/proxy/{path}', [CodeReleaseController::class, 'proxy'])
+        ->whereNumber('codeRelease')
+        ->where('path', '.*')
+        ->name('code-releases.proxy');
 
     // Comments
     Route::post('/comments', [CommentsController::class, 'store'])
