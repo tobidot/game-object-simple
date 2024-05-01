@@ -4,7 +4,9 @@
         "dev": "vite",
         "build": "vite build",
         "build-lookup-enum": "cd nova-components/LookupEnum && npm run dev",
-        "build-lookup-enum-prod": "cd nova-components/LookupEnum && npm run prod"
+        "build-lookup-enum-prod": "cd nova-components/LookupEnum && npm run prod",
+        "build-api-token-copier": "cd nova-components/ApiTokenCopier && npm run dev",
+        "build-api-token-copier-prod": "cd nova-components/ApiTokenCopier && npm run prod"
     },
     "devDependencies": {
         "axios": "^1.4.0",

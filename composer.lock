@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d9d60134e311a67d4f494a8c1b383b52",
+    "content-hash": "adac1c4a0f8aba19cb0ab3a45d000ede",
     "packages": [
         {
             "name": "binarytorch/larecipe",
@@ -8068,6 +8068,42 @@
             "time": "2023-12-08T13:03:43+00:00"
         },
         {
+            "name": "tobidot/api-token-copier",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "./nova-components/ApiTokenCopier",
+                "reference": "7168e9c4d65620138e8b9103354069659a424950"
+            },
+            "require": {
+                "php": "^7.3|^8.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Tobidot\\ApiTokenCopier\\AssetServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Tobidot\\ApiTokenCopier\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A Laravel Nova asset.",
+            "keywords": [
+                "laravel",
+                "nova"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "tobidot/lookup-enum",
             "version": "0.0.1",
             "dist": {
@@ -11208,7 +11244,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "tobidot/api-token-copier": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

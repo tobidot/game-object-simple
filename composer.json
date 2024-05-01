@@ -15,6 +15,10 @@
         {
             "type": "path",
             "url": "./nova-components/LookupEnum"
+        },
+        {
+            "type": "path",
+            "url": "./nova-components/ApiTokenCopier"
         }
     ],
     "require": {
@@ -33,7 +37,8 @@
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.7",
         "livewire/livewire": "^2.11",
-        "tobidot/lookup-enum": "^0.0.1"
+        "tobidot/lookup-enum": "^0.0.1",
+        "tobidot/api-token-copier": "@dev"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.13",
