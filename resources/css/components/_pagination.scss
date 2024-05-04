@@ -1,0 +1,115 @@
+@import "../globals/mixins";
+
+.pagination-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+
+    &__links {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    &__info {
+        span {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #6b7280;
+        }
+    }
+
+
+    nav {
+        ul {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+
+            li {
+                display: inline-block;
+                margin: 0 0.5rem;
+
+                a, span {
+                    display: block;
+                    padding: 0.5rem 1rem;
+                    border-radius: 0.25rem;
+                    color: #6b7280;
+                    text-decoration: none;
+                    transition: background-color 0.3s;
+
+                    &:hover {
+                        background-color: #f3f4f6;
+                    }
+                }
+
+                &.active {
+                    > span {
+                        background-color: #f3f4f6;
+                        font-weight: bold;
+                        color: #111827;
+                    }
+                }
+
+                &.disabled {
+                    > span {
+                        color: #6b7280;
+                        cursor: not-allowed;
+                    }
+                }
+            }
+        }
+    }
+}
+
+#search {
+    display: flex;
+    flex: 1 1 auto;
+    margin: 0;
+
+    * {
+        width: 100%;
+    }
+
+}
+
+@include mobile-tablet {
+    // make smaller on tablet
+    .pagination-section {
+        nav {
+            ul {
+                li {
+                    a, span {
+                        padding: 0.25rem 0.125rem;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@include mobile {
+    // make smaller on mobile and column layout
+    .pagination-section {
+        flex-direction: column;
+
+        &__links {
+            margin-bottom: 0.25rem;
+        }
+
+        nav {
+            ul {
+                li {
+                    a, span {
+                        padding: 0.125rem 0;
+                    }
+                }
+            }
+        }
+    }
+}

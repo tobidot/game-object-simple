@@ -19,15 +19,30 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ProjectController extends Controller
 {
+    /**
+     * @throws ValidationException
+     */
     public function index(): View
     {
+        $params = Validator::make(request()->all(), [
+            'search' => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9\s]*$/'],
+        ])->validate();
+        $base_url_path = route('projects');
+        if (isset($params['search'])) {
+            $base_url_path.= '?search=' . $params['search'];
+        }
         AppHelper::resolve(ViewService::class)->associate(Project::class);
-        $projects = Project::query()
-            ->orderByDesc('created_at')
-            ->limit(24)
-            ->get();
+        $paginator = Project::query()
+            ->orderByDesc('created_at', 'DESC')
+            ->when(isset($params['search']), function ($query) use ($params) {
+                $query->where('title', 'like', '%' . $params['search'] . '%');
+            })
+            ->paginate(9);
+        $paginator->withPath($base_url_path);
+        $paginator->onEachSide = 2;
         return view('projects.index', [
-            'projects' => $projects
+            'projects' => $paginator->items(),
+            'paginator' => $paginator,
         ]);
     }
 
