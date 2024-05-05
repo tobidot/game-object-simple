@@ -13,25 +13,31 @@ $page = $model;
 ?>
 
 <div class="excerpt">
-    <div class="excerpt__content">
+    <div class="excerpt__title">
         <h3>
             {{$page->title}}
-            @isset($page->created_at)
-                <small>
-                    {{ $page->created_at->setTimezone(new DateTimeZone("Europe/Berlin"))->format('Y-m-d') }}
-                </small>
-            @endisset
         </h3>
+    </div>
+    @isset($page->thumbnail)
+        <div class="excerpt__thumbnail">
+            {!! ViewHelper::mediaImageHtml($page->thumbnail, 'cover') !!}
+        </div>
+    @endif
+    <div class="excerpt__meta">
+        @isset($page->created_at)
+            <span>
+                {{ $page->created_at->setTimezone(new DateTimeZone("Europe/Berlin"))->format('Y-m-d') }}
+            </span>
+        @endisset
+    </div>
+    <div class="excerpt__content">
         <p>
             {{ substr( strip_tags( html_entity_decode( str_replace("<br>"," ", $page->content) ) ) , 0, 255) }}
         </p>
-        <x-link :href="route('pages.show', ['page'=>$page])">
-            {{__("Read More")}}
-        </x-link>
-    </div>
-    <div class="excerpt__background">
-        @isset($page->thumbnail)
-            {!! ViewHelper::mediaImageHtml($model->thumbnail, 'cover') !!}
-        @endif
+        <div class="excerpt__actions">
+            <x-link :href="route('pages.show', ['page'=>$page])">
+                {{__("Read More")}}
+            </x-link>
+        </div>
     </div>
 </div>

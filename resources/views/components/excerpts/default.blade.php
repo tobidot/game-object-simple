@@ -8,23 +8,28 @@
  */
 ?>
 
+
 <div class="excerpt">
-    @isset($model->title)
+    <div class="excerpt__title">
         <h3>
-            {{$model->title }}
-            @isset($model->created_at)
-                <small>
-                    {{ $model->created_at->setTimezone(new DateTimeZone("Europe/Berlin"))->format('Y-m-d') }}
-                </small>
-            @endisset
+            {{$model->title}}
         </h3>
-    @endisset
-    @isset($model->content)
+    </div>
+    @isset($model->thumbnail)
+        <div class="excerpt__thumbnail">
+            {!! ViewHelper::mediaImageHtml($model->thumbnail, 'cover') !!}
+        </div>
+    @endif
+    <div class="excerpt__meta">
+        @isset($model->created_at)
+            <span>
+                {{ $model->created_at->setTimezone(new DateTimeZone("Europe/Berlin"))->format('Y-m-d') }}
+            </span>
+        @endisset
+    </div>
+    <div class="excerpt__content">
         <p>
-            {{ substr( strip_tags( html_entity_decode( str_replace("<br>"," ", $page->content ?? '') ) ) , 0, 255) }}
+            {{ substr( strip_tags( html_entity_decode( str_replace("<br>"," ", $model->content) ) ) , 0, 255) }}
         </p>
-    @endisset
-{{--    <x-link :href="route('page', ['page'=>$page])">--}}
-{{--        {{__("Read More")}}--}}
-{{--    </x-link>--}}
+    </div>
 </div>

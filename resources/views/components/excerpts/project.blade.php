@@ -16,21 +16,31 @@ $latestRelease = $project->codeReleases()->latest()->first();
 ?>
 
 <div class="excerpt">
-    <div class="excerpt__content">
+    <div class="excerpt__title">
         <h3>
             {{$project->title}}
-            @isset($project->created_at)
-                <small>
-                    {{ $project->created_at->setTimezone(new DateTimeZone("Europe/Berlin"))->format('Y-m-d') }}
-                </small>
-            @endisset
         </h3>
+    </div>
+    @isset($project->thumbnail)
+        <div class="excerpt__thumbnail">
+            {!! ViewHelper::mediaImageHtml($model->thumbnail, 'cover') !!}
+        </div>
+    @endif
+    <div class="excerpt__meta">
+        @isset($project->created_at)
+            <span>
+                {{ $project->created_at->setTimezone(new DateTimeZone("Europe/Berlin"))->format('Y-m-d') }}
+            </span>
+        @endisset
+    </div>
+    <div class="excerpt__content">
         <p>
             {{ substr( strip_tags( html_entity_decode( str_replace("<br>"," ", $project->description) ) ) , 0, 255) }}
         </p>
         <div class="excerpt__actions">
             @if($latestRelease !== null)
-                <x-link :href="route('code-releases.show', ['codeRelease' => $latestRelease])" target="_blank">
+                <x-link :href="route('projects.proxy', ['project' => $project, 'path' => 'index.html'])"
+                        target="_blank">
                     {{__("Try it out")}} ({{$latestRelease->version}})
                 </x-link>
             @endif
@@ -38,10 +48,5 @@ $latestRelease = $project->codeReleases()->latest()->first();
                 {{__("Read More")}}
             </x-link>
         </div>
-    </div>
-    <div class="excerpt__background">
-        @isset($project->thumbnail)
-            {!! ViewHelper::mediaImageHtml($model->thumbnail, 'cover') !!}
-        @endif
     </div>
 </div>
