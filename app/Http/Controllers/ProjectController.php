@@ -8,6 +8,7 @@ use App\Models\CodeRelease;
 use App\Models\Project;
 use App\Services\Models\ProjectService;
 use App\Services\Models\ViewService;
+use App\Traits\Filterable;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -19,11 +20,16 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ProjectController extends Controller
 {
+    use Filterable;
+
     /**
      * @throws ValidationException
      */
     public function index(): View
     {
+        AppHelper::resolve(ViewService::class)->associate(Project::class);
+        return $this->filterable(request()->all());
+
         $params = Validator::make(request()->all(), [
             'search' => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9\s]*$/'],
         ])->validate();
@@ -31,7 +37,6 @@ class ProjectController extends Controller
         if (isset($params['search'])) {
             $base_url_path.= '?search=' . $params['search'];
         }
-        AppHelper::resolve(ViewService::class)->associate(Project::class);
         $paginator = Project::query()
             ->orderByDesc('created_at', 'DESC')
             ->when(isset($params['search']), function ($query) use ($params) {
@@ -107,4 +112,20 @@ class ProjectController extends Controller
             'redirect' => route('projects.proxy', ['project' => $project->id, 'path' => 'index.html'])
         ]);
     }
+
+    public function getBaseQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return Project::query();
+    }
+
+    public function getFilterViewName(): string
+    {
+        return 'projects.index';
+    }
+
+    public function getPerPage(): int
+    {
+        return 4;
+    }
+
 }

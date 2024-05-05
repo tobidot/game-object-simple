@@ -4,11 +4,10 @@
 @endphp
 @php
     /**
-     * @var Project[] $projects
      * @var LengthAwarePaginator $paginator
      */
 @endphp
-<x-layouts.app>
+<x-layouts.app class="projects">
     <x-slot name="title">
         Project - Archive
     </x-slot>
@@ -16,7 +15,7 @@
     <x-pagination.section :paginator="$paginator"/>
 
     <div class="archive">
-        @foreach($projects as $project)
+        @foreach($paginator->items() as $project)
             <div class="archive__item">
                 <x-excerpt :model="$project"></x-excerpt>
             </div>

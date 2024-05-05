@@ -1,6 +1,9 @@
 const search_form = document.getElementById('search') as HTMLFormElement;
 
 export function initialize_search() {
+    if (search_form === null) {
+        return ;
+    }
     search_form.addEventListener('submit', on_search_input_change);
 }
 

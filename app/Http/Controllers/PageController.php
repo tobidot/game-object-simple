@@ -7,23 +7,21 @@ use App\Helpers\AppHelper;
 use App\Models\Page;
 use App\Services\CaptchaService;
 use App\Services\Models\ViewService;
+use App\Traits\Filterable;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
 class PageController extends Controller
 {
+    use Filterable;
 
-    public function index(): View
+    public function index(Request $request): View
     {
         AppHelper::resolve(ViewService::class)->associate(Page::class);
-        $pages = Page::query()
-            ->orderByDesc('created_at')
-            ->limit(24)
-            ->get();
-        return view('pages.index', [
-            'pages' => $pages,
-        ]);
+        return $this->filterable($request->all());
     }
 
     /**
@@ -40,5 +38,18 @@ class PageController extends Controller
             ]);
     }
 
+    public function getPerPage(): int
+    {
+        return 6;
+    }
 
+    public function getFilterViewName(): string
+    {
+        return 'pages.index';
+    }
+
+    public function getBaseQuery(): Builder
+    {
+        return Page::query();
+    }
 }
