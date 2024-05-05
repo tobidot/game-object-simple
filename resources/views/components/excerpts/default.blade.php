@@ -28,8 +28,6 @@
         @endisset
     </div>
     <div class="excerpt__content">
-        <p>
-            {{ substr( strip_tags( html_entity_decode( str_replace("<br>"," ", $model->content) ) ) , 0, 255) }}
-        </p>
+        {{ substr( strip_tags( html_entity_decode( str_replace("<br>"," ", $model->content) ) ) , 0, 255) }}
     </div>
 </div>

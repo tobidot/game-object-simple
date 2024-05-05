@@ -34,19 +34,17 @@ $latestRelease = $project->codeReleases()->latest()->first();
         @endisset
     </div>
     <div class="excerpt__content">
-        <p>
-            {{ substr( strip_tags( html_entity_decode( str_replace("<br>"," ", $project->description) ) ) , 0, 255) }}
-        </p>
-        <div class="excerpt__actions">
-            @if($latestRelease !== null)
-                <x-link :href="route('projects.proxy', ['project' => $project, 'path' => 'index.html'])"
-                        target="_blank">
-                    {{__("Try it out")}} ({{$latestRelease->version}})
-                </x-link>
-            @endif
-            <x-link :href="route('projects.show', ['project'=>$project])">
-                {{__("Read More")}}
+        {{ substr( strip_tags( html_entity_decode( str_replace("<br>"," ", $project->description) ) ) , 0, 255) }}
+    </div>
+    <div class="excerpt__actions">
+        <x-link :href="route('projects.show', ['project'=>$project])">
+            {{__("Read More")}}
+        </x-link>
+        @if($latestRelease !== null)
+            <x-link :href="route('projects.proxy', ['project' => $project, 'path' => 'index.html'])"
+                    target="_blank">
+                {{__("Try it out")}} ({{$latestRelease->version}})
             </x-link>
-        </div>
+        @endif
     </div>
 </div>

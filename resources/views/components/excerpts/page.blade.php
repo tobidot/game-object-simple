@@ -31,13 +31,11 @@ $page = $model;
         @endisset
     </div>
     <div class="excerpt__content">
-        <p>
-            {{ substr( strip_tags( html_entity_decode( str_replace("<br>"," ", $page->content) ) ) , 0, 255) }}
-        </p>
-        <div class="excerpt__actions">
-            <x-link :href="route('pages.show', ['page'=>$page])">
-                {{__("Read More")}}
-            </x-link>
-        </div>
+        {{ substr( strip_tags( html_entity_decode( str_replace("<br>"," ", $page->content) ) ) , 0, 255) }}
+    </div>
+    <div class="excerpt__actions">
+        <x-link :href="route('pages.show', ['page'=>$page])">
+            {{__("Read More")}}
+        </x-link>
     </div>
 </div>

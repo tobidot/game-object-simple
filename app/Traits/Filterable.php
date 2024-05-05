@@ -8,22 +8,20 @@ use App\Services\Models\ViewService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 trait Filterable
 {
     public function filterable(
         array   $params
     ): View {
-        // validate the input
-        $params = Validator::make(
-            $params, [
-            'search' => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9\s]*$/'],
-        ])->validate();
         // build the paginator
+        $search = $this->getSearchInput();
         $paginator = $this->getBaseQuery()
             ->orderByDesc('created_at', 'DESC')
-            ->when(isset($params['search']), function ($query) use ($params) {
-                $query->where('title', 'like', '%' . $params['search'] . '%');
+            ->when($search !== null, function ($query) use ($search) {
+                $query->where('title', 'like', '%' . $search . '%');
             })
             ->paginate($this->getPerPage())
             ->withPath($this->getBaseUrl());
@@ -47,8 +45,6 @@ trait Filterable
         return 2;
     }
 
-
-
     public function buildFilterView($paginator): View
     {
         return view($this->getFilterViewName(), [
@@ -59,9 +55,27 @@ trait Filterable
     public function getBaseUrl(): string
     {
         $base_url_path = request()->getBaseUrl();
-        if (isset($params['search'])) {
-            $base_url_path .= '?search=' . $params['search'];
+        $search = $this->getSearchInput();
+        if ($search !== null) {
+            $base_url_path .= '?search=' . $search;
         }
         return $base_url_path;
+    }
+
+    /**
+     */
+    public function getSearchInput() : string|null
+    {
+        $search = request()->query('search', null);
+        if (empty($search) ) {
+            return null;
+        }
+        if (preg_match('/[^a-zA-Z0-9\s]/', $search)) {
+            return null;
+        }
+        if (strlen($search) > 255) {
+            return substr($search, 0, 255);
+        }
+        return $search;
     }
 }
