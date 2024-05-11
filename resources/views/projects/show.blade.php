@@ -93,12 +93,11 @@
         </div>
     @endif
 
+
     <div class="project__comments">
-        <h2>
-            Comments
-        </h2>
-        <x-comments.list :comments="$project->comments"></x-comments.list>
-        <x-comments.form :commentable="$project"></x-comments.form>
+        <x-comments.section :commentable="$project" :comments="$project->comments">
+
+        </x-comments.section>
     </div>
 </x-layouts.app>
 

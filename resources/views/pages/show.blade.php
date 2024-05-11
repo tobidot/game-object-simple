@@ -59,10 +59,8 @@
     @endif
 
     <div class="page__comments">
-        <h2>
-            Comments
-        </h2>
-        <x-comments.list :comments="$page->comments"></x-comments.list>
-        <x-comments.form :commentable="$page"></x-comments.form>
+        <x-comments.section :commentable="$page" :comments="$page->comments">
+
+        </x-comments.section>
     </div>
 </x-layouts.app>

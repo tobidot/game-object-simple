@@ -17,7 +17,9 @@
     Custom Captcha Check.
 --}}
 
-<form id="comment-form" action="{{ route('comments.store') }}#comment-form" method="post" class="comment-form">
+<form id="comment-form" action="{{ route('comments.store') }}#comment-form" method="post" {{$attributes->merge([
+    'class' => 'comment-form'
+])}}>
     @csrf
     <input type="hidden" name="commentable_type" value="{{ get_class($commentable) }}">
     <input type="hidden" name="commentable_id" value="{{ $commentable->id }}">
