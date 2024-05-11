@@ -33,6 +33,12 @@ class CodeReleaseController extends Controller
             'html' => 'text/html',
             'js' => 'application/javascript',
             'css' => 'text/css',
+            'svg' => 'image/svg+xml',
+            'png' => 'image/png',
+            'jpg', 'jpeg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            'txt' => 'text/plain',
+            'json' => 'application/json',
             default => 'text/plain',
         };
         return response()->file(public_path("$code_attachment->path/$path"), [
