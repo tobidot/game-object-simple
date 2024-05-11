@@ -4,12 +4,12 @@ export class Comments {
     constructor() {
         const button = document.getElementById("write-comment");
         if (!(button instanceof HTMLButtonElement)) {
-            throw new Error("Element not found");
+            return ;
         }
         this.button = button;
         const form = document.getElementById("comment-form");
         if (!(form instanceof HTMLFormElement)) {
-            throw new Error("Element not found");
+            return ;
         }
         this.form = form;
         this.button.addEventListener("click", this.reveal_comment_form);
