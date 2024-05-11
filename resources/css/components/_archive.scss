@@ -6,27 +6,39 @@
     gap: 2rem;
 
     &__item {
-        display: grid;
-        grid-area: span 6;
         padding: 0.25rem;
         border-radius: 0.5rem;
         background-color: $background-color-dark;
         color: $text-color-light;
         box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-        max-width: 800px;
-
-        grid-template-rows: subgrid;
     }
 
     &--button {
         // Override grid-template-columns to make it more compact
-        grid-template-columns: repeat(auto-fit, minmax(200px, 60vh));
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         justify-content: center;
 
         .archive {
             &__item {
                 // Override padding to make it more compact
                 padding: 1rem;
+            }
+        }
+    }
+
+    &--with-excerpts {
+        .archive {
+            &__item {
+                display: grid;
+                grid-area: span 6;
+                padding: 0.25rem;
+                border-radius: 0.5rem;
+                background-color: $background-color-dark;
+                color: $text-color-light;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+                max-width: max(calc(50vh), 280px);
+
+                grid-template-rows: subgrid;
             }
         }
     }

@@ -13,7 +13,7 @@
 
     <x-pagination.section :paginator="$paginator"/>
 
-    <div class="archive">
+    <div class="archive archive--with-excerpts">
         @foreach($paginator->items() as $page)
             <div class="archive__item">
                 <x-excerpt :model="$page"></x-excerpt>
