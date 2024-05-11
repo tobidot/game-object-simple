@@ -1,3 +1,4 @@
 # Update the project
 git pull
-npm run build
+# npm run install --save false
+# npm run build

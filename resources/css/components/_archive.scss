@@ -2,21 +2,25 @@
 
 .archive {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
     gap: 2rem;
 
     &__item {
+        display: grid;
+        grid-area: span 6;
         padding: 0.25rem;
         border-radius: 0.5rem;
         background-color: $background-color-dark;
         color: $text-color-light;
         box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
         max-width: 800px;
+
+        grid-template-rows: subgrid;
     }
 
     &--button {
         // Override grid-template-columns to make it more compact
-        grid-template-columns: repeat(auto-fit, minmax(200px, 0.333fr));
+        grid-template-columns: repeat(auto-fit, minmax(200px, 60vh));
         justify-content: center;
 
         .archive {
@@ -27,3 +31,5 @@
         }
     }
 }
+
+
