@@ -7,6 +7,7 @@ use App\Enums\PublishState;
 use App\Exceptions\DummyException;
 use App\Models\Attachment;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -19,7 +20,8 @@ class AttachmentService
         UploadedFile $file,
         string       $path_prefix,
         string       $url_prefix,
-    ) : Attachment {
+    ): Attachment
+    {
         $disk = Storage::disk('public');
         $uuid = Str::uuid();
         $zip_name = $file->getClientOriginalName();
@@ -37,12 +39,26 @@ class AttachmentService
         $local_file_path = $disk->path($disk_file_path);
         $local_folder_path = $disk->path("$path_prefix/$zip_folder_path");
         $zip = new \ZipArchive();
-        $zip->open($local_file_path);
-        $extracted = $zip->extractTo($local_folder_path);
-        if ($extracted === false) {
-            throw new DummyException("Could not unzip file");
+        if ($zip->open($local_file_path)) {
+            $extracted = $zip->extractTo($local_folder_path);
+            if ($extracted === false) {
+                throw new DummyException("Could not unzip file");
+            }
+            $zip->close();
+        };
+        $files = $disk->files("$path_prefix/$zip_folder_path");
+        $folders = $disk->directories("$path_prefix/$zip_folder_path");
+
+        if (count($files) <= 1 && count($folders) === 1) {
+            $top_level_folder = last(explode("/", $folders[0]));
+            $inner_files = $disk->files("$path_prefix/$zip_folder_path", true);
+            foreach ($inner_files as $filepath) {
+                $new_filepath = str_replace("/$top_level_folder", "", $filepath);
+                $disk->move($filepath, $new_filepath);
+            }
+            $disk->delete($folders[0]);
         }
-        $zip->close();
+
         // make them public
         $disk->setVisibility($disk_file_path, 'public');
         $files = $disk->allFiles($disk_file_path);
