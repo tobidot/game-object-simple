@@ -10,6 +10,7 @@ use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Fields\URL;
@@ -60,6 +61,10 @@ class TobidotElement extends Resource
             ID::make()->sortable(),
             Text::make(__('Name'), 'name')->required(),
             Textarea::make(__('Description'), 'description')->nullable(),
+            Select::make(__('Kind'), 'kind')->options([
+                'element' => __('Element'),
+                'library' => __('Library'),
+            ])->displayUsingLabels(),
             Image::make(__('Icon'), 'icon')
                 ->disk('media-library')
                 ->nullable(),

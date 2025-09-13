@@ -26,6 +26,7 @@ use Laravel\Nova\Fields\MorphedByMany;
  * @property Carbon|null $updated_at
  * @property string $name
  * @property string $description
+ * @property string $kind
  * @property string $icon
  * @property string $content
  *

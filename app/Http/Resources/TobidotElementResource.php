@@ -20,6 +20,7 @@ class TobidotElementResource extends JsonResource
         $element = $this;
         return [
             'name' => $element->name,
+            'kind' => $element->kind,
             'major' => $element->major,
             'minor' => $element->minor,
             'patch' => $element->patch,
