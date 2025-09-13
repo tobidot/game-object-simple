@@ -108,6 +108,7 @@ return [
     'api_middleware' => [
         'nova',
         Authenticate::class,
+        // \Laravel\Nova\Http\Middleware\EnsureEmailIsVerified::class,
         Authorize::class,
     ],
 
