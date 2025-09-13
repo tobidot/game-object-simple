@@ -32,3 +32,12 @@ Route::group([
             ->whereNumber('project');
     });
 });
+
+Route::group([
+    'prefix' => 'public'
+], function () {
+    Route::get('/tobidot-elements', [
+        \App\Http\Controllers\TobidotElementController::class,
+        'index'
+    ])->name('tobidot-elements.index');
+});
