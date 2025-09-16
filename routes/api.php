@@ -35,7 +35,6 @@ Route::group([
 
 Route::group([
     'prefix' => 'public',
-    'middleware' => 'cors'
 ], function () {
     Route::get('/tobidot-elements', [
         \App\Http\Controllers\TobidotElementController::class,
