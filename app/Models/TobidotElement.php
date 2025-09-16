@@ -52,4 +52,9 @@ class TobidotElement extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'standalone' => 'boolean',
+        'extra' => 'json',
+    ];
+
 }

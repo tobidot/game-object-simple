@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Laravel\Nova\Fields\Boolean;
+use Laravel\Nova\Fields\Code;
 use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Image;
@@ -74,6 +76,14 @@ class TobidotElement extends Resource
                 ->required()->default(0),
             Number::make(__('Patch'), 'patch')
                 ->required()->default(0),
+            Boolean::make(__('Standalone'), 'standalone')
+                ->required()->default(true),
+            Number::make(__('Width'), 'width')
+                ->required()->default(200),
+            Number::make(__('Height'), 'height')
+                ->required()->default(200),
+            Code::make(__('Extra'), 'Extra')
+                ->nullable()->json(),
             File::make(__('Content'), 'content')
                 ->acceptedTypes('.zip,.js')
                 ->path('/'.Str::uuid() )

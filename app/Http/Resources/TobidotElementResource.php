@@ -24,8 +24,12 @@ class TobidotElementResource extends JsonResource
             'major' => $element->major,
             'minor' => $element->minor,
             'patch' => $element->patch,
+            'standalone' => $element->standalone,
+            'width' => $element->width,
+            'height' => $element->height,
+            'extra' => $element->extra ?? [],
             'icon' =>  asset(Storage::url("media/{$element->icon}")),
-            'content' => asset(Storage::url("tobidot-elements/$element->content"   )),
+            'content' => asset(Storage::url("tobidot-elements/$element->content")),
         ];
     }
 }
