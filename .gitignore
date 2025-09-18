@@ -17,3 +17,5 @@ yarn-error.log
 /.idea
 /.vscode
 *.plb
+./bin/update-fast.sh
+./bin/update.sh
