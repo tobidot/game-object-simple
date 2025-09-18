@@ -103,7 +103,16 @@ class TobidotElement extends Resource
                 ->disk('public')
                 ->nullable(),
             URL::make(__('URL'), function () {
-                return "/storage/$this->content";
+                return '/' . implode('/', [
+                        'storage',
+                        ...array_filter(
+                            explode(
+                                '/',
+                                $this->content,
+                            ),
+                            fn($item) => !empty($item)
+                        ),
+                    ]);
             })->readonly(),
             BelongsTo::make(__('Attachment'), 'attachment')->onlyOnDetail(),
         ];
@@ -114,7 +123,8 @@ class TobidotElement extends Resource
         \App\Models\TobidotElement $model,
         string                     $attribute,
         string                     $requestAttribute
-    ): string|null {
+    ): string|null
+    {
         $file = $request->file($requestAttribute);
 
         if (!$file) {

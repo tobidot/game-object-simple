@@ -22,7 +22,7 @@ class TobidotElementResource extends JsonResource
 
         $content = $element->content;
         if (Str::endsWith($content,'.zip')) {
-            $temp = explode('/', $content);
+            $temp = array_filter(explode('/', $content), fn($item)=>!empty($item));
             array_splice($temp, -1, 1, 'index.js' );
             $content = implode('/', $temp);
         }
