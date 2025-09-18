@@ -137,7 +137,7 @@ class TobidotElement extends Resource
                 'tobidot-elements',
             );
         } else {
-            $attachment = AppHelper::resolve(AttachmentService::class)->createFromSingleFile(
+            $attachment = AppHelper::resolve(AttachmentService::class)->createFromUploadedSingleFile(
                 $file,
                 'tobidot-elements',
                 'tobidot-elements',
