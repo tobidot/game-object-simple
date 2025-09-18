@@ -81,4 +81,42 @@ class AttachmentService
         return $attachment;
     }
 
+
+    public function createFromUploadedSingleFile(
+        UploadedFile $file,
+        string       $path_prefix,
+        string       $url_prefix,
+    ): Attachment
+    {
+        $disk = Storage::disk('public');
+        $uuid = Str::uuid();
+        $file_name = "index";
+        $file_base_name = substr($file_name, 0, strpos($file_name, '.'));
+        $file_folder_path = "$file_base_name-$uuid";
+        $disk_file_path = $file->storeAs("$path_prefix/$file_folder_path", $file_name, [
+            'disk' => 'public',
+            'visibility' => 'public',
+            'directory_visibility' => 'public'
+        ]);
+        if ($disk_file_path === false) {
+            throw new DummyException("Failed to store file as attachment");
+        }
+
+        // make them public
+        $disk->setVisibility($disk_file_path, 'public');
+        //
+        $attachment = new Attachment();
+        $attachment->url = '/' . implode("/", array_filter([
+                $url_prefix,
+                $file_folder_path,
+            ], fn($item) => !empty($item)));
+        $attachment->path = '/' . implode("/", array_filter([
+                $path_prefix,
+                $file_folder_path,
+            ], fn($item) => !empty($item)));
+        $attachment->publish_state_id = PublishState::PUBLISHED->value;
+        $attachment->type_id = AttachmentType::BINARY->value;
+        $attachment->save();
+        return $attachment;
+    }
 }

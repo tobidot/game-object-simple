@@ -130,11 +130,19 @@ class TobidotElement extends Resource
         if (!$file) {
             return null;
         }
-        $attachment = AppHelper::resolve(AttachmentService::class)->createFromUploadedZipFile(
-            $file,
-            'tobidot-elements',
-            'tobidot-elements',
-        );
+        if ($file->getExtension() === 'zip') {
+            $attachment = AppHelper::resolve(AttachmentService::class)->createFromUploadedZipFile(
+                $file,
+                'tobidot-elements',
+                'tobidot-elements',
+            );
+        } else {
+            $attachment = AppHelper::resolve(AttachmentService::class)->createFromSingleFile(
+                $file,
+                'tobidot-elements',
+                'tobidot-elements',
+            );
+        }
         $model->attachment()->associate($attachment);
 
         return $attachment->path . '/' . $file->getClientOriginalName();
