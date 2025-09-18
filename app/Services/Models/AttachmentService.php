@@ -67,8 +67,14 @@ class AttachmentService
         }
         //
         $attachment = new Attachment();
-        $attachment->url = "/$url_prefix/$zip_folder_path";
-        $attachment->path = "/$path_prefix/$zip_folder_path";
+        $attachment->url = '/' . implode("/", array_filter([
+                $url_prefix,
+                $zip_folder_path,
+            ], fn($item) => !empty($item)));
+        $attachment->path = '/' . implode("/", array_filter([
+                $path_prefix,
+                $zip_folder_path,
+            ], fn($item) => !empty($item)));
         $attachment->publish_state_id = PublishState::PUBLISHED->value;
         $attachment->type_id = AttachmentType::ZIP->value;
         $attachment->save();

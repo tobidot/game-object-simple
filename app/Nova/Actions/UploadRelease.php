@@ -67,6 +67,9 @@ class UploadRelease extends Action
     {
         // detect the related resource id
         $resource_id = $request->resourceId ?? $request->viaResource ?? $request->resources;
+        if (is_array($resource_id)) {
+            $resource_id = $resource_id[0];
+        }
         $project = Project::query()->find($resource_id);
         $default_version_tag = "0.0.1";
         $latest_release = $project->codeReleases()->latest('created_at')->first();

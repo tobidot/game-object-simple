@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Models\TobidotElement;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class TobidotElementResource extends JsonResource
 {
@@ -18,6 +19,14 @@ class TobidotElementResource extends JsonResource
     {
         /** @var TobidotElement $element */
         $element = $this;
+
+        $content = $element->content;
+        if (Str::endsWith($content,'.zip')) {
+            $temp = explode('/', $content);
+            array_splice($temp, -1, 1, 'index.js' );
+            $content = implode('/', $temp);
+        }
+
         return [
             'name' => $element->name,
             'kind' => $element->kind,
@@ -29,7 +38,7 @@ class TobidotElementResource extends JsonResource
             'height' => $element->height,
             'extra' => $element->extra ?? [],
             'icon' =>  asset(Storage::url("media/{$element->icon}")),
-            'content' => asset(Storage::url("tobidot-elements/$element->content")),
+            'content' => asset(Storage::url($content)),
         ];
     }
 }

@@ -57,4 +57,7 @@ class TobidotElement extends Model
         'extra' => 'json',
     ];
 
+    public function attachment(): BelongsTo {
+        return $this->belongsTo(Attachment::class,  'attachment_id', 'id');
+    }
 }
