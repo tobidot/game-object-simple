@@ -136,16 +136,18 @@ class TobidotElement extends Resource
                 'tobidot-elements',
                 'tobidot-elements',
             );
+            $full_path = $attachment->path . '/index.zip';
         } else {
             $attachment = AppHelper::resolve(AttachmentService::class)->createFromUploadedSingleFile(
                 $file,
                 'tobidot-elements',
                 'tobidot-elements',
             );
+            $full_path = $attachment->path . '/index.js';
         }
         $model->attachment()->associate($attachment);
 
-        return $attachment->path . '/' . $file->getClientOriginalName();
+        return $full_path;
     }
 
     /**

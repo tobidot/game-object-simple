@@ -24,9 +24,9 @@ class AttachmentService
     {
         $disk = Storage::disk('public');
         $uuid = Str::uuid();
-        $zip_name = $file->getClientOriginalName();
+        $zip_name = 'index.zip';
         $zip_base_name = substr($zip_name, 0, strpos($zip_name, '.'));
-        $zip_folder_path = "$zip_base_name-$uuid";
+        $zip_folder_path = "$uuid";
         $disk_file_path = $file->storeAs("$path_prefix/$zip_folder_path", $zip_name, [
             'disk' => 'public',
             'visibility' => 'public',
@@ -90,9 +90,8 @@ class AttachmentService
     {
         $disk = Storage::disk('public');
         $uuid = Str::uuid();
-        $file_name = "index";
-        $file_base_name = substr($file_name, 0, strpos($file_name, '.'));
-        $file_folder_path = "$file_base_name-$uuid";
+        $file_name = "index.js";
+        $file_folder_path = "$uuid";
         $disk_file_path = $file->storeAs("$path_prefix/$file_folder_path", $file_name, [
             'disk' => 'public',
             'visibility' => 'public',
