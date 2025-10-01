@@ -130,7 +130,7 @@ class TobidotElement extends Resource
         if (!$file) {
             return null;
         }
-        if ($file->getExtension() === 'zip') {
+        if ($file->getClientOriginalExtension() === 'zip') {
             $attachment = AppHelper::resolve(AttachmentService::class)->createFromUploadedZipFile(
                 $file,
                 'tobidot-elements',
