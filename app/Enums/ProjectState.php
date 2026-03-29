@@ -2,18 +2,9 @@
 
 namespace App\Enums;
 
-use App\Enums\Traits\LookupEnumTrait;
-
-enum ProjectState : int
+enum ProjectState : string
 {
-    use LookupEnumTrait;
-
-    public static function table(): string
-    {
-        return 'lu_project_states';
-    }
-
-    case DRAFT = 1;
-    case IN_DEVELOPMENT = 2;
-    case FINISHED = 3;
+    case DRAFT = 'draft';
+    case IN_DEVELOPMENT = 'in_development';
+    case FINISHED = 'finished';
 }

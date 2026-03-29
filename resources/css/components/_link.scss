@@ -1,7 +1,7 @@
-@import "../globals/variables";
+@use "../globals/variables";
 
 .link {
-    color: $primary-color;
+    color: variables.$primary-color;
     font-weight: bold;
 
     &:hover {

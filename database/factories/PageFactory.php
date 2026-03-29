@@ -21,14 +21,14 @@ class PageFactory extends Factory
             'uri' => implode('/', $this->faker->words($this->faker->numberBetween(1, 3))),
             'title' => $this->faker->sentence($this->faker->numberBetween(1, 9)),
             'content' => $this->faker->randomHtml(4, 4),
-            'publish_state_id' => $this->faker->randomElement(PublishState::cases()),
+            'publish_state' => $this->faker->randomElement(PublishState::cases()),
         ];
     }
 
     public function published() : self
     {
         return $this->state([
-            'publish_state_id' => PublishState::PUBLISHED->value,
+            'publish_state' => PublishState::PUBLISHED,
         ]);
     }
 }

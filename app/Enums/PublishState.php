@@ -2,17 +2,8 @@
 
 namespace App\Enums;
 
-use App\Enums\Traits\LookupEnumTrait;
-
-enum PublishState : int
+enum PublishState : string
 {
-    use LookupEnumTrait;
-
-    public static function table(): string
-    {
-        return 'lu_publish_states';
-    }
-
-    case PRIVATE = 1;
-    case PUBLISHED = 2;
+    case PRIVATE = 'private';
+    case PUBLISHED = 'published';
 }

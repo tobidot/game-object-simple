@@ -2,8 +2,11 @@
 
 namespace App\Nova;
 
+use App\Enums\LogEventTypes;
+use App\Helpers\NovaHelper;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\MorphTo;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class LogEvent extends Resource
@@ -41,6 +44,8 @@ class LogEvent extends Resource
     {
         return [
             ID::make()->sortable(),
+            NovaHelper::makeEnum('Type', 'type', LogEventTypes::class),
+            MorphTo::make('Loggable'),
         ];
     }
 

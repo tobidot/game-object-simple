@@ -63,10 +63,10 @@ class Project extends Resource
             Image::make(__('Thumbnail'), 'thumbnail')
                 ->rules(['nullable'])
                 ->nullable(),
-            NovaHelper::makeEnum('Publish State', 'publish_state_id', PublishState::class)
+            NovaHelper::makeEnum('Publish State', 'publish_state', PublishState::class)
                 ->rules(['required'])
                 ->required(),
-            NovaHelper::makeEnum('Project State', 'state_id', ProjectState::class)
+            NovaHelper::makeEnum('Project State', 'state', ProjectState::class)
                 ->rules(['required'])
                 ->required(),
 //            LookupEnum::make(__('Publish State'), 'publish_state_id')

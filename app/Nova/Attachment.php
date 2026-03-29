@@ -4,6 +4,7 @@ namespace App\Nova;
 
 use App\Enums\AttachmentType;
 use App\Enums\PublishState;
+use App\Helpers\NovaHelper;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\ID;
@@ -55,12 +56,10 @@ class Attachment extends Resource
             Text::make(__('Path'), 'path')
                 ->rules(['required'])
                 ->required(),
-            LookupEnum::make(__('Publish State'), 'publish_state_id')
-                ->table(PublishState::table())
+            NovaHelper::makeEnum('Publish State', 'publish_state', PublishState::class)
                 ->rules(['required'])
                 ->required(),
-            LookupEnum::make(__('Attachment Type'), 'type_id')
-                ->table(AttachmentType::table())
+            NovaHelper::makeEnum('Attachment Type', 'type', AttachmentType::class)
                 ->rules(['required'])
                 ->required(),
         ];

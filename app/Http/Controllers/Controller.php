@@ -19,8 +19,8 @@ class Controller extends BaseController
     public function home(): View
     {
         $page = Page::query()->where('uri', '=', 'home')->first();
-        AppHelper::resolve(ViewService::class)->associate($page);
         if($page) {
+            AppHelper::resolve(ViewService::class)->associate($page);
             return view('pages.show', ['page' => $page]);
         }
         return view('statics.home');

@@ -24,13 +24,13 @@ class PageSeeder extends Seeder
             Page::factory()->create([
                 'title' => 'Home',
                 'uri' => 'home',
-                'publish_state_id' => PublishState::PUBLISHED,
+                'publish_state' => PublishState::PUBLISHED,
             ]);
         }
 
         $pages = Page::factory()->count(10)->create();
         for ($i = 0; $i < 3; ++$i) {
-            $pages[$i]->publish_state_id = PublishState::PUBLISHED->value;
+            $pages[$i]->publish_state = PublishState::PUBLISHED;
             $pages[$i]->save();
         }
     }

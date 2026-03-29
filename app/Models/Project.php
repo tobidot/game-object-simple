@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ProjectState;
 use App\Enums\PublishState;
 use App\Models\Scopes\VisibleScope;
 use Barryvdh\LaravelIdeHelper\Eloquent;
@@ -24,9 +25,9 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property string $title
  * @property string $description
- * @property int $publish_state_is
- * @property int $state_id
- * @@property-read Collection<int, Comment> $comments
+ * @property PublishState $publish_state
+ * @property ProjectState $state
+ * @property-read Collection<int, Comment> $comments
  * @property-read Collection<int, CodeRelease> $codeReleases
  * @property-read int|null $code_releases_count
  * @method static Builder|Project newModelQuery()
@@ -35,12 +36,10 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Project whereCreatedAt($value)
  * @method static Builder|Project whereDescription($value)
  * @method static Builder|Project whereId($value)
- * @method static Builder|Project wherePublishStateIs($value)
- * @method static Builder|Project whereStateId($value)
+ * @method static Builder|Project wherePublishState($value)
+ * @method static Builder|Project whereState($value)
  * @method static Builder|Project whereTitle($value)
  * @method static Builder|Project whereUpdatedAt($value)
- * @property int $publish_state_id
- * @method static Builder|Project wherePublishStateId($value)
  * @mixin Eloquent
  * @property string|null $thumbnail
  * @property-read Collection<int, Page> $pages
@@ -56,6 +55,11 @@ use Illuminate\Support\Carbon;
 class Project extends Model
 {
     use HasFactory;
+
+    protected $casts = [
+        'publish_state' => PublishState::class,
+        'state' => ProjectState::class,
+    ];
 
     protected static function booted()
     {
@@ -98,7 +102,7 @@ class Project extends Model
      */
     public function scopePublished(Builder $query): Builder
     {
-        return $query->where('publish_state_id', PublishState::PUBLISHED);
+        return $query->where('publish_state', PublishState::PUBLISHED);
     }
 
 }

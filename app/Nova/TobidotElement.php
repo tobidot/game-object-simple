@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\Code;
 use Laravel\Nova\Fields\File;
@@ -115,6 +116,14 @@ class TobidotElement extends Resource
                     ]);
             })->readonly(),
             BelongsTo::make(__('Attachment'), 'attachment')->onlyOnDetail(),
+            BelongsToMany::make(__('Dependencies'), 'dependencies', TobidotElement::class)
+                ->fields(function () {
+                    return [
+                        Number::make(__('Required Major'), 'required_major'),
+                        Number::make(__('Required Minor'), 'required_minor'),
+                        Number::make(__('Required Patch'), 'required_patch'),
+                    ];
+                }),
         ];
     }
 

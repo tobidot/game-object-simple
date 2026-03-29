@@ -24,6 +24,6 @@ class VisibleScope implements Scope
         if (auth()->check()) {
             return;
         }
-        $builder->where('publish_state_id', '=', PublishState::PUBLISHED->value);
+        $builder->where('publish_state', '=', PublishState::PUBLISHED->value);
     }
 }

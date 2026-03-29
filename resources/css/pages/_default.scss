@@ -1,15 +1,15 @@
-@import "../globals/variables";
-@import "../globals/mixins";
+@use "../globals/variables";
+@use "../globals/mixins";
 
 main.page {
-    @include page-centered;
-    @include page-like;
+    @include mixins.page-centered;
+    @include mixins.page-like;
     .page {
         &__teaser {
-            @include teaser;
+            @include mixins.teaser;
         }
         &__content {
-            @include trix-content;
+            @include mixins.trix-content;
         }
     }
 }

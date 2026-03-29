@@ -1,4 +1,4 @@
-@import "variables";
+@use "variables";
 
 /** Mixin for mobile layout */
 @mixin mobile {
@@ -46,8 +46,8 @@
 }
 
 @mixin page-centered(
-    $border-color: $background-color-light,
-    $background-color: $background-color
+    $border-color: variables.$background-color-light,
+    $background-color: variables.$background-color
 ) {
     max-width: 1024px;
     margin: auto;

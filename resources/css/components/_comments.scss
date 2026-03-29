@@ -1,4 +1,4 @@
-@import "../../css/globals/mixins";
+@use "../../css/globals/mixins";
 
 .comment {
     display: flex;
@@ -173,7 +173,7 @@
 
 
 
-    @include tablet {
+    @include mixins.tablet {
 
         &__field {
             grid-column: span 4;
@@ -197,7 +197,7 @@
         }
     }
 
-    @include mobile {
+    @include mixins.mobile {
         grid-template-columns: repeat(4, 1fr);
         gap: 0.25rem;
 

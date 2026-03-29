@@ -21,7 +21,7 @@ class ProjectSeeder extends Seeder
     {
         $pages = Project::factory()->count(10)->create();
         for ($i = 0; $i < 3; ++$i) {
-            $pages[$i]->publish_state_id = PublishState::PUBLISHED->value;
+            $pages[$i]->publish_state = PublishState::PUBLISHED;
             $pages[$i]->save();
         }
     }

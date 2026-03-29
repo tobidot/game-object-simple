@@ -75,8 +75,8 @@ class AttachmentService
                 $path_prefix,
                 $zip_folder_path,
             ], fn($item) => !empty($item)));
-        $attachment->publish_state_id = PublishState::PUBLISHED->value;
-        $attachment->type_id = AttachmentType::ZIP->value;
+        $attachment->publish_state = PublishState::PUBLISHED;
+        $attachment->type = AttachmentType::ZIP;
         $attachment->save();
         return $attachment;
     }
@@ -113,8 +113,8 @@ class AttachmentService
                 $path_prefix,
                 $file_folder_path,
             ], fn($item) => !empty($item)));
-        $attachment->publish_state_id = PublishState::PUBLISHED->value;
-        $attachment->type_id = AttachmentType::BINARY->value;
+        $attachment->publish_state = PublishState::PUBLISHED;
+        $attachment->type = AttachmentType::BINARY;
         $attachment->save();
         return $attachment;
     }

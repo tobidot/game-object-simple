@@ -11,11 +11,12 @@ class TobidotElementController extends Controller
 {
 
 
-    public function index(): Collection|\Illuminate\Support\Collection
+    public function index(): \Illuminate\Http\JsonResponse
     {
-        return collect( [
+        return response()->json([
             'version' => 1,
             'packages' => TobidotElement::query()
+                ->with('dependencies')
                 ->get()
                 ->groupBy('name')
                 ->map(

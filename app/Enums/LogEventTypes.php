@@ -2,17 +2,8 @@
 
 namespace App\Enums;
 
-use App\Enums\Traits\LookupEnumTrait;
-
-enum LogEventTypes : int
+enum LogEventTypes : string
 {
-    use LookupEnumTrait;
-
-    public static function table(): string
-    {
-        return 'lu_log_event_types';
-    }
-
-    case INFO = 1;
-    case ERROR = 2;
+    case INFO = 'info';
+    case ERROR = 'error';
 }

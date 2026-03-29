@@ -1,4 +1,4 @@
-@import "../globals/mixins";
+@use "../globals/mixins";
 
 .pagination-section {
     display: flex;
@@ -78,7 +78,7 @@
 
 }
 
-@include mobile-tablet {
+@include mixins.mobile-tablet {
     // make smaller on tablet
     .pagination-section {
         nav {
@@ -93,7 +93,7 @@
     }
 }
 
-@include mobile {
+@include mixins.mobile {
     // make smaller on mobile and column layout
     .pagination-section {
         flex-direction: column;

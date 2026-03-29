@@ -1,5 +1,5 @@
-@import "../globals/variables";
-@import "../globals/mixins";
+@use "../globals/variables";
+@use "../globals/mixins";
 
 // Header
 header {
@@ -8,8 +8,8 @@ header {
     padding: 1rem;
     margin-bottom: -0.5rem;
 
-    color: $text-color-dark;
-    // background-color: $background-color-light;
+    color: variables.$text-color-dark;
+    // background-color: variables.$background-color-light;
     background: linear-gradient(0deg, transparent, #eee 0.5rem);
 
     align-items: center;
@@ -68,14 +68,14 @@ header {
         a {
             &:hover,
             &[aria-current="page"] {
-                color: $primary-color;
+                color: variables.$primary-color;
                 text-decoration: underline;
             }
         }
     }
 
     /** Mobile */
-    @include mobile-tablet {
+    @include mixins.mobile-tablet {
         flex-direction: column;
         height: auto;
         padding: 1rem 0;
@@ -109,7 +109,7 @@ header {
         }
     }
 
-    @include mobile {
+    @include mixins.mobile {
         .navigation {
             width: 100%;
 

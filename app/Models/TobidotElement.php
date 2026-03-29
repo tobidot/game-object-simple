@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
@@ -34,7 +35,7 @@ use Laravel\Nova\Fields\MorphedByMany;
  * @property int $minor
  * @property int $patch
  *
- * @method static CodeReleaseFactory factory($count = null, $state = [])
+ * @method static \Database\Factories\TobidotElementFactory factory($count = null, $state = [])
  * @method static Builder|CodeRelease newModelQuery()
  * @method static Builder|CodeRelease newQuery()
  * @method static Builder|CodeRelease query()
@@ -59,5 +60,12 @@ class TobidotElement extends Model
 
     public function attachment(): BelongsTo {
         return $this->belongsTo(Attachment::class,  'attachment_id', 'id');
+    }
+
+    public function dependencies(): BelongsToMany
+    {
+        return $this->belongsToMany(TobidotElement::class, 'tobidot_element_dependencies', 'tobidot_element_id', 'dependency_id')
+            ->withPivot(['required_major', 'required_minor', 'required_patch'])
+            ->withTimestamps();
     }
 }

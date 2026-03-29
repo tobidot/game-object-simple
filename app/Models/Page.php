@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PublishState;
 use App\Models\Scopes\VisibleScope;
 use Barryvdh\LaravelIdeHelper\Eloquent;
 use Database\Factories\PageFactory;
@@ -24,16 +25,15 @@ use Illuminate\Support\Carbon;
  * @property string $uri
  * @property string $title
  * @property string $content
- * @property int $publish_state_id
+ * @property PublishState $publish_state
  * @property-read Collection<int, LogEvent> $logEvents
- * @property-read LuPublishState $publishState
  * @method static Builder|Page newModelQuery()
  * @method static Builder|Page newQuery()
  * @method static Builder|Page query()
  * @method static Builder|Page whereContent($value)
  * @method static Builder|Page whereCreatedAt($value)
  * @method static Builder|Page whereId($value)
- * @method static Builder|Page wherePublishStateId($value)
+ * @method static Builder|Page wherePublishState($value)
  * @method static Builder|Page whereTitle($value)
  * @method static Builder|Page whereUpdatedAt($value)
  * @method static Builder|Page whereUri($value)
@@ -53,10 +53,11 @@ class Page extends Model
 {
     use HasFactory;
 
-
-    public $with = [
-        'publishState'
+    protected $casts = [
+        'publish_state' => PublishState::class,
     ];
+
+    public $with = [];
 
     protected static function booted()
     {
@@ -67,11 +68,6 @@ class Page extends Model
     public function getRouteKeyName(): string
     {
         return 'uri';
-    }
-
-    public function publishState(): BelongsTo
-    {
-        return $this->belongsTo(LuPublishState::class);
     }
 
     public function logEvents(): MorphMany

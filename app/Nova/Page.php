@@ -65,7 +65,7 @@ class Page extends Resource
             Image::make(__('Thumbnail'), 'thumbnail')
                 ->rules(['nullable'])
                 ->nullable(),
-            NovaHelper::makeEnum('Publish State', 'publish_state_id', PublishState::class)
+            NovaHelper::makeEnum('Publish State', 'publish_state', PublishState::class)
                 ->rules(['required'])
                 ->required(),
 //            LookupEnum::make(__('Publish State Enum'), 'publish_state_id')

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TobidotElementController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -37,7 +38,7 @@ Route::group([
     'prefix' => 'public',
 ], function () {
     Route::get('/tobidot-elements', [
-        \App\Http\Controllers\TobidotElementController::class,
+        TobidotElementController::class,
         'index'
     ])->name('tobidot-elements.index');
 });

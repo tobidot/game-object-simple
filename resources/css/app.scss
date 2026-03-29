@@ -1,19 +1,19 @@
-@import "globals/variables";
-@import "globals/mixins";
-@import "globals/globals";
-@import "globals/layout";
+@use "globals/variables";
+@use "globals/mixins";
+@use "globals/globals";
+@use "globals/layout";
 
-@import "components/archive";
-@import "components/excerpt";
-@import "components/link";
-@import "components/navigation";
-@import "components/comments";
-@import "components/pagination";
+@use "components/archive";
+@use "components/excerpt";
+@use "components/link";
+@use "components/navigation";
+@use "components/comments";
+@use "components/pagination";
 
-@import "statics/imprint";
-@import "pages/default";
-@import "pages/index";
-@import "projects/default";
-@import "projects/index";
+@use "statics/imprint";
+@use "pages/default" as page-default;
+@use "pages/index" as page-index;
+@use "projects/default" as project-default;
+@use "projects/index" as project-index;
 
-@import "utils/js-classes";
+@use "utils/js-classes";

@@ -1,9 +1,9 @@
-@import "./variables";
+@use "./variables";
 
 .meta {
     display: flex;
 
-    color: $text-color-light;
+    color: variables.$text-color-light;
     font-size: 0.8rem;
 
     justify-content: space-between;
