@@ -31,6 +31,20 @@ Route::group([
             'release'
         ])->name('projects.release')
             ->whereNumber('project');
+
+        Route::post('/tobidot-elements', [
+            TobidotElementController::class,
+            'upload'
+        ])->name('tobidot-elements.upload');
+
+        Route::get(
+            '/validate-token',
+            function() {
+                echo 'Token is valid';
+
+                return \request()->user()->id;
+            }
+        );
     });
 });
 

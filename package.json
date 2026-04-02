@@ -9,17 +9,12 @@
         "build-api-token-copier-prod": "cd nova-components/ApiTokenCopier && npm run prod"
     },
     "devDependencies": {
-        "axios": "^1.4.0",
         "laravel-vite-plugin": "^3.0.0",
         "lodash": "^4.17.21",
         "postcss": "^8.4.23",
         "vite": "^8.0.3"
     },
     "dependencies": {
-        "@game.object/common": "file:E:/projects/private/collection-html-custom-elements/common",
-        "@game.object/dll-tce-package-registry": "file:E:/projects/private/collection-html-custom-elements/dll-tce-package-registry",
-        "@game.object/tce-desktop": "file:E:/projects/private/collection-html-custom-elements/tce-desktop",
-        "@game.object/tce-bootloader": "file:E:/projects/private/collection-html-custom-elements/tce-bootloader",
         "npm-check-updates": "^19.6.6",
         "sass": "^1.62.1"
     }

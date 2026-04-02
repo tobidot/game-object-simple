@@ -63,7 +63,7 @@ class TobidotElementResource extends JsonResource
             'patch' => (int)$element->patch,
             'root' => asset(Storage::url($root)),
             'icon' => $element->icon ? asset(Storage::url("media/{$element->icon}")) : null,
-            'content' => asset(Storage::url($content)),
+            'content' => $content === null ? null : asset(Storage::url($content)),
             'width' => (int)$element->width,
             'height' => (int)$element->height,
             'extra' => $element->extra ?? [],

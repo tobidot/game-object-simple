@@ -1,0 +1,69 @@
+### Upload a existing element
+# Upload the data/c.zip to a project
+POST {{host}}/api/v1/tobidot-elements
+Authorization: Bearer {{api_token}}
+Accept: application/json
+Content-Disposition: form-data;
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="name"
+Content-Type: text/plain
+
+non-element
+--WebAppBoundary
+Content-Disposition: form-data; name="zip"; filename="c.zip"
+Content-Type: application/zip
+
+< ./data/c.zip
+--WebAppBoundary--
+
+> {%
+    client.test("Response status is 200", function() {
+        client.assert(response.status === 200, "response status is 200");
+    });
+%}
+
+
+### Upload a new tobidot-element
+# Upload the data/c.zip to a project
+POST {{host}}/api/v1/tobidot-elements
+Authorization: Bearer {{api_token}}
+Accept: application/json
+Content-Disposition: form-data;
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="name"
+Content-Type: text/plain
+
+non-element
+--WebAppBoundary
+Content-Disposition: form-data; name="version"
+Content-Type: text/plain
+
+1.0.0
+--WebAppBoundary
+Content-Disposition: form-data; name="kind"
+Content-Type: text/plain
+
+element
+--WebAppBoundary
+Content-Disposition: form-data; name="description"
+Content-Type: text/plain
+
+Test Upload
+--WebAppBoundary
+Content-Disposition: form-data; name="zip"; filename="c.zip"
+Content-Type: application/zip
+
+< ./data/c.zip
+--WebAppBoundary--
+
+> {%
+    client.test("Response status is 200", function() {
+        client.assert(response.status === 200, "response status is 200");
+    });
+%}
+
+

@@ -1,0 +1,4 @@
+### Validate your Token
+GET {{host}}/api/v1/validate-token
+Authorization: Bearer {{api_token}}
+Accept: application/json
