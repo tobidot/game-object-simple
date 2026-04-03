@@ -25,29 +25,31 @@
         "php": "^8.2|^8.3|^8.4",
         "ext-gd": "*",
         "ext-zip": "*",
-        "binarytorch/larecipe": "^2.6",
+        "binarytorch/larecipe": "^2.8",
         "binarytorch/larecipe-swagger": "^0.2.0",
         "doctrine/dbal": "^3.6",
         "emilianotisato/nova-tinymce": "^2.0",
-        "guzzlehttp/guzzle": "^7.2",
-        "laravel/framework": "^10",
+        "guzzlehttp/guzzle": "^7.10",
+        "laravel/framework": "^12.56",
         "laravel/nova": "^5",
-        "laravel/nova-log-viewer": "^1.0",
-        "laravel/passport": "^11.8",
-        "laravel/sanctum": "^3.2",
+        "laravel/nova-log-viewer": "^1.2",
+        "laravel/passport": "^13.7",
+        "laravel/sanctum": "^4.3",
         "laravel/tinker": "^2.7",
-        "livewire/livewire": "^2.11",
+        "livewire/livewire": "^4.2",
         "tobidot/api-token-copier": "@dev",
         "tobidot/lookup-enum": "^0.0.1"
     },
     "require-dev": {
-        "barryvdh/laravel-ide-helper": "^2.13",
-        "fakerphp/faker": "^1.9.1",
+        "barryvdh/laravel-ide-helper": "^3.7",
+        "fakerphp/faker": "^1.24",
+        "laravel/boost": "^2",
         "laravel/pint": "^1.0",
-        "laravel/sail": "^1.0.1",
+        "laravel/sail": "^1.56",
         "mockery/mockery": "^1.4.4",
-        "nunomaduro/collision": "^7.5",
-        "phpunit/phpunit": "^10.1",
+        "nunomaduro/collision": "^8.9",
+        "pestphp/pest": "^4.0",
+        "phpunit/phpunit": "^12.0",
         "spatie/laravel-ignition": "^2.1"
     },
     "autoload": {
@@ -87,7 +89,8 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
-            "pestphp/pest-plugin": true
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
         }
     },
     "minimum-stability": "stable",
