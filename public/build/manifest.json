@@ -1,0 +1,32 @@
+{
+  "resources/css/app.scss": {
+    "file": "assets/app-CzpKzVQQ.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.scss",
+    "isEntry": true
+  },
+  "resources/css/desktop.scss": {
+    "file": "assets/desktop-Gy33g3ga.css",
+    "name": "desktop",
+    "names": [
+      "desktop.css"
+    ],
+    "src": "resources/css/desktop.scss",
+    "isEntry": true
+  },
+  "resources/js/app.ts": {
+    "file": "assets/app-BKG2DkV8.js",
+    "name": "app",
+    "src": "resources/js/app.ts",
+    "isEntry": true
+  },
+  "resources/js/desktop.ts": {
+    "file": "assets/desktop-DCFsdqIK.js",
+    "name": "desktop",
+    "src": "resources/js/desktop.ts",
+    "isEntry": true
+  }
+}
