@@ -8,10 +8,24 @@
     const package_groups = json.packages;
 
     // 2. Find and import the registry package
-    let registry_item: any = null;
-    for (const name in package_groups) {
-        registry_item = package_groups[name].find((p: any) => p.name === 'dll-tce-package-registry');
-        if (registry_item) break;
+    let registry_item_versions: Array<{
+        major: number,
+        minor: number,
+        patch: number,
+        [key:string]: any,
+    }> = package_groups['dll-tce-package-registry'];
+    let latest_version_string: string = '0.0.0';
+    let registry_item = null;
+    for (const item of registry_item_versions) {
+        const version = [
+            item.major,
+            item.minor,
+            item.patch,
+        ].join('.');
+        if (version >= latest_version_string) {
+            latest_version_string = version;
+        }
+        registry_item = item;
     }
 
     if (!registry_item) {
@@ -23,7 +37,7 @@
     await import (/* @vite-ignore */ registry_url);
 
     const package_loader = (window as any).tobidot.tce_package_loader;
-    const registry_id = { namespace: 'tobidot', name: 'dll-tce-package-registry' };
+    const registry_id = {namespace: 'tobidot', name: 'dll-tce-package-registry'};
 
     // Initialize Registry
     const registry_pkg = await package_loader.load(registry_id) as any;
@@ -31,7 +45,7 @@
     await registry_pkg.register_provider('tobidot', '/api/public/tobidot-elements');
 
     // 3. Load the desktop package (now registered via the provider)
-    const desktop_id = { namespace: 'tobidot', name: 'tce-desktop' };
+    const desktop_id = {namespace: 'tobidot', name: 'tce-desktop'};
     const desktop_pkg = await package_loader.load(desktop_id);
     await desktop_pkg.init();
 
@@ -50,10 +64,30 @@
     }
     $desktop.append($element);
 
+
+    console.log('Looking for autostart');
+    package_loader.load(
+        {namespace: 'tobidot', name: 'dll-tce-file-system'},
+    ).then(async (file_system: { load: (...args: Array<any>) => any }) => {
+        const fs_exists = file_system.load('exists') as (file: string) => Promise<boolean>;
+        const fs_read = file_system.load('read') as (file: string) => Promise<string>;
+        const auto_start_exists = await fs_exists('/autostart.js');
+        if (!auto_start_exists) {
+            console.log('No autostart script found');
+            return;
+        }
+        const content = await fs_read('/autostart.js');
+        console.log('Executing autostart script...');
+        const autostart = new Function(content);
+        autostart();
+    }).catch((error: any) => {
+        console.log('Error during autostart', error);
+    });
+
     console.log('Desktop package loaded and initialized: ', desktop_id);
 
     // 4. Load other necessary components
-    const bootloader_id = { namespace: 'tobidot', name: 'tce-bootloader' };
+    const bootloader_id = {namespace: 'tobidot', name: 'tce-bootloader'};
     const bootloader_pkg = await package_loader.load(bootloader_id);
     await bootloader_pkg.init();
 })().then(() => {
