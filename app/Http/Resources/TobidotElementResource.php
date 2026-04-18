@@ -67,6 +67,7 @@ class TobidotElementResource extends JsonResource
             'width' => (int)$element->width,
             'height' => (int)$element->height,
             'extra' => $element->extra ?? [],
+            'created_at' => $element->created_at,
             'dependencies' => $element->dependencies->map(function (TobidotElement $dependency) {
                 $requirement = [
                     'identifier' => [

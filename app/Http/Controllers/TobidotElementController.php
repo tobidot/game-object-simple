@@ -15,8 +15,6 @@ use Illuminate\Validation\ValidationException;
 
 class TobidotElementController extends Controller
 {
-
-
     public function index(): JsonResponse
     {
         return response()->json([
