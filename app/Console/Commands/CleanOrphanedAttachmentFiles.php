@@ -40,8 +40,13 @@ class CleanOrphanedAttachmentFiles extends Command
 
         $count = 0;
         foreach ($directories as $directory) {
+            $parts = explode('/', $directory);
+            if (count($parts) !== 2) {
+                // only get paths at depth level 2
+                continue;
+            }
             // Check if there is a corresponding model in the database
-            if (!Attachment::where('attachments.path', $directory)->exists()) {
+            if (!Attachment::where('attachments.path', '/'.$directory)->exists()) {
                 $this->handleOrphanedDirectory($directory);
                 $count++;
             }
