@@ -26,6 +26,7 @@ class UploadTobidotElementRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'zip' => ['required', 'file'],
+            'icon' => ['sometimes', 'file', 'image'],
             'version' => ['sometimes', 'string', 'regex:/^\d+\.\d+\.\d+$/', 'max:255'],
             'kind' => ['sometimes', 'in:element,library', 'string', 'max:255'],
             'description' => ['sometimes', 'string'],

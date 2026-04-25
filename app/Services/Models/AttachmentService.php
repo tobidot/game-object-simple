@@ -6,6 +6,7 @@ use App\Enums\AttachmentType;
 use App\Enums\PublishState;
 use App\Exceptions\DummyException;
 use App\Models\Attachment;
+use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -86,11 +87,12 @@ class AttachmentService
         UploadedFile $file,
         string       $path_prefix,
         string       $url_prefix,
+        ?string      $file_name = null,
     ): Attachment
     {
         $disk = Storage::disk('public');
         $uuid = Str::uuid();
-        $file_name = "index.js";
+        $file_name = $file_name ?? $file->getClientOriginalName();
         $file_folder_path = "$uuid";
         $disk_file_path = $file->storeAs("$path_prefix/$file_folder_path", $file_name, [
             'disk' => 'public',
@@ -113,8 +115,58 @@ class AttachmentService
                 $path_prefix,
                 $file_folder_path,
             ], fn($item) => !empty($item)));
+        $attachment->file_name = $file_name;
         $attachment->publish_state = PublishState::PUBLISHED;
         $attachment->type = AttachmentType::BINARY;
+        $attachment->save();
+        return $attachment;
+    }
+
+    public function createFromUploadedImage(
+        UploadedFile $file,
+        string       $path_prefix,
+        string       $url_prefix,
+    ): Attachment
+    {
+        $hash = hash_file('sha256', $file->getRealPath());
+
+        $existing = Attachment::query()
+            ->where('hash', $hash)
+            ->first();
+
+        if ($existing) {
+            return $existing;
+        }
+
+        $disk = Storage::disk('public');
+        $uuid = Str::uuid();
+        $file_name = $file->getClientOriginalName();
+        $file_folder_path = "$uuid";
+        $disk_file_path = $file->storeAs("$path_prefix/$file_folder_path", $file_name, [
+            'disk' => 'public',
+            'visibility' => 'public',
+            'directory_visibility' => 'public'
+        ]);
+        if ($disk_file_path === false) {
+            throw new DummyException("Failed to store image as attachment");
+        }
+
+        // make them public
+        $disk->setVisibility($disk_file_path, 'public');
+        //
+        $attachment = new Attachment();
+        $attachment->url = '/' . implode("/", array_filter([
+                $url_prefix,
+                $file_folder_path,
+            ], fn($item) => !empty($item)));
+        $attachment->path = '/' . implode("/", array_filter([
+                $path_prefix,
+                $file_folder_path,
+            ], fn($item) => !empty($item)));
+        $attachment->file_name = $file_name;
+        $attachment->publish_state = PublishState::PUBLISHED;
+        $attachment->type = AttachmentType::BINARY;
+        $attachment->hash = $hash;
         $attachment->save();
         return $attachment;
     }

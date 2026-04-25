@@ -28,7 +28,9 @@ class TobidotElementResource extends JsonResource
         $root = implode('/', $temp);
 
         $content = null;
-        if (Str::endsWith($element->content, '.zip')) {
+        if ($element->attachment && $element->attachment->file_name) {
+             $content = $root . '/' . $element->attachment->file_name;
+        } elseif (Str::endsWith($element->content, '.zip')) {
             // if this is a zip look for the primary source
             $name = Str::ucfirst(\Str::camel( $element->name ) );
             $candidate_names = [
@@ -62,7 +64,7 @@ class TobidotElementResource extends JsonResource
             'minor' => (int)$element->minor,
             'patch' => (int)$element->patch,
             'root' => asset(Storage::url($root)),
-            'icon' => $element->icon ? asset(Storage::url("media/{$element->icon}")) : null,
+            'icon' => $element->icon ? asset(Storage::url($element->icon)) : null,
             'content' => $content === null ? null : asset(Storage::url($content)),
             'width' => (int)$element->width,
             'height' => (int)$element->height,

@@ -16,6 +16,7 @@ class TobidotElementService
      * @param  string|null  $version
      * @param  string|null  $kind
      * @param  string|null  $description
+     * @param  UploadedFile|null  $icon
      * @return TobidotElement
      * @throws \Exception|\Throwable
      */
@@ -24,7 +25,8 @@ class TobidotElementService
         UploadedFile $zip,
         ?string $version = null,
         ?string $kind = null,
-        ?string $description = null
+        ?string $description = null,
+        ?UploadedFile $icon = null
     ): TobidotElement {
         $last_element = TobidotElement::query()
             ->where('name', $name)
@@ -45,14 +47,25 @@ class TobidotElementService
             $kind,
             $description,
             $last_element,
+            $icon,
             &$element,
         ) {
-            $attachment = AppHelper::resolve(AttachmentService::class)
+            $attachmentService = AppHelper::resolve(AttachmentService::class);
+            $attachment = $attachmentService
                 ->createFromUploadedZipFile(
                     $zip,
                     "tobidot-elements",
                     "tobidot-elements",
                 );
+
+            $iconAttachment = null;
+            if ($icon) {
+                $iconAttachment = $attachmentService->createFromUploadedImage(
+                    $icon,
+                    "icons",
+                    "icons"
+                );
+            }
 
             $element = new TobidotElement();
             $element->name = $name;
@@ -70,7 +83,9 @@ class TobidotElementService
             $element->height = $last_element?->height ?? 200;
             $element->extra = $last_element?->extra ?? null;
 
-            if ($last_element?->icon) {
+            if ($iconAttachment) {
+                $element->icon = $iconAttachment->url . '/' . $iconAttachment->file_name;
+            } elseif ($last_element?->icon) {
                 $element->icon = $last_element->icon;
             }
 

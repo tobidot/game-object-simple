@@ -45,7 +45,8 @@ class TobidotElementController extends Controller
                 $request->zip,
                 $request->version ?? null,
                 $request->kind ?? null,
-                $request->description ?? null
+                $request->description ?? null,
+                $request->file('icon')
             );
 
         return response()->json([

@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property string $path
  * @property PublishState $publish_state
  * @property AttachmentType $type
+ * @property string|null $file_name
  * @method static Builder|Attachment newModelQuery()
  * @method static Builder|Attachment newQuery()
  * @method static Builder|Attachment query()
