@@ -57,6 +57,16 @@ class TobidotElementResource extends JsonResource
             $element->content,
         ]);
 
+        if ($element->icon) {
+            $raw_icon_path =  $element->icon;
+            if (! Str::startsWith($raw_icon_path, 'media/')) {
+                $raw_icon_path = "media/$raw_icon_path";
+            }
+            $icon = asset(Storage::url($raw_icon_path));
+        } else {
+            $icon = null;
+        }
+
         return [
             'name' => $element->name,
             'kind' => $element->kind,
@@ -64,7 +74,7 @@ class TobidotElementResource extends JsonResource
             'minor' => (int)$element->minor,
             'patch' => (int)$element->patch,
             'root' => asset(Storage::url($root)),
-            'icon' => $element->icon ? asset(Storage::url($element->icon)) : null,
+            'icon' => $icon,
             'content' => $content === null ? null : asset(Storage::url($content)),
             'width' => (int)$element->width,
             'height' => (int)$element->height,
