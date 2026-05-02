@@ -77,7 +77,7 @@ class AttachmentService
         $hash = hash('sha256', $file->getContent());
         $file_name = $file_name ?? $file->getClientOriginalName();
         $file_folder_path = "$uuid";
-        $public_folder_path = join_paths("/", $prefix, $file_folder_path);
+        $public_folder_path = join_paths("", $prefix, $file_folder_path);
         $public_file_path = join_paths($public_folder_path, $file_name);
 
         // Deduplicate
