@@ -5,9 +5,12 @@ namespace App\Nova;
 use App\Enums\AttachmentType;
 use App\Enums\PublishState;
 use App\Helpers\NovaHelper;
+use App\Nova\CodeRelease;
+use App\Nova\TobidotElement;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\MorphToMany;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\URL;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -70,6 +73,9 @@ class Attachment extends Resource
             NovaHelper::makeEnum('Attachment Type', 'type', AttachmentType::class)
                 ->rules(['required'])
                 ->required(),
+
+            MorphToMany::make(__('Tobidot Elements'), 'tobidotElements', TobidotElement::class),
+            MorphToMany::make(__('Code Releases'), 'codeReleases', CodeRelease::class),
         ];
     }
 
