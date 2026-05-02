@@ -31,12 +31,19 @@ class UnusedAttachments extends Lens
     public static function query(LensRequest $request, $query)
     {
         return $request->withOrdering($request->withFilters(
-            $query->whereDoesntHave('codeReleases')
-                ->whereNotExists(function ($query) {
-                    $query->select(\Illuminate\Support\Facades\DB::raw(1))
-                        ->from('tobidot_elements')
-                        ->whereColumn('tobidot_elements.attachment_id', 'attachments.id');
-                })
+            $query->whereNotExists(function ($query) {
+                $query->select(\Illuminate\Support\Facades\DB::raw(1))
+                    ->from('attachables')
+                    ->whereColumn('attachables.attachment_id', 'attachments.id');
+            })->whereNotExists(function ($query) {
+                $query->select(\Illuminate\Support\Facades\DB::raw(1))
+                    ->from('tobidot_elements')
+                    ->whereColumn('tobidot_elements.attachment_id', 'attachments.id');
+            })->whereNotExists(function ($query) {
+                $query->select(\Illuminate\Support\Facades\DB::raw(1))
+                    ->from('projects')
+                    ->whereColumn('projects.thumbnail', 'attachments.url');
+            })
         ));
     }
 

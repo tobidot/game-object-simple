@@ -25,6 +25,21 @@ class CleanupAttachment extends Action
     public function handle(ActionFields $fields, Collection $models)
     {
         foreach ($models as $model) {
+            // Detach from TobidotElements
+            \Illuminate\Support\Facades\DB::table('tobidot_elements')
+                ->where('attachment_id', $model->id)
+                ->update(['attachment_id' => null]);
+
+            // Detach from attachables (MorphToMany)
+            \Illuminate\Support\Facades\DB::table('attachables')
+                ->where('attachment_id', $model->id)
+                ->delete();
+
+            // Clear Project thumbnails if they use this attachment's URL
+            \Illuminate\Support\Facades\DB::table('projects')
+                ->where('thumbnail', $model->url)
+                ->update(['thumbnail' => null]);
+
             // Delete files from disk
             $path = ltrim($model->path, '/');
             if (!empty($path)) {
