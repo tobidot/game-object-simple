@@ -78,7 +78,7 @@ class AttachmentService
         $hash = hash_file('sha256', $file->getContent());
         $file_name = $file_name ?? $file->getClientOriginalName();
         $file_folder_path = "$uuid";
-        $public_folder_path = join_paths($prefix, $file_folder_path);
+        $public_folder_path = join_paths("/", $prefix, $file_folder_path);
         $public_file_path = join_paths($public_folder_path, $file_name);
 
         // Deduplicate
@@ -129,7 +129,7 @@ class AttachmentService
         // Save the attachment
         $attachment = new Attachment();
         $attachment->path = $public_file_path;
-        $attachment->url = join_paths('storage', $attachment->path);
+        $attachment->url = join_paths('/storage', $attachment->path);
         $attachment->hash = $hash;
         $attachment->file_name = $file_name;
         $attachment->content_type = $mime_type;
