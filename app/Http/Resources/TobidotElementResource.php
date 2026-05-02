@@ -58,7 +58,7 @@ class TobidotElementResource extends JsonResource
         ]);
 
         if ($element->icon) {
-            $raw_icon_path =  $element->icon;
+            $raw_icon_path = ltrim($element->icon, '/');
             if (! Str::startsWith($raw_icon_path, 'media/')) {
                 $raw_icon_path = "media/$raw_icon_path";
             }

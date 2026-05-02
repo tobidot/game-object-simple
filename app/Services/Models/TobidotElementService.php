@@ -84,7 +84,7 @@ class TobidotElementService
             $element->extra = $last_element?->extra ?? null;
 
             if ($iconAttachment) {
-                $element->icon = $iconAttachment->url . '/' . $iconAttachment->file_name;
+                $element->icon = ltrim($iconAttachment->url . '/' . $iconAttachment->file_name, '/');
             } elseif ($last_element?->icon) {
                 $element->icon = $last_element->icon;
             }
