@@ -58,12 +58,20 @@ class TobidotElement extends Model
         'extra' => 'json',
     ];
 
-    public function iconAttachment(): BelongsTo {
-        return $this->belongsTo(Attachment::class,  'icon_attachment_id', 'id');
+    public function attachments(): MorphToMany
+    {
+        return $this->morphToMany(Attachment::class, 'attachable', 'attachables')
+            ->withPivot('relation');
     }
 
-    public function attachment(): BelongsTo {
-        return $this->belongsTo(Attachment::class,  'attachment_id', 'id');
+    public function codeAttachment(): MorphToMany
+    {
+        return $this->attachments()->wherePivot('relation', 'code');
+    }
+
+    public function iconAttachment(): MorphToMany
+    {
+        return $this->attachments()->wherePivot('relation', 'icon');
     }
 
     public function dependencies(): BelongsToMany

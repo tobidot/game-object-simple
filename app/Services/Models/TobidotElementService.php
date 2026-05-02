@@ -76,8 +76,6 @@ class TobidotElementService
             $element->kind = $kind ?? ($last_element?->kind ?? 'element');
             $element->description = $description ?? ($last_element?->description ?? null);
             $element->content = $attachment->url.'/index.zip';
-            $element->attachment_id = $attachment->id;
-            $element->icon_attachment_id = $iconAttachment?->id ?? $last_element?->icon_attachment_id;
 
             // Default values from migration if available, or sensible defaults
             $element->standalone = $last_element?->standalone ?? true;
@@ -92,6 +90,17 @@ class TobidotElementService
             }
 
             $element->save();
+
+            $element->attachments()->attach($attachment->id, ['relation' => 'code']);
+
+            if ($iconAttachment) {
+                $element->attachments()->attach($iconAttachment->id, ['relation' => 'icon']);
+            } elseif ($last_element) {
+                $lastIconAttachment = $last_element->iconAttachment()->first();
+                if ($lastIconAttachment) {
+                    $element->attachments()->attach($lastIconAttachment->id, ['relation' => 'icon']);
+                }
+            }
         });
 
         return $element;

@@ -39,8 +39,9 @@ class TobidotElementResource extends JsonResource
         }
 
         $content = null;
-        if ($element->attachment && $element->attachment->file_name) {
-             $content = $root . '/' . $element->attachment->file_name;
+        $codeAttachment = $element->codeAttachment()->first();
+        if ($codeAttachment && $codeAttachment->file_name) {
+             $content = $root . '/' . $codeAttachment->file_name;
         } elseif (Str::endsWith($element->content, '.zip')) {
             // if this is a zip look for the primary source
             $name = Str::ucfirst(\Str::camel( $element->name ) );
@@ -70,8 +71,8 @@ class TobidotElementResource extends JsonResource
             $element->content,
         ]);
 
-        if ($element->iconAttachment) {
-            $icon = asset(Storage::disk('public')->url($element->iconAttachment->path . '/' . $element->iconAttachment->file_name));
+        if ($iconAttachment = $element->iconAttachment()->first()) {
+            $icon = asset(Storage::disk('public')->url($iconAttachment->path . '/' . $iconAttachment->file_name));
         } elseif ($element->icon) {
             $raw_icon_path = ltrim($element->icon, '/');
             if (Str::startsWith($raw_icon_path, 'media/')) {

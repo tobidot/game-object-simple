@@ -22,6 +22,7 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Fields\URL;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Fields\MorphToMany;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class TobidotElement extends Resource
@@ -116,8 +117,8 @@ class TobidotElement extends Resource
                         ),
                     ]);
             })->readonly(),
-            BelongsTo::make(__('Attachment'), 'attachment')->onlyOnDetail(),
-            BelongsTo::make(__('Icon Attachment'), 'iconAttachment', Attachment::class)->onlyOnDetail(),
+            MorphToMany::make(__('Code Attachment'), 'codeAttachment', Attachment::class),
+            MorphToMany::make(__('Icon Attachment'), 'iconAttachment', Attachment::class),
             BelongsToMany::make(__('Dependencies'), 'dependencies', TobidotElement::class)
                 ->fields(function () {
                     return [
@@ -156,7 +157,8 @@ class TobidotElement extends Resource
             );
             $full_path = $attachment->path . '/index.js';
         }
-        $model->attachment()->associate($attachment);
+        $model->save(); // ensure it has an ID
+        $model->attachments()->attach($attachment->id, ['relation' => 'code']);
 
         return $full_path;
     }
