@@ -128,8 +128,8 @@ class AttachmentService
 
         // Save the attachment
         $attachment = new Attachment();
-        $attachment->url = join_paths('storage', $prefix, $file_folder_path);
         $attachment->path = $public_file_path;
+        $attachment->url = join_paths('storage', $attachment->path);
         $attachment->hash = $hash;
         $attachment->file_name = $file_name;
         $attachment->content_type = $mime_type;
