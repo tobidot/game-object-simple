@@ -79,8 +79,8 @@ class TobidotElement extends Resource
                 if (!$iconAttachment) {
                     return null;
                 }
-                return AppHelper::resolve(AttachmentService::class)->getUrl($iconAttachment);
-            })
+                return $iconAttachment->path;
+            }, 'public')
                 ->readonly()
                 ->showOnIndex()
                 ->showOnDetail(),
