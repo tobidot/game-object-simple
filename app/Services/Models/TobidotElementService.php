@@ -62,7 +62,7 @@ class TobidotElementService
             if ($icon) {
                 $iconAttachment = $attachmentService->createFromUploadedImage(
                     $icon,
-                    "media-library",
+                    "media",
                     "media"
                 );
             }
