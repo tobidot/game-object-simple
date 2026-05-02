@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\URL;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Tobidot\LookupEnum\LookupEnum;
 
@@ -35,12 +36,15 @@ class Attachment extends Resource
      */
     public static $search = [
         'id',
+        'path',
+        'file_name',
+        'hash',
     ];
 
     /**
      * Get the fields displayed by the resource.
      *
-     * @param NovaRequest $request
+     * @param  NovaRequest  $request
      * @return array
      */
     public function fields(NovaRequest $request): array
@@ -48,14 +52,18 @@ class Attachment extends Resource
         return [
             ID::make()->sortable(),
             DateTime::make(__('Created at'), 'created_at')
-                ->rules(['required'])
-                ->required(),
-            Text::make(__('Url'), 'url')
-                ->rules(['required'])
-                ->required(),
+                ->readonly()
+                ->exceptOnForms(),
+            URL::make(__('Url'), 'url')
+                ->displayUsing(fn($value) => $value)
+                ->readonly(),
             Text::make(__('Path'), 'path')
-                ->rules(['required'])
-                ->required(),
+                ->readonly(),
+            Text::make(__('Hash'), 'hash')
+                ->readonly()
+                ->hideFromIndex(),
+            Text::make(__('Content Type'), 'content_type')
+                ->readonly(),
             NovaHelper::makeEnum('Publish State', 'publish_state', PublishState::class)
                 ->rules(['required'])
                 ->required(),
@@ -68,7 +76,7 @@ class Attachment extends Resource
     /**
      * Get the cards available for the request.
      *
-     * @param NovaRequest $request
+     * @param  NovaRequest  $request
      * @return array
      */
     public function cards(NovaRequest $request): array
@@ -81,18 +89,21 @@ class Attachment extends Resource
     /**
      * Get the filters available for the resource.
      *
-     * @param NovaRequest $request
+     * @param  NovaRequest  $request
      * @return array
      */
     public function filters(NovaRequest $request): array
     {
-        return [];
+        return [
+            new Filters\EnumFilter(__('Publish State'), 'publish_state', PublishState::class),
+            new Filters\EnumFilter(__('Attachment Type'), 'type', AttachmentType::class),
+        ];
     }
 
     /**
      * Get the lenses available for the resource.
      *
-     * @param NovaRequest $request
+     * @param  NovaRequest  $request
      * @return array
      */
     public function lenses(NovaRequest $request): array
@@ -105,7 +116,7 @@ class Attachment extends Resource
     /**
      * Get the actions available for the resource.
      *
-     * @param NovaRequest $request
+     * @param  NovaRequest  $request
      * @return array
      */
     public function actions(NovaRequest $request): array

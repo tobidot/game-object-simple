@@ -55,6 +55,7 @@ class TobidotElement extends Resource
     public static $search = [
         'id',
         'name',
+        'description',
     ];
 
     /**
@@ -73,10 +74,16 @@ class TobidotElement extends Resource
                 'element' => __('Element'),
                 'library' => __('Library'),
             ])->displayUsingLabels(),
-            Image::make(__('Icon'), 'icon')
-                ->disk('media-library')
+            Image::make(__('Icon'), function () {
+                $iconAttachment = $this->iconAttachment()->first();
+                if (!$iconAttachment) {
+                    return null;
+                }
+                return AppHelper::resolve(AttachmentService::class)->getUrl($iconAttachment);
+            })
                 ->readonly()
-                ->nullable(),
+                ->showOnIndex()
+                ->showOnDetail(),
             Number::make(__('Major'), 'major')
                 ->required()->default(1),
             Number::make(__('Minor'), 'minor')
@@ -152,7 +159,10 @@ class TobidotElement extends Resource
      */
     public function filters(NovaRequest $request): array
     {
-        return [];
+        return [
+            new Filters\TobidotElementKindFilter(),
+            new Filters\StandaloneFilter(),
+        ];
     }
 
     /**

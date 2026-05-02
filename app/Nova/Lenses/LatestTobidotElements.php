@@ -2,6 +2,8 @@
 
 namespace App\Nova\Lenses;
 
+use App\Helpers\AppHelper;
+use App\Services\Models\AttachmentService;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Number;
@@ -19,7 +21,10 @@ class LatestTobidotElements extends Lens
      *
      * @var array
      */
-    public static $search = [];
+    public static $search = [
+        'id',
+        'name',
+    ];
 
     /**
      * Get the query builder / paginator for the lens.
@@ -52,8 +57,13 @@ class LatestTobidotElements extends Lens
     {
         return [
             ID::make(__('ID'), 'id')->sortable(),
-            Image::make(__('Icon'), 'icon')
-                ->disk('media-library'),
+            Image::make(__('Icon'), function () {
+                $iconAttachment = $this->iconAttachment()->first();
+                if (!$iconAttachment) {
+                    return null;
+                }
+                return AppHelper::resolve(AttachmentService::class)->getUrl($iconAttachment);
+            }),
             Text::make(__('Name'), 'name')->sortable(),
             Select::make(__('Kind'), 'kind')->options([
                 'element' => __('Element'),
@@ -84,7 +94,10 @@ class LatestTobidotElements extends Lens
      */
     public function filters(NovaRequest $request)
     {
-        return [];
+        return [
+            new \App\Nova\Filters\TobidotElementKindFilter(),
+            new \App\Nova\Filters\StandaloneFilter(),
+        ];
     }
 
     /**
