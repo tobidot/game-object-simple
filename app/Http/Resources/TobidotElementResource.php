@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\AttachmentType;
 use App\Enums\LogEventTypes;
 use App\Models\TobidotElement;
 use App\Helpers\AppHelper;
@@ -29,6 +30,10 @@ class TobidotElementResource extends JsonResource
         $codeAttachment = $element->codeAttachment()->first();
         $iconAttachment = $element->iconAttachment()->first();
 
+        if ($codeAttachment && $codeAttachment->type === AttachmentType::ZIP) {
+
+        }
+
         return [
             'name' => $element->name,
             'kind' => $element->kind,
@@ -37,7 +42,7 @@ class TobidotElementResource extends JsonResource
             'patch' => (int) $element->patch,
             'root' => $codeAttachment ? $attachmentService->getBaseUrl($codeAttachment) : null,
             'icon' => $iconAttachment ? $attachmentService->getUrl($iconAttachment) : null,
-            'content' => $codeAttachment ? $attachmentService->getUrl($codeAttachment) : null,
+            'content' => $codeAttachment ? $attachmentService->getIndexUrl($codeAttachment, $element->name) : null,
             'width' => (int) $element->width,
             'height' => (int) $element->height,
             'extra' => $element->extra ?? [],

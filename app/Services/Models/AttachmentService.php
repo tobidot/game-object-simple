@@ -151,8 +151,53 @@ class AttachmentService
         return asset(Storage::disk('public')->url($attachment->path));
     }
 
+    public function getIndexUrl(Attachment $attachment, string $name): ?string
+    {
+        $index_file = $this->discoverIndex($attachment, $name);
+
+        return asset(Storage::disk('public')->url(join_paths(dirname($attachment->path), $index_file)));
+    }
+
     public function getBaseUrl(Attachment $attachment): ?string
     {
         return dirname($this->getUrl($attachment));
+    }
+
+    public function discoverIndex(Attachment $attachment, string $name): ?string
+    {
+        $disk = Storage::disk('public');
+
+        if ($attachment->file_name
+            && $disk->exists($attachment->path)
+            && $attachment->type !== AttachmentType::ZIP
+        ) {
+            //
+            return $attachment->file_name;
+        }
+
+        $directory = dirname($attachment->path);
+
+        $studly = Str::studly($name);
+        $kebab = Str::kebab($name);
+
+        $candidates = [
+            $studly.'.js',
+            $studly.'.es.js',
+            $kebab.'.js',
+            $kebab.'.es.js',
+            'index.js',
+            'index.es.js',
+            'index.html',
+        ];
+
+        foreach ($candidates as $candidate) {
+            $full_path = join_paths($directory, $candidate);
+            if ($disk->exists($full_path)) {
+                return $candidate;
+            }
+        }
+
+        // Final fallback: original file name
+        return $attachment->file_name;
     }
 }
