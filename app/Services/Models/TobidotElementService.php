@@ -63,7 +63,7 @@ class TobidotElementService
                 $iconAttachment = $attachmentService->createFromUploadedImage(
                     $icon,
                     "media",
-                    "media"
+                    ""
                 );
             }
 
