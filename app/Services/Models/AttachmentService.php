@@ -72,10 +72,9 @@ class AttachmentService
         string $prefix,
         ?string $file_name = null,
     ): Attachment {
-
         $disk = Storage::disk('public');
         $uuid = Str::uuid();
-        $hash = hash_file('sha256', $file->getContent());
+        $hash = hash('sha256', $file->getContent());
         $file_name = $file_name ?? $file->getClientOriginalName();
         $file_folder_path = "$uuid";
         $public_folder_path = join_paths("/", $prefix, $file_folder_path);
