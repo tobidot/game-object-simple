@@ -50,23 +50,22 @@ class TobidotElementService
             $icon,
             &$element,
         ) {
+            // Create the attachments
             $attachmentService = AppHelper::resolve(AttachmentService::class);
-            $attachment = $attachmentService
-                ->createFromUploadedZipFile(
-                    $zip,
-                    "tobidot-elements",
-                    "tobidot-elements",
-                );
+            $attachment = $attachmentService->createFromUploadedZipFile(
+                $zip,
+                "tobidot-elements",
+            );
 
             $iconAttachment = null;
             if ($icon) {
                 $iconAttachment = $attachmentService->createFromUploadedSingleFile(
                     $icon,
                     "media",
-                    "",
                 );
             }
 
+            // Create new element
             $element = new TobidotElement();
             $element->name = $name;
             $element->major = $major;

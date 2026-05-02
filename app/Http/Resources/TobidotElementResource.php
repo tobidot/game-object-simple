@@ -4,6 +4,8 @@ namespace App\Http\Resources;
 
 use App\Enums\LogEventTypes;
 use App\Models\TobidotElement;
+use App\Helpers\AppHelper;
+use App\Services\Models\AttachmentService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -22,50 +24,22 @@ class TobidotElementResource extends JsonResource
         /** @var TobidotElement $element */
         $element = $this;
 
-        $content = null;
-        $root = null;
+        $attachmentService = AppHelper::resolve(AttachmentService::class);
+
         $codeAttachment = $element->codeAttachment()->first();
-        if ($codeAttachment && $codeAttachment->file_name) {
-             $temp = array_filter(explode('/', $codeAttachment->path), fn($item) => !empty($item));
-             array_splice($temp, -1, 1);
-             $root = implode('/', $temp);
-
-             // If 'storage' is the first segment, remove it because we'll use the public disk
-             if (count($temp) > 0 && $temp[array_key_first($temp)] === 'storage') {
-                 array_shift($temp);
-                 $root = implode('/', $temp);
-             }
-
-             $content = $root . '/' . $codeAttachment->file_name;
-        }
-
-        if ($iconAttachment = $element->iconAttachment()->first()) {
-            $path = $iconAttachment->path === '/' ? '' : $iconAttachment->path;
-            if ($iconAttachment->file_name) {
-                $path = rtrim($path, '/') . '/' . $iconAttachment->file_name;
-            }
-            $raw_path = ltrim($path, '/');
-
-            if (Str::startsWith($raw_path, 'media/')) {
-                $icon = asset(Storage::disk('public')->url($raw_path));
-            } else {
-                $icon = asset(Storage::disk('media-library')->url($raw_path));
-            }
-        } else {
-            $icon = null;
-        }
+        $iconAttachment = $element->iconAttachment()->first();
 
         return [
             'name' => $element->name,
             'kind' => $element->kind,
-            'major' => (int)$element->major,
-            'minor' => (int)$element->minor,
-            'patch' => (int)$element->patch,
-            'root' => $root === null ? null : asset(Storage::disk('public')->url($root)),
-            'icon' => $icon,
-            'content' => $content === null ? null : asset(Storage::disk('public')->url($content)),
-            'width' => (int)$element->width,
-            'height' => (int)$element->height,
+            'major' => (int) $element->major,
+            'minor' => (int) $element->minor,
+            'patch' => (int) $element->patch,
+            'root' => $codeAttachment ? $attachmentService->getBaseUrl($codeAttachment) : null,
+            'icon' => $iconAttachment ? $attachmentService->getUrl($iconAttachment) : null,
+            'content' => $codeAttachment ? $attachmentService->getUrl($codeAttachment) : null,
+            'width' => (int) $element->width,
+            'height' => (int) $element->height,
             'extra' => $element->extra ?? [],
             'created_at' => $element->created_at,
             'dependencies' => $element->dependencies->map(function (TobidotElement $dependency) {

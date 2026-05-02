@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 /**
  * App\Models\Attachment
@@ -23,19 +25,6 @@ use Illuminate\Support\Carbon;
  * @property PublishState $publish_state
  * @property AttachmentType $type
  * @property string|null $file_name
- * @method static Builder|Attachment newModelQuery()
- * @method static Builder|Attachment newQuery()
- * @method static Builder|Attachment query()
- * @method static Builder|Attachment whereCreatedAt($value)
- * @method static Builder|Attachment whereId($value)
- * @method static Builder|Attachment wherePath($value)
- * @method static Builder|Attachment wherePublishState($value)
- * @method static Builder|Attachment whereType($value)
- * @method static Builder|Attachment whereUpdatedAt($value)
- * @property string $url
- * @method static Builder|Attachment whereUrl($value)
- * @property-read Collection<int, CodeRelease> $codeReleases
- * @property-read int|null $code_releases_count
  * @mixin Eloquent
  */
 class Attachment extends Model

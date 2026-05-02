@@ -141,4 +141,18 @@ class AttachmentService
 
         return $attachment;
     }
+
+    public function getUrl(Attachment $attachment): ?string
+    {
+        if (!$attachment->file_name) {
+            return null;
+        }
+
+        return asset(Storage::disk('public')->url($attachment->path));
+    }
+
+    public function getBaseUrl(Attachment $attachment): ?string
+    {
+        return dirname($this->getUrl($attachment));
+    }
 }
