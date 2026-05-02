@@ -126,6 +126,7 @@ class AttachmentService
         UploadedFile $file,
         string       $path_prefix,
         string       $url_prefix,
+        bool         $use_sub_folder = true,
     ): Attachment
     {
         $hash = hash_file('sha256', $file->getRealPath());
@@ -141,8 +142,10 @@ class AttachmentService
         $disk = Storage::disk('public');
         $uuid = Str::uuid();
         $file_name = $file->getClientOriginalName();
-        $file_folder_path = "$uuid";
-        $disk_file_path = $file->storeAs("$path_prefix/$file_folder_path", $file_name, [
+        $file_folder_path = $use_sub_folder ? "$uuid" : "";
+        $store_path = trim("$path_prefix/$file_folder_path", '/');
+
+        $disk_file_path = $file->storeAs($store_path, $file_name, [
             'disk' => 'public',
             'visibility' => 'public',
             'directory_visibility' => 'public'

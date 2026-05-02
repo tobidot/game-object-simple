@@ -30,6 +30,10 @@ class CleanupAttachment extends Action
                 ->where('attachment_id', $model->id)
                 ->update(['attachment_id' => null]);
 
+            \Illuminate\Support\Facades\DB::table('tobidot_elements')
+                ->where('icon_attachment_id', $model->id)
+                ->update(['icon_attachment_id' => null]);
+
             // Detach from attachables (MorphToMany)
             \Illuminate\Support\Facades\DB::table('attachables')
                 ->where('attachment_id', $model->id)

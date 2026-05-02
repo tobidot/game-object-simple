@@ -70,7 +70,9 @@ class TobidotElementResource extends JsonResource
             $element->content,
         ]);
 
-        if ($element->icon) {
+        if ($element->iconAttachment) {
+            $icon = asset(Storage::disk('public')->url($element->iconAttachment->path . '/' . $element->iconAttachment->file_name));
+        } elseif ($element->icon) {
             $raw_icon_path = ltrim($element->icon, '/');
             if (Str::startsWith($raw_icon_path, 'media/')) {
                 $icon = asset(Storage::disk('public')->url($raw_icon_path));

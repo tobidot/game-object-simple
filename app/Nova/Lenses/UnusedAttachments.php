@@ -38,7 +38,10 @@ class UnusedAttachments extends Lens
             })->whereNotExists(function ($query) {
                 $query->select(\Illuminate\Support\Facades\DB::raw(1))
                     ->from('tobidot_elements')
-                    ->whereColumn('tobidot_elements.attachment_id', 'attachments.id');
+                    ->where(function($q) {
+                        $q->whereColumn('tobidot_elements.attachment_id', 'attachments.id')
+                          ->orWhereColumn('tobidot_elements.icon_attachment_id', 'attachments.id');
+                    });
             })->whereNotExists(function ($query) {
                 $query->select(\Illuminate\Support\Facades\DB::raw(1))
                     ->from('projects')

@@ -74,6 +74,7 @@ class TobidotElement extends Resource
             ])->displayUsingLabels(),
             Image::make(__('Icon'), 'icon')
                 ->disk('media-library')
+                ->readonly()
                 ->nullable(),
             Number::make(__('Major'), 'major')
                 ->required()->default(1),
@@ -116,6 +117,7 @@ class TobidotElement extends Resource
                     ]);
             })->readonly(),
             BelongsTo::make(__('Attachment'), 'attachment')->onlyOnDetail(),
+            BelongsTo::make(__('Icon Attachment'), 'iconAttachment', Attachment::class)->onlyOnDetail(),
             BelongsToMany::make(__('Dependencies'), 'dependencies', TobidotElement::class)
                 ->fields(function () {
                     return [

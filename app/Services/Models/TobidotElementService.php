@@ -63,7 +63,8 @@ class TobidotElementService
                 $iconAttachment = $attachmentService->createFromUploadedImage(
                     $icon,
                     "media",
-                    ""
+                    "",
+                    false
                 );
             }
 
@@ -76,6 +77,7 @@ class TobidotElementService
             $element->description = $description ?? ($last_element?->description ?? null);
             $element->content = $attachment->url.'/index.zip';
             $element->attachment_id = $attachment->id;
+            $element->icon_attachment_id = $iconAttachment?->id ?? $last_element?->icon_attachment_id;
 
             // Default values from migration if available, or sensible defaults
             $element->standalone = $last_element?->standalone ?? true;
@@ -84,7 +86,7 @@ class TobidotElementService
             $element->extra = $last_element?->extra ?? null;
 
             if ($iconAttachment) {
-                $element->icon = ltrim($iconAttachment->url . '/' . $iconAttachment->file_name, '/');
+                $element->icon = ltrim($iconAttachment->path . '/' . $iconAttachment->file_name, '/');
             } elseif ($last_element?->icon) {
                 $element->icon = $last_element->icon;
             }
