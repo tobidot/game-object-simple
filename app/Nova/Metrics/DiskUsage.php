@@ -23,9 +23,9 @@ class DiskUsage extends Partition
         $used = $total - $free;
 
         return $this->result([
-            __('Used') => round($used / 1024 / 1024 / 1024, 2),
-            __('Free') => round($free / 1024 / 1024 / 1024, 2),
-        ])->suffix('GB');
+            __('Used (GB)') => round($used / 1024 / 1024 / 1024, 2),
+            __('Free (GB)') => round($free / 1024 / 1024 / 1024, 2),
+        ]);
     }
 
     /**
