@@ -73,7 +73,9 @@ class Attachment extends Resource
      */
     public function cards(NovaRequest $request): array
     {
-        return [];
+        return [
+            new Metrics\DiskUsage(),
+        ];
     }
 
     /**
@@ -95,7 +97,9 @@ class Attachment extends Resource
      */
     public function lenses(NovaRequest $request): array
     {
-        return [];
+        return [
+            new Lenses\UnusedAttachments(),
+        ];
     }
 
     /**
@@ -106,6 +110,8 @@ class Attachment extends Resource
      */
     public function actions(NovaRequest $request): array
     {
-        return [];
+        return [
+            new Actions\CleanupAttachment(),
+        ];
     }
 }
