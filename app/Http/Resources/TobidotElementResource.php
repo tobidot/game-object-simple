@@ -22,54 +22,22 @@ class TobidotElementResource extends JsonResource
         /** @var TobidotElement $element */
         $element = $this;
 
-        // determine root folder
-        $temp = array_filter(explode('/', $element->content), fn($item) => !empty($item));
-        if (count($temp) > 0 && (Str::startsWith($element->content, 'http') || $temp[array_key_first($temp)] === 'storage')) {
-            // If it's a full URL or starts with storage, we need to be careful
-            // But based on Service code, it should be /tobidot-elements/...
-        }
-
-        array_splice($temp, -1, 1);
-        $root = implode('/', $temp);
-
-        // If 'storage' is the first segment, remove it because we'll use the public disk
-        if (count($temp) > 0 && $temp[array_key_first($temp)] === 'storage') {
-            array_shift($temp);
-            $root = implode('/', $temp);
-        }
-
         $content = null;
+        $root = null;
         $codeAttachment = $element->codeAttachment()->first();
         if ($codeAttachment && $codeAttachment->file_name) {
+             $temp = array_filter(explode('/', $codeAttachment->path), fn($item) => !empty($item));
+             array_splice($temp, -1, 1);
+             $root = implode('/', $temp);
+
+             // If 'storage' is the first segment, remove it because we'll use the public disk
+             if (count($temp) > 0 && $temp[array_key_first($temp)] === 'storage') {
+                 array_shift($temp);
+                 $root = implode('/', $temp);
+             }
+
              $content = $root . '/' . $codeAttachment->file_name;
-        } elseif (Str::endsWith($element->content, '.zip')) {
-            // if this is a zip look for the primary source
-            $name = Str::ucfirst(\Str::camel( $element->name ) );
-            $candidate_names = [
-                "$name.es.js",
-                "$name.js",
-                "index.es.js",
-                "index.js",
-                $element->name . ".es.js",
-                $element->name . ".js",
-            ];
-            foreach($candidate_names as $candidate_name) {
-                $candidate = "$root/$candidate_name";
-
-                \Log::info("test", [
-                    $candidate
-                ]);
-                if (Storage::disk('public')->exists($candidate)) {
-                    $content = $candidate;
-                    break;
-                }
-            }
         }
-
-        \Log::info("content", [
-            $content,
-            $element->content,
-        ]);
 
         if ($iconAttachment = $element->iconAttachment()->first()) {
             $path = $iconAttachment->path === '/' ? '' : $iconAttachment->path;
@@ -83,13 +51,6 @@ class TobidotElementResource extends JsonResource
             } else {
                 $icon = asset(Storage::disk('media-library')->url($raw_path));
             }
-        } elseif ($element->icon) {
-            $raw_icon_path = ltrim($element->icon, '/');
-            if (Str::startsWith($raw_icon_path, 'media/')) {
-                $icon = asset(Storage::disk('public')->url($raw_icon_path));
-            } else {
-                $icon = asset(Storage::disk('media-library')->url($raw_icon_path));
-            }
         } else {
             $icon = null;
         }
@@ -100,7 +61,7 @@ class TobidotElementResource extends JsonResource
             'major' => (int)$element->major,
             'minor' => (int)$element->minor,
             'patch' => (int)$element->patch,
-            'root' => asset(Storage::disk('public')->url($root)),
+            'root' => $root === null ? null : asset(Storage::disk('public')->url($root)),
             'icon' => $icon,
             'content' => $content === null ? null : asset(Storage::disk('public')->url($content)),
             'width' => (int)$element->width,

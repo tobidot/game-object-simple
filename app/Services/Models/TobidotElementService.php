@@ -74,20 +74,12 @@ class TobidotElementService
             $element->patch = $patch;
             $element->kind = $kind ?? ($last_element?->kind ?? 'element');
             $element->description = $description ?? ($last_element?->description ?? null);
-            $element->content = $attachment->url.'/index.zip';
 
             // Default values from migration if available, or sensible defaults
             $element->standalone = $last_element?->standalone ?? true;
             $element->width = $last_element?->width ?? 200;
             $element->height = $last_element?->height ?? 200;
             $element->extra = $last_element?->extra ?? null;
-
-            if ($iconAttachment) {
-                $path = $iconAttachment->path === '/' ? '' : $iconAttachment->path;
-                $element->icon = ltrim($path . '/' . $iconAttachment->file_name, '/');
-            } elseif ($last_element?->icon) {
-                $element->icon = $last_element->icon;
-            }
 
             $element->save();
 

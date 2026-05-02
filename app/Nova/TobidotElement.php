@@ -91,32 +91,6 @@ class TobidotElement extends Resource
                 ->required()->default(200),
             Code::make(__('Extra'), 'Extra')
                 ->nullable()->json(),
-            File::make(__('Content'), 'content')
-                ->acceptedTypes('.zip,.js')
-//                ->storeAs(function (Request $request) {
-//                    $name = Str::snake($request->post('name'), '-');
-//                    $major = $request->post('major');
-//                    $patch = $request->post('patch');
-//                    $minor = $request->post('minor');
-//                    $version = "$major-$minor-$patch";
-//                    $extension = $request->file('content')->extension();
-//                    return "{$version}_$name.$extension";
-//                })
-                ->store([$this, 'store_file'])
-                ->disk('public')
-                ->nullable(),
-            URL::make(__('URL'), function () {
-                return '/' . implode('/', [
-                        'storage',
-                        ...array_filter(
-                            explode(
-                                '/',
-                                $this->content,
-                            ),
-                            fn($item) => !empty($item)
-                        ),
-                    ]);
-            })->readonly(),
             MorphToMany::make(__('Code Attachment'), 'codeAttachment', Attachment::class),
             MorphToMany::make(__('Icon Attachment'), 'iconAttachment', Attachment::class),
             BelongsToMany::make(__('Dependencies'), 'dependencies', TobidotElement::class)
@@ -135,12 +109,12 @@ class TobidotElement extends Resource
         \App\Models\TobidotElement $model,
         string                     $attribute,
         string                     $requestAttribute
-    ): string|null
+    ): void
     {
         $file = $request->file($requestAttribute);
 
         if (!$file) {
-            return null;
+            return;
         }
         if ($file->getClientOriginalExtension() === 'zip') {
             $attachment = AppHelper::resolve(AttachmentService::class)->createFromUploadedZipFile(
@@ -148,19 +122,15 @@ class TobidotElement extends Resource
                 'tobidot-elements',
                 'tobidot-elements',
             );
-            $full_path = $attachment->path . '/index.zip';
         } else {
             $attachment = AppHelper::resolve(AttachmentService::class)->createFromUploadedSingleFile(
                 $file,
                 'tobidot-elements',
                 'tobidot-elements',
             );
-            $full_path = $attachment->path . '/index.js';
         }
         $model->save(); // ensure it has an ID
         $model->attachments()->attach($attachment->id, ['relation' => 'code']);
-
-        return $full_path;
     }
 
     /**

@@ -28,8 +28,6 @@ use Laravel\Nova\Fields\MorphedByMany;
  * @property string $name
  * @property string $description
  * @property string $kind
- * @property string $icon
- * @property string $content
  *
  * @property int $major
  * @property int $minor
