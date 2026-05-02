@@ -72,7 +72,17 @@ class TobidotElementResource extends JsonResource
         ]);
 
         if ($iconAttachment = $element->iconAttachment()->first()) {
-            $icon = asset(Storage::disk('public')->url($iconAttachment->path . '/' . $iconAttachment->file_name));
+            $path = $iconAttachment->path === '/' ? '' : $iconAttachment->path;
+            if ($iconAttachment->file_name) {
+                $path = rtrim($path, '/') . '/' . $iconAttachment->file_name;
+            }
+            $raw_path = ltrim($path, '/');
+
+            if (Str::startsWith($raw_path, 'media/')) {
+                $icon = asset(Storage::disk('public')->url($raw_path));
+            } else {
+                $icon = asset(Storage::disk('media-library')->url($raw_path));
+            }
         } elseif ($element->icon) {
             $raw_icon_path = ltrim($element->icon, '/');
             if (Str::startsWith($raw_icon_path, 'media/')) {

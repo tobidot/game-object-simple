@@ -60,11 +60,10 @@ class TobidotElementService
 
             $iconAttachment = null;
             if ($icon) {
-                $iconAttachment = $attachmentService->createFromUploadedImage(
+                $iconAttachment = $attachmentService->createFromUploadedSingleFile(
                     $icon,
                     "media",
                     "",
-                    false
                 );
             }
 
@@ -84,7 +83,8 @@ class TobidotElementService
             $element->extra = $last_element?->extra ?? null;
 
             if ($iconAttachment) {
-                $element->icon = ltrim($iconAttachment->path . '/' . $iconAttachment->file_name, '/');
+                $path = $iconAttachment->path === '/' ? '' : $iconAttachment->path;
+                $element->icon = ltrim($path . '/' . $iconAttachment->file_name, '/');
             } elseif ($last_element?->icon) {
                 $element->icon = $last_element->icon;
             }

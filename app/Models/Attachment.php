@@ -51,4 +51,9 @@ class Attachment extends Model
     {
         return $this->morphedByMany(CodeRelease::class, 'attachable');
     }
+
+    public function tobidotElements(): MorphToMany
+    {
+        return $this->morphedByMany(TobidotElement::class, 'attachable');
+    }
 }
