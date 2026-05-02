@@ -24,8 +24,19 @@ class TobidotElementResource extends JsonResource
 
         // determine root folder
         $temp = array_filter(explode('/', $element->content), fn($item) => !empty($item));
+        if (count($temp) > 0 && (Str::startsWith($element->content, 'http') || $temp[array_key_first($temp)] === 'storage')) {
+            // If it's a full URL or starts with storage, we need to be careful
+            // But based on Service code, it should be /tobidot-elements/...
+        }
+
         array_splice($temp, -1, 1);
         $root = implode('/', $temp);
+
+        // If 'storage' is the first segment, remove it because we'll use the public disk
+        if (count($temp) > 0 && $temp[array_key_first($temp)] === 'storage') {
+            array_shift($temp);
+            $root = implode('/', $temp);
+        }
 
         $content = null;
         if ($element->attachment && $element->attachment->file_name) {
@@ -38,6 +49,8 @@ class TobidotElementResource extends JsonResource
                 "$name.js",
                 "index.es.js",
                 "index.js",
+                $element->name . ".es.js",
+                $element->name . ".js",
             ];
             foreach($candidate_names as $candidate_name) {
                 $candidate = "$root/$candidate_name";
@@ -45,7 +58,7 @@ class TobidotElementResource extends JsonResource
                 \Log::info("test", [
                     $candidate
                 ]);
-                if (Storage::exists("public/$candidate")) {
+                if (Storage::disk('public')->exists($candidate)) {
                     $content = $candidate;
                     break;
                 }
@@ -62,7 +75,7 @@ class TobidotElementResource extends JsonResource
             if (! Str::startsWith($raw_icon_path, 'media/')) {
                 $raw_icon_path = "media/$raw_icon_path";
             }
-            $icon = asset(Storage::url($raw_icon_path));
+            $icon = asset(Storage::disk('public')->url($raw_icon_path));
         } else {
             $icon = null;
         }
@@ -73,9 +86,9 @@ class TobidotElementResource extends JsonResource
             'major' => (int)$element->major,
             'minor' => (int)$element->minor,
             'patch' => (int)$element->patch,
-            'root' => asset(Storage::url($root)),
+            'root' => asset(Storage::disk('public')->url($root)),
             'icon' => $icon,
-            'content' => $content === null ? null : asset(Storage::url($content)),
+            'content' => $content === null ? null : asset(Storage::disk('public')->url($content)),
             'width' => (int)$element->width,
             'height' => (int)$element->height,
             'extra' => $element->extra ?? [],
