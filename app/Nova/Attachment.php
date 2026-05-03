@@ -10,12 +10,16 @@ use App\Nova\TobidotElement;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\MorphToMany;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\URL;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Tobidot\LookupEnum\LookupEnum;
 
+/**
+ * @mixin \App\Models\Attachment
+ */
 class Attachment extends Resource
 {
     /**
@@ -30,7 +34,12 @@ class Attachment extends Resource
      *
      * @var string
      */
-    public static $title = 'id';
+    public static $title = 'file_name';
+
+    public function subtitle(): string
+    {
+        return $this->created_at->format('Y-m-d H:i:s');
+    }
 
     /**
      * The columns that should be searched.
@@ -54,6 +63,10 @@ class Attachment extends Resource
     {
         return [
             ID::make()->sortable(),
+            Image::make(__('Preview'), 'path')
+                ->readonly()
+                ->onlyOnDetail()
+                ->canSee(fn() => $this->type === AttachmentType::IMAGE),
             DateTime::make(__('Created at'), 'created_at')
                 ->readonly()
                 ->exceptOnForms(),
@@ -61,8 +74,10 @@ class Attachment extends Resource
                 ->displayUsing(fn($value) => $value)
                 ->readonly(),
             Text::make(__('Path'), 'path')
+                ->hideFromIndex()
                 ->readonly(),
             Text::make(__('Hash'), 'hash')
+                ->hideFromIndex()
                 ->readonly()
                 ->hideFromIndex(),
             Text::make(__('Content Type'), 'content_type')
@@ -129,6 +144,7 @@ class Attachment extends Resource
     {
         return [
             new Actions\CleanupAttachment(),
+            new Actions\UploadAttachment(),
         ];
     }
 }

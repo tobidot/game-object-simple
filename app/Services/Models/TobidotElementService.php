@@ -6,6 +6,7 @@ use App\Helpers\AppHelper;
 use App\Models\TobidotElement;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use JetBrains\PhpStorm\ArrayShape;
 
 class TobidotElementService
@@ -55,6 +56,7 @@ class TobidotElementService
             $attachment = $attachmentService->createFromUploadedZipFile(
                 $zip,
                 "tobidot-elements",
+                Str::slug($name),
             );
 
             $iconAttachment = null;
@@ -62,6 +64,7 @@ class TobidotElementService
                 $iconAttachment = $attachmentService->createFromUploadedSingleFile(
                     $icon,
                     "media",
+                    Str::slug($name),
                 );
             }
 
