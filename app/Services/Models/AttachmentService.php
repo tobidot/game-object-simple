@@ -78,7 +78,7 @@ class AttachmentService
         if ($file_name === null) {
             $file_name = $file->getClientOriginalName();
         } else {
-            $file_name = $file_name . $file->clientExtension();
+            $file_name = $file_name . '.' . $file->clientExtension();
         }
         $file_folder_path = "$uuid";
         $public_folder_path = join_paths("", $prefix, $file_folder_path);
