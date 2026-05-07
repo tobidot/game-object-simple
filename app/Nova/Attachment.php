@@ -4,9 +4,11 @@ namespace App\Nova;
 
 use App\Enums\AttachmentType;
 use App\Enums\PublishState;
+use App\Helpers\AppHelper;
 use App\Helpers\NovaHelper;
 use App\Nova\CodeRelease;
 use App\Nova\TobidotElement;
+use App\Services\Models\AttachmentService;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\ID;
@@ -63,17 +65,26 @@ class Attachment extends Resource
     {
         return [
             ID::make()->sortable(),
-            Image::make(__('Preview'), 'path')
+            Image::make(__('Preview'),
+                function(\App\Models\Attachment $value) {
+                    return AppHelper::resolve(AttachmentService::class)->getPublicFilePath($value);
+                })
                 ->readonly()
-                ->onlyOnDetail()
+                ->exceptOnForms()
                 ->canSee(fn() => $this->type === AttachmentType::IMAGE),
             DateTime::make(__('Created at'), 'created_at')
                 ->readonly()
                 ->exceptOnForms(),
-            URL::make(__('Url'), 'url')
-                ->displayUsing(fn($value) => $value)
-                ->readonly(),
+            URL::make(
+                __('Url'),
+                function(\App\Models\Attachment $value) {
+                    return AppHelper::resolve(AttachmentService::class)->getUrl($value);
+                }
+            )->readonly(),
             Text::make(__('Path'), 'path')
+                ->hideFromIndex()
+                ->readonly(),
+            Text::make(__('File Name'), 'file_name')
                 ->hideFromIndex()
                 ->readonly(),
             Text::make(__('Hash'), 'hash')

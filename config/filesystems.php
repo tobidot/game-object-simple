@@ -48,7 +48,7 @@ return [
         'media-library' => [
             'driver' => 'local',
             'root' => storage_path('app/public/media'),
-            'url' => env('APP_URL').'/media',
+            'url' => env('APP_URL'),
             'visibility' => 'public',
             'throw' => false,
         ],

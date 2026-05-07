@@ -27,7 +27,7 @@ class AttachmentService
 
         // unpack zip
         $disk = Storage::disk('public');
-        $local_file_path = $disk->path($attachment->path);
+        $local_file_path = $disk->path(join_paths($attachment->path, $attachment->file_name));
         $local_folder_path = dirname($local_file_path);
         $zip = new \ZipArchive();
         if ($zip->open($local_file_path)) {
@@ -131,8 +131,8 @@ class AttachmentService
 
         // Save the attachment
         $attachment = new Attachment();
-        $attachment->path = $public_file_path;
-        $attachment->url = join_paths('/storage', $attachment->path);
+        $attachment->path = $public_folder_path;
+        $attachment->url = join_paths('/storage', $attachment->path, $attachment->file_name);
         $attachment->hash = $hash;
         $attachment->file_name = $file_name;
         $attachment->content_type = $mime_type;
@@ -151,19 +151,23 @@ class AttachmentService
             return null;
         }
 
-        return asset(Storage::disk('public')->url($attachment->path));
+        return asset(Storage::disk('public')->url(join_paths($attachment->path, $attachment->file_name)));
     }
 
     public function getIndexUrl(Attachment $attachment, string $name): ?string
     {
         $index_file = $this->discoverIndex($attachment, $name);
 
-        return asset(Storage::disk('public')->url(join_paths(dirname($attachment->path), $index_file)));
+        return asset(Storage::disk('public')->url(join_paths($attachment->path, $index_file)));
     }
-
     public function getBaseUrl(Attachment $attachment): ?string
     {
-        return dirname($this->getUrl($attachment));
+        return asset(Storage::disk('public')->url($attachment->path));
+    }
+
+    public function getPublicFilePath(Attachment $attachment): ?string
+    {
+        return join_paths($attachment->path, $attachment->file_name);
     }
 
     public function discoverIndex(Attachment $attachment, string $name): ?string
@@ -177,8 +181,6 @@ class AttachmentService
             //
             return $attachment->file_name;
         }
-
-        $directory = dirname($attachment->path);
 
         $studly = Str::studly($name);
         $kebab = Str::kebab($name);
@@ -194,7 +196,7 @@ class AttachmentService
         ];
 
         foreach ($candidates as $candidate) {
-            $full_path = join_paths($directory, $candidate);
+            $full_path = join_paths($attachment->path, $candidate);
             if ($disk->exists($full_path)) {
                 return $candidate;
             }
