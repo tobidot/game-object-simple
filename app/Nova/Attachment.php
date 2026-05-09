@@ -65,13 +65,6 @@ class Attachment extends Resource
     {
         return [
             ID::make()->sortable(),
-            Image::make(__('Preview'),
-                function(\App\Models\Attachment $value) {
-                    return AppHelper::resolve(AttachmentService::class)->getPublicFilePath($value);
-                })
-                ->readonly()
-                ->exceptOnForms()
-                ->canSee(fn() => $this->type === AttachmentType::IMAGE),
             DateTime::make(__('Created at'), 'created_at')
                 ->readonly()
                 ->exceptOnForms(),
@@ -80,7 +73,16 @@ class Attachment extends Resource
                 function(\App\Models\Attachment $value) {
                     return AppHelper::resolve(AttachmentService::class)->getUrl($value);
                 }
-            )->readonly(),
+            )
+                ->readonly()
+                ->canSee(fn() => $this->type !== AttachmentType::IMAGE),
+            Image::make(__('Preview'),
+                function(\App\Models\Attachment $value) {
+                    return AppHelper::resolve(AttachmentService::class)->getPublicFilePath($value);
+                })
+                ->readonly()
+                ->exceptOnForms()
+                ->canSee(fn() => $this->type === AttachmentType::IMAGE),
             Text::make(__('Path'), 'path')
                 ->hideFromIndex()
                 ->readonly(),

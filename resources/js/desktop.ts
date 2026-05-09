@@ -1,3 +1,5 @@
+import {TceRoot} from '@game.object/tce-common';
+
 (async () => {
     // 1. Fetch the elements list to find the registry
     const response = await fetch('/api/public/tobidot-elements');
@@ -12,7 +14,7 @@
         major: number,
         minor: number,
         patch: number,
-        [key:string]: any,
+        [key: string]: any,
     }> = package_groups['dll-tce-package-registry'];
     let latest_version_string: string = '0.0.0';
     let registry_item = null;
@@ -44,7 +46,14 @@
     await registry_pkg.init();
     await registry_pkg.register_provider('tobidot', '/api/public/tobidot-elements');
 
-    // 3. Load the desktop package (now registered via the provider)
+    // 3. Load the desktop library to interact with the desktop
+    const dll_desktop_id = {namespace: 'tobidot', name: 'dll-tce-desktop'};
+    const dll_desktop_pkg = await package_loader.load(dll_desktop_id);
+    await dll_desktop_pkg.init();
+    const dll_desktop_add_icon = dll_desktop_pkg.load('create_icon') as ($application: HTMLElement, options: any) => any;
+    const dll_desktop_add_window = dll_desktop_pkg.load('create_window') as ($application: HTMLElement, options: any) => any;
+
+    // 4. Load the desktop package (now registered via the provider)
     const desktop_id = {namespace: 'tobidot', name: 'tce-desktop'};
     const desktop_pkg = await package_loader.load(desktop_id);
     await desktop_pkg.init();
@@ -63,6 +72,51 @@
         throw new Error('App element not found');
     }
     $desktop.append($element);
+
+    // 3.1 Load/Install and add icons/windows from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    let windowX = 100;
+    let windowY = 100;
+
+    for (const [key, value] of urlParams.entries()) {
+        const packageName = key.replace(/[^a-zA-Z0-9-]/g, '');
+        if (!packageName || packageName === 'tce-desktop' || packageName === 'tce-bootloader') {
+            continue;
+        }
+
+        try {
+            console.log(`Loading package ${packageName} from URL parameter...`);
+            const pkg_id = {namespace: 'tobidot', name: packageName};
+            const pkg = await package_loader.load(pkg_id);
+            if (pkg && typeof pkg.init === 'function') {
+                await pkg.init();
+            }
+
+            const windowMatch = value.match(/^window(,(\d+),(\d+))?$/);
+            const isIcon = value === 'icon' || windowMatch;
+            const width = windowMatch ? parseInt(windowMatch[2]) || 400 : 400;
+            const height = windowMatch ? parseInt(windowMatch[3]) || 300 : 300;
+
+            if (isIcon) {
+                const $icon = await TceRoot.create_icon(packageName, undefined, {
+                    width,
+                    height,
+                });
+            }
+            if (windowMatch) {
+                const $window = await TceRoot.create_window(packageName, undefined, {
+                    area: {
+                        left: 0,
+                        top: 0,
+                        width,
+                        height,
+                    },
+                });
+            }
+        } catch (error) {
+            console.error(`Error loading package ${packageName}:`, error);
+        }
+    }
 
 
     console.log('Looking for autostart');
