@@ -2,7 +2,7 @@
 
 ## Quick Start
 
-`docker compose up laravel.test` starts all services locally.
+`docker compose up -d` starts all services locally.
 
 ## Deploy
 

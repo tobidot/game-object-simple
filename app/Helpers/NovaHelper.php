@@ -2,10 +2,8 @@
 
 namespace App\Helpers;
 
-use App\Enums\Traits\LookupEnumTrait;
 use Laravel\Nova\Fields\Select;
 use LogicException;
-use Tobidot\LookupEnum\LookupEnum;
 
 class NovaHelper
 {

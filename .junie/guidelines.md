@@ -4,7 +4,7 @@ This is a Laravel 10 application utilizing Laravel Nova 5 for its administration
 ### Build & Configuration Instructions
 
 #### Environment Setup
-1. **Prerequisites**: PHP 8.2+, Composer, Node.js & NPM, and Docker (optional, for Laravel Sail).
+1. **Prerequisites**: PHP 8.5+, Composer, Node.js & NPM, and Docker (optional, for the plain PHP + Composer container defined in `docker-compose.yml`).
 2. **Clone & Install**:
    ```bash
    composer install
@@ -28,10 +28,10 @@ This is a Laravel 10 application utilizing Laravel Nova 5 for its administration
    npm run dev
    ```
 
-#### Laravel Sail (Docker)
-The project is pre-configured with Laravel Sail. To start the development environment:
+#### Docker
+The project is pre-configured with a plain PHP + Composer container. To start the development environment:
 ```bash
-./vendor/bin/sail up -d
+docker compose up -d
 ```
 
 #### Production Update
@@ -40,16 +40,16 @@ A utility script for production updates is located at `bin/update.sh`. It handle
 ### Testing Information
 
 #### Configuration
-Tests are configured via `phpunit.xml`. The project uses PHPUnit 10. Database testing should use a dedicated testing database, which is automatically handled if using Laravel Sail.
+Tests are configured via `phpunit.xml`. The project uses PHPUnit 10. Database testing should use a dedicated testing database, which is automatically created by `docker/mysql/create-testing-database.sh` when using `docker compose`.
 
 #### Running Tests
 - **Local PHP**:
   ```bash
   vendor/bin/phpunit
   ```
-- **Laravel Sail**:
+- **Docker**:
   ```bash
-  ./vendor/bin/sail test
+  docker compose exec app vendor/bin/phpunit
   ```
 - **Targeted Test**:
   ```bash

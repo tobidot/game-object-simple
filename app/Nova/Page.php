@@ -17,10 +17,8 @@ use Laravel\Nova\Fields\MorphMany;
 use Laravel\Nova\Fields\MorphToMany;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Tobidot\LookupEnum\LookupEnum;
 
 class Page extends Resource
 {
@@ -68,9 +66,6 @@ class Page extends Resource
             NovaHelper::makeEnum('Publish State', 'publish_state', PublishState::class)
                 ->rules(['required'])
                 ->required(),
-//            LookupEnum::make(__('Publish State Enum'), 'publish_state_id')
-//                ->table('lu_publish_states')
-//                ->displayUsingLabels(),
             Text::make(__('Uri'), 'uri')
                 ->rules(['required', 'string', 'regex:/[a-z0-9\/]+/'])
                 ->required()

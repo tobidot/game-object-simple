@@ -17,7 +17,6 @@ use Laravel\Nova\Fields\MorphToMany;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\URL;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Tobidot\LookupEnum\LookupEnum;
 
 /**
  * @mixin \App\Models\Attachment

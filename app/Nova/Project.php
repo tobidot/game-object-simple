@@ -19,7 +19,6 @@ use Laravel\Nova\Fields\MorphMany;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Tobidot\LookupEnum\LookupEnum;
 
 class Project extends Resource
 {
@@ -69,12 +68,6 @@ class Project extends Resource
             NovaHelper::makeEnum('Project State', 'state', ProjectState::class)
                 ->rules(['required'])
                 ->required(),
-//            LookupEnum::make(__('Publish State'), 'publish_state_id')
-//                ->table(PublishState::table())
-//                ->displayUsingLabels(),
-//            LookupEnum::make(__('Project State'), 'state_id')
-//                ->table(ProjectState::table())
-//                ->displayUsingLabels(),
             Text::make(__('Uri'), function () {
                 $project = $this->resource;
                 if (!($project instanceof \App\Models\Project)) return '-';

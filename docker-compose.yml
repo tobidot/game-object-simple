@@ -1,26 +1,20 @@
-# For more information: https://laravel.com/docs/sail
 services:
     app:
         build:
-            context: ./vendor/laravel/sail/runtimes/8.4
-            dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
-        image: sail-8.4/app
+            context: .
+            dockerfile: docker/app/Dockerfile
+        image: game-object-de/app
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:
             - '${APP_PORT:-80}:80'
-            - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
         environment:
-            WWWUSER: '${WWWUSER}'
-            LARAVEL_SAIL: 1
-            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
-            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+            XDEBUG_MODE: '${XDEBUG_MODE:-off}'
+            XDEBUG_CONFIG: '${XDEBUG_CONFIG:-client_host=host.docker.internal}'
         volumes:
             - '.:/var/www/html'
         networks:
-            - sail
+            - app
         depends_on:
             - mysql
             - redis
@@ -38,10 +32,10 @@ services:
             MYSQL_USER: '${DB_USERNAME}'
             MYSQL_PASSWORD: '${DB_PASSWORD}'
         volumes:
-            - 'sail-mysql:/var/lib/mysql'
-            - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
+            - 'app-mysql:/var/lib/mysql'
+            - './docker/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
         networks:
-            - sail
+            - app
         healthcheck:
             test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
             retries: 3
@@ -51,9 +45,9 @@ services:
         ports:
             - '${FORWARD_REDIS_PORT:-6379}:6379'
         volumes:
-            - 'sail-redis:/data'
+            - 'app-redis:/data'
         networks:
-            - sail
+            - app
         healthcheck:
             test: ["CMD", "redis-cli", "ping"]
             retries: 3
@@ -63,9 +57,9 @@ services:
         ports:
             - '${FORWARD_MEILISEARCH_PORT:-7700}:7700'
         volumes:
-            - 'sail-meilisearch:/meili_data'
+            - 'app-meilisearch:/meili_data'
         networks:
-            - sail
+            - app
         healthcheck:
             test: ["CMD", "wget", "--no-verbose", "--spider",  "http://localhost:7700/health"]
             retries: 3
@@ -76,7 +70,7 @@ services:
             - '${FORWARD_MAILHOG_PORT:-1025}:1025'
             - '${FORWARD_MAILHOG_DASHBOARD_PORT:-8025}:8025'
         networks:
-            - sail
+            - app
     selenium:
         image: 'selenium/standalone-chrome'
         extra_hosts:
@@ -84,14 +78,14 @@ services:
         volumes:
             - '/dev/shm:/dev/shm'
         networks:
-            - sail
+            - app
 networks:
-    sail:
+    app:
         driver: bridge
 volumes:
-    sail-mysql:
+    app-mysql:
         driver: local
-    sail-redis:
+    app-redis:
         driver: local
-    sail-meilisearch:
+    app-meilisearch:
         driver: local
