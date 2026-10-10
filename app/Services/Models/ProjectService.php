@@ -7,21 +7,19 @@ use App\Models\CodeRelease;
 use App\Models\Project;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
-use Laravel\Nova\Actions\Action;
 
 class ProjectService
 {
     public function release(
-        Project      $project,
+        Project $project,
         UploadedFile $zip,
-        ?string      $version = null,
-        ?int         $completeness = null,
-        ?int         $fun = null,
-        ?int         $complexity = null
-    ): CodeRelease
-    {
+        ?string $version = null,
+        ?int $completeness = null,
+        ?int $fun = null,
+        ?int $complexity = null
+    ): CodeRelease {
         $last_release = $project->codeReleases()->latest()->first();
-        if (!($last_release instanceof CodeRelease)) {
+        if (! ($last_release instanceof CodeRelease)) {
             $last_release = null;
         }
         if (empty($version)) {
@@ -29,7 +27,7 @@ class ProjectService
                 // increase semver by 1 patch version
                 $version = $last_release->version;
                 $version = explode('.', $version);
-                $version[2] = (int)$version[2] + 1;
+                $version[2] = (int) $version[2] + 1;
                 $version = implode('.', $version);
             } else {
                 // start at 0.0.1 if no previous release
@@ -37,8 +35,8 @@ class ProjectService
             }
         } else {
             // validate semver
-            if (!preg_match('/^\d+\.\d+\.\d+$/', $version)) {
-                throw new \InvalidArgumentException("Invalid Semver Version");
+            if (! preg_match('/^\d+\.\d+\.\d+$/', $version)) {
+                throw new \InvalidArgumentException('Invalid Semver Version');
             }
             // make sure version number is higher than last release
             if ($last_release instanceof CodeRelease) {
@@ -62,7 +60,7 @@ class ProjectService
             $version, $project, $zip,
             &$release
         ) {
-            $release = new CodeRelease();
+            $release = new CodeRelease;
             $release->version = $version;
             $release->completeness = $completeness;
             $release->fun = $fun;
@@ -72,8 +70,8 @@ class ProjectService
             $attachment = AppHelper::resolve(AttachmentService::class)
                 ->createFromUploadedZipFile(
                     $zip,
-                    "releases",
-                    "releases",
+                    'releases',
+                    'releases',
                 );
             $release->attachments()->save(
                 $attachment,

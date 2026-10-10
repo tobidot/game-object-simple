@@ -3,7 +3,6 @@
 namespace App\Nova\Actions;
 
 use App\Helpers\AppHelper;
-use App\Models\Attachment;
 use App\Models\TobidotElement;
 use App\Services\Models\AttachmentService;
 use Illuminate\Bus\Queueable;
@@ -23,14 +22,12 @@ class UploadAttachment extends Action
     /**
      * Perform the action on the given models.
      *
-     * @param ActionFields $fields
-     * @param Collection $models
      * @return mixed
      */
     public function handle(ActionFields $fields, Collection $models): ActionResponse
     {
         $file = $fields->file;
-        if (!$file) {
+        if (! $file) {
             return Action::danger(__('No file uploaded.'));
         }
 
@@ -52,9 +49,6 @@ class UploadAttachment extends Action
 
     /**
      * Get the fields available on the action.
-     *
-     * @param NovaRequest $request
-     * @return array
      */
     public function fields(NovaRequest $request): array
     {

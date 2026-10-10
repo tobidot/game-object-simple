@@ -25,14 +25,14 @@ class CommentsController extends Controller
             'content' => ['required', 'string', 'max:2048'],
             'commentable_type' => ['required', 'string', Rule::in([Page::class, Project::class])],
             'commentable_id' => ['required', 'integer'],
-            'captcha' => [new CustomCaptcha()],
+            'captcha' => [new CustomCaptcha],
         ]);
 
         $commentable = $params['commentable_type']::find($params['commentable_id']);
         //
 
         // Store the comment...
-        $comment = new Comment();
+        $comment = new Comment;
         $comment->author = $params['author'];
         $comment->title = $params['title'];
         $comment->email = $params['email'];

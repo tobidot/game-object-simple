@@ -1,4 +1,0 @@
-- ## Get Started
-    - [Overview](/{{route}}/{{version}}/overview)
-    - [Website History](/{{route}}/{{version}}/history)
-    - [Todos](/{{route}}/{{version}}/todos)

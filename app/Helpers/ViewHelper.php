@@ -18,11 +18,13 @@ class ViewHelper
         return getimagesize(Storage::disk('media-library')->path($name));
     }
 
-    public static function mediaImageHtml(string $name,?string $alt = null) : string {
-         $size = ViewHelper::mediaImageSize($name);
-         $url = ViewHelper::mediaUrl($name);
-         $alt ??= Str::title(Str::of($name)->replace('_', ' '));
-return <<<HTML
+    public static function mediaImageHtml(string $name, ?string $alt = null): string
+    {
+        $size = ViewHelper::mediaImageSize($name);
+        $url = ViewHelper::mediaUrl($name);
+        $alt ??= Str::title(Str::of($name)->replace('_', ' '));
+
+        return <<<HTML
 <img src="$url"
     alt="$alt"
     width="$size[0]"
@@ -33,17 +35,15 @@ HTML;
 
     /**
      * Get the url for a model
-     *
-     * @param Model $model
-     * @return string
      */
     public static function modelUrl(Model $model): string
     {
         $name = Str::camel(class_basename($model));
         $folder = Str::snake(Str::plural(class_basename($model)), '-');
+
         return route(
-            $folder . '.show', [
-                $name => $model
+            $folder.'.show', [
+                $name => $model,
             ]
         );
     }

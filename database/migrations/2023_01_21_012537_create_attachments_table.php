@@ -8,10 +8,8 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up() : void
+    public function up(): void
     {
         Schema::create('attachments', function (Blueprint $table) {
             $table->id()->index();
@@ -29,7 +27,7 @@ return new class extends Migration
                 ->on('lu_attachment_types')
                 ->cascadeOnUpdate();
         });
-        Schema::create('attachables', function(Blueprint $table){
+        Schema::create('attachables', function (Blueprint $table) {
             $table->foreignId('attachment_id')
                 ->index()
                 ->references('id')
@@ -43,8 +41,6 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down(): void
     {

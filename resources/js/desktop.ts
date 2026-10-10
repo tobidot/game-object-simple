@@ -16,18 +16,14 @@ import {TceRoot} from '@game.object/tce-common';
         patch: number,
         [key: string]: any,
     }> = package_groups['dll-tce-package-registry'];
-    let latest_version_string: string = '0.0.0';
-    let registry_item = null;
+    // compare numerically: as strings "1.0.9" would wrongly be newer than "1.0.19"
+    const is_newer = (a: typeof registry_item_versions[number], b: typeof registry_item_versions[number]) =>
+        a.major !== b.major ? a.major > b.major : a.minor !== b.minor ? a.minor > b.minor : a.patch > b.patch;
+    let registry_item: typeof registry_item_versions[number] | null = null;
     for (const item of registry_item_versions) {
-        const version = [
-            item.major,
-            item.minor,
-            item.patch,
-        ].join('.');
-        if (version >= latest_version_string) {
-            latest_version_string = version;
+        if (!registry_item || is_newer(item, registry_item)) {
+            registry_item = item;
         }
-        registry_item = item;
     }
 
     if (!registry_item) {

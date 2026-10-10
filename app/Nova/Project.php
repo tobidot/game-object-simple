@@ -8,7 +8,6 @@ use App\Helpers\NovaHelper;
 use App\Nova\Actions\UploadRelease;
 use App\Nova\Metrics\ViewsPerDay;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Laravel\Nova\Exceptions\HelperNotSupported;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Boolean;
@@ -42,14 +41,12 @@ class Project extends Resource
      * @var array
      */
     public static $search = [
-        'id', 'title'
+        'id', 'title',
     ];
 
     /**
      * Get the fields displayed by the resource.
      *
-     * @param NovaRequest $request
-     * @return array
      * @throws HelperNotSupported
      */
     public function fields(NovaRequest $request): array
@@ -70,16 +67,22 @@ class Project extends Resource
                 ->required(),
             Text::make(__('Uri'), function () {
                 $project = $this->resource;
-                if (!($project instanceof \App\Models\Project)) return '-';
+                if (! ($project instanceof \App\Models\Project)) {
+                    return '-';
+                }
                 $url = route('projects.show', ['project' => $project]);
+
                 return "<a class='link-default' href='$url' target='_blank'>Open Page: $url</a>";
             })
                 ->exceptOnForms()
                 ->asHtml(),
             Text::make(__('View Count'), function () {
                 $resource = $this->resource;
-                if (!($resource instanceof self::$model)) return '-';
-                return  $resource->views()->count();
+                if (! ($resource instanceof self::$model)) {
+                    return '-';
+                }
+
+                return $resource->views()->count();
             })->exceptOnForms(),
             Trix::make(__('Description'), 'description')
                 ->rules(['required', 'string', 'max:65535'])
@@ -95,7 +98,10 @@ class Project extends Resource
                 })
                 ->resolveUsing(function () {
                     $value = $this->description ?? '';
-                    if (!is_string($value)) return $value;
+                    if (! is_string($value)) {
+                        return $value;
+                    }
+
                     return str_replace(['<h2>', '</h2>'], ['<h1>', '</h1>'], $value);
                 }),
             Boolean::make(__('Allow Comments'), 'allow_comments'),
@@ -109,8 +115,6 @@ class Project extends Resource
     /**
      * Get the cards available for the request.
      *
-     * @param NovaRequest $request
-     * @return array
      * @throws HelperNotSupported
      */
     public function cards(NovaRequest $request): array
@@ -123,9 +127,6 @@ class Project extends Resource
 
     /**
      * Get the filters available for the resource.
-     *
-     * @param NovaRequest $request
-     * @return array
      */
     public function filters(NovaRequest $request): array
     {
@@ -134,9 +135,6 @@ class Project extends Resource
 
     /**
      * Get the lenses available for the resource.
-     *
-     * @param NovaRequest $request
-     * @return array
      */
     public function lenses(NovaRequest $request): array
     {
@@ -145,14 +143,11 @@ class Project extends Resource
 
     /**
      * Get the actions available for the resource.
-     *
-     * @param NovaRequest $request
-     * @return array
      */
     public function actions(NovaRequest $request): array
     {
         return [
-            new UploadRelease(),
+            new UploadRelease,
         ];
     }
 }

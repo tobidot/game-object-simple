@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 
 /**
- *
  * @property int $id
  * @property string $author
  * @property string $email
@@ -20,7 +19,6 @@ use Illuminate\Support\Carbon;
  * @property Model $commentable
  * @property mixed $commentable_type
  * @property int $commentable_id
- *
  */
 class Comment extends Model
 {
@@ -30,7 +28,7 @@ class Comment extends Model
         'visible' => 'boolean',
     ];
 
-    public function commentable() : MorphTo
+    public function commentable(): MorphTo
     {
         return $this->morphTo();
     }

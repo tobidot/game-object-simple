@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\CodeRelease;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CodeRelease>
+ * @extends Factory<CodeRelease>
  */
 class CodeReleaseFactory extends Factory
 {

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TceGeneratorController;
 use App\Http\Controllers\TobidotElementController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,25 +22,25 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::group([
-    'prefix' => 'v1'
+    'prefix' => 'v1',
 ], function () {
     Route::group([
-        'middleware' => 'auth:sanctum'
+        'middleware' => 'auth:sanctum',
     ], function () {
         Route::post('/projects/{project}/releases', [
             ProjectController::class,
-            'release'
+            'release',
         ])->name('projects.release')
             ->whereNumber('project');
 
         Route::post('/tobidot-elements', [
             TobidotElementController::class,
-            'upload'
+            'upload',
         ])->name('tobidot-elements.upload');
 
         Route::get(
             '/validate-token',
-            function() {
+            function () {
                 echo 'Token is valid';
 
                 return \request()->user()->id;
@@ -53,6 +54,11 @@ Route::group([
 ], function () {
     Route::get('/tobidot-elements', [
         TobidotElementController::class,
-        'index'
+        'index',
     ])->name('tobidot-elements.index');
+
+    Route::post('/tce-generator', [
+        TceGeneratorController::class,
+        'apiGenerate',
+    ])->name('api.public.tce-generator');
 });

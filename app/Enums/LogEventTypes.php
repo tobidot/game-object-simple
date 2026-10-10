@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum LogEventTypes : string
+enum LogEventTypes: string
 {
     case INFO = 'info';
     case ERROR = 'error';

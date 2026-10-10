@@ -9,15 +9,14 @@ class CaptchaService
 {
     /**
      * Generates the captcha to show on the page.
-     *
-     * @return array
      */
-    #[ArrayShape(['image' => "string", 'prompt' => 'string', 'token' => "int"])]
+    #[ArrayShape(['image' => 'string', 'prompt' => 'string', 'token' => 'int'])]
     public function generateCaptcha(): array
     {
         $token = now()->timestamp;
         $image = $this->generateCaptchaImage($token);
         $prompt = $this->generateCaptchaPrompt($token);
+
         return [
             'image' => $image,
             'prompt' => $prompt,
@@ -26,13 +25,11 @@ class CaptchaService
     }
 
     /**
-     * @param int $token
      * @return array
      *
      * Base on the token return the letters to be written in the captcha image.
-     *
      */
-    #[ArrayShape(['red' => "string", 'green' => "string", 'blue' => "string", "color" => "string"])]
+    #[ArrayShape(['red' => 'string', 'green' => 'string', 'blue' => 'string', 'color' => 'string'])]
     public function generateCaptchaDefinition(int $token): array
     {
         // Generate a hash from the token to get randomized input
@@ -49,7 +46,7 @@ class CaptchaService
         $definition = [
             'red' => '',
             'green' => '',
-            'blue' => ''
+            'blue' => '',
         ];
         for ($i = 0; $i < $red_count; $i++) {
             $definition['red'] .= chr(ord('A') + ord($red_letters[$i]) % 26);
@@ -62,29 +59,26 @@ class CaptchaService
         }
         // which letters should be returned
         $definition['color'] = ['red', 'green', 'blue'][ord($hash[$offset]) % 3];
+
         return $definition;
     }
 
     /**
      * The text to prompt the user
-     *
-     * @param int $token
-     * @return string
      */
     public function generateCaptchaPrompt(int $token): string
     {
         $definition = $this->generateCaptchaDefinition($token);
-        return __("Please note all :color letters from the CAPTCHA.", [
-            'color' => __($definition['color'])
+
+        return __('Please note all :color letters from the CAPTCHA.', [
+            'color' => __($definition['color']),
         ]);
     }
 
     /**
-     * @param int $token
      * @return string
      *
      * Generate a captcha image based on the token.
-     *
      */
     public function generateCaptchaImage(int $token): string
     {
@@ -100,7 +94,7 @@ class CaptchaService
         $colors = [
             'red' => $red,
             'green' => $green,
-            'blue' => $blue
+            'blue' => $blue,
         ];
         $definition = $this->generateCaptchaDefinition($token);
         foreach ($colors as $color_name => $color) {
@@ -117,14 +111,12 @@ class CaptchaService
         $image_data = ob_get_contents();
         ob_end_clean();
         imagedestroy($img);
-        return 'data:image/png;base64,' . base64_encode($image_data);
+
+        return 'data:image/png;base64,'.base64_encode($image_data);
     }
 
     /**
      * Check if the captcha is solved correctly.
-     * @param int $token
-     * @param string $solution
-     * @return bool
      */
     public function isCaptchaSolved(int $token, string $solution): bool
     {
@@ -139,13 +131,12 @@ class CaptchaService
             }
             $solution[$index] = '';
         }
+
         return true;
     }
 
     /**
      * The user has solved the captcha for the current session.
-     *
-     * @return void
      */
     public function markSessionAsSolvedCaptcha(): void
     {
@@ -154,12 +145,9 @@ class CaptchaService
 
     /**
      * Check if the user should be shown a captcha.
-     *
-     * @return bool
      */
     public function isCaptchaRequired(): bool
     {
         return auth()->guest() && session('solved_captcha') !== true;
     }
-
 }

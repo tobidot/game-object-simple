@@ -3,8 +3,8 @@
 namespace App\Http\Resources;
 
 use App\Enums\AttachmentType;
-use App\Models\TobidotElement;
 use App\Helpers\AppHelper;
+use App\Models\TobidotElement;
 use App\Services\Models\AttachmentService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -13,9 +13,6 @@ class TobidotElementResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
-     *
-     * @param  Request  $request
-     * @return array
      */
     public function toArray(Request $request): array
     {
@@ -56,9 +53,9 @@ class TobidotElementResource extends JsonResource
                     'major' => $dependency->pivot->required_major,
                     'minor' => $dependency->pivot->required_minor,
                     'patch' => $dependency->pivot->required_patch,
-                ], fn($val) => $val !== null);
+                ], fn ($val) => $val !== null);
 
-                if (!empty($version)) {
+                if (! empty($version)) {
                     $requirement['version'] = $version;
                 }
 

@@ -15,14 +15,15 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-
     public function home(): View
     {
         $page = Page::query()->where('uri', '=', 'home')->first();
-        if($page) {
+        if ($page) {
             AppHelper::resolve(ViewService::class)->associate($page);
+
             return view('pages.show', ['page' => $page]);
         }
+
         return view('statics.home');
     }
 
@@ -30,6 +31,4 @@ class Controller extends BaseController
     {
         return view('statics.imprint');
     }
-
-
 }

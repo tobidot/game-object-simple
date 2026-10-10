@@ -10,6 +10,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+
 use function Illuminate\Filesystem\join_paths;
 
 class AttachmentService
@@ -27,35 +28,37 @@ class AttachmentService
 
         // unpack zip
         $disk = Storage::disk('public');
-        $local_file_path = $disk->path(join_paths($attachment->path, $attachment->file_name));
+        $relative_folder_path = $attachment->path;
+        $local_file_path = $disk->path(join_paths($relative_folder_path, $attachment->file_name));
         $local_folder_path = dirname($local_file_path);
-        $zip = new \ZipArchive();
+        $zip = new \ZipArchive;
         if ($zip->open($local_file_path)) {
             $extracted = $zip->extractTo($local_folder_path);
             if ($extracted === false) {
-                throw new DummyException("Could not unzip file");
+                throw new DummyException('Could not unzip file');
             }
             $zip->close();
         }
 
         // simplify the folder structure
-        $files = $disk->files($local_folder_path);
-        $folders = $disk->directories($local_folder_path);
+        $files = $disk->files($relative_folder_path);
+        $folders = $disk->directories($relative_folder_path);
         if (count($files) === 1 && count($folders) === 1) {
             // if there is a single file (the zip) and a single folder now
             // move everything inside the folder to the root of the zip
             $top_level_folder = $folders[0];
-            $inner_files = $disk->files($local_folder_path, true);
+            $inner_files = $disk->files($top_level_folder, true);
             foreach ($inner_files as $filepath) {
-                $new_filepath = str_replace("/$top_level_folder", "", $filepath);
+                $relative_inner_path = Str::after($filepath, "$top_level_folder/");
+                $new_filepath = join_paths($relative_folder_path, $relative_inner_path);
                 $disk->move($filepath, $new_filepath);
             }
             $disk->delete($top_level_folder);
         }
 
         // make sure all files are public
-        $disk->setVisibility($local_folder_path, 'public');
-        $files = $disk->allFiles($local_folder_path);
+        $disk->setVisibility($relative_folder_path, 'public');
+        $files = $disk->allFiles($relative_folder_path);
         foreach ($files as $file) {
             $disk->setVisibility($file, 'public');
         }
@@ -65,7 +68,6 @@ class AttachmentService
 
         return $attachment;
     }
-
 
     public function createFromUploadedSingleFile(
         UploadedFile $file,
@@ -78,10 +80,10 @@ class AttachmentService
         if ($file_name === null) {
             $file_name = $file->getClientOriginalName();
         } else {
-            $file_name = $file_name . '.' . $file->clientExtension();
+            $file_name = $file_name.'.'.$file->clientExtension();
         }
         $file_folder_path = "$uuid";
-        $public_folder_path = join_paths("", $prefix, $file_folder_path);
+        $public_folder_path = join_paths('', $prefix, $file_folder_path);
         $public_file_path = join_paths($public_folder_path, $file_name);
 
         // Deduplicate
@@ -101,10 +103,10 @@ class AttachmentService
         $raw_file_path = $file->storeAs($public_folder_path, $file_name, [
             'disk' => 'public',
             'visibility' => 'public',
-            'directory_visibility' => 'public'
+            'directory_visibility' => 'public',
         ]);
         if ($raw_file_path === false) {
-            throw new DummyException("Failed to store file as attachment");
+            throw new DummyException('Failed to store file as attachment');
         }
 
         // figure out the type of file
@@ -112,25 +114,21 @@ class AttachmentService
         $attachment_type = match ($mime_type) {
             'application/json',
             'text/html',
-            'text/plain',
-            => AttachmentType::TEXT,
+            'text/plain', => AttachmentType::TEXT,
             'image/png',
             'image/jpg',
             'image/jpeg',
             'image/gif',
             'image/svg+xml',
             'image/webp',
-            'image/avif',
-            => AttachmentType::IMAGE,
-            'video/mp4',
-            => AttachmentType::VIDEO,
-            'application/zip',
-            => AttachmentType::ZIP,
+            'image/avif', => AttachmentType::IMAGE,
+            'video/mp4', => AttachmentType::VIDEO,
+            'application/zip', => AttachmentType::ZIP,
             default => AttachmentType::BINARY,
         };
 
         // Save the attachment
-        $attachment = new Attachment();
+        $attachment = new Attachment;
         $attachment->path = $public_folder_path;
         $attachment->url = join_paths('/storage', $attachment->path, $attachment->file_name);
         $attachment->hash = $hash;
@@ -147,7 +145,7 @@ class AttachmentService
 
     public function getUrl(Attachment $attachment): ?string
     {
-        if (!$attachment->file_name) {
+        if (! $attachment->file_name) {
             return null;
         }
 
@@ -160,6 +158,7 @@ class AttachmentService
 
         return asset(Storage::disk('public')->url(join_paths($attachment->path, $index_file)));
     }
+
     public function getBaseUrl(Attachment $attachment): ?string
     {
         return asset(Storage::disk('public')->url($attachment->path));
@@ -190,9 +189,13 @@ class AttachmentService
             $studly.'.es.js',
             $kebab.'.js',
             $kebab.'.es.js',
+            // Prefer a plain HTML entrypoint over a generic "index.js" fallback: a proper
+            // JS module package never ships an "index.html" alongside it, but raw "website"
+            // builds (e.g. Emscripten/WASM output) do, and their "index.js" is loader glue,
+            // not an importable ES module.
+            'index.html',
             'index.js',
             'index.es.js',
-            'index.html',
         ];
 
         foreach ($candidates as $candidate) {

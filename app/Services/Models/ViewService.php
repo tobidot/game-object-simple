@@ -23,10 +23,11 @@ class ViewService
     public function get(): View
     {
         if ($this->current_view === null) {
-            $this->current_view = new View();
+            $this->current_view = new View;
             $this->current_view->url = request()->url();
             $this->current_view->save();
         }
+
         return $this->current_view;
     }
 

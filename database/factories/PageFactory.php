@@ -3,10 +3,11 @@
 namespace Database\Factories;
 
 use App\Enums\PublishState;
+use App\Models\Page;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Page>
+ * @extends Factory<Page>
  */
 class PageFactory extends Factory
 {
@@ -15,7 +16,7 @@ class PageFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition() : array
+    public function definition(): array
     {
         return [
             'uri' => implode('/', $this->faker->words($this->faker->numberBetween(1, 3))),
@@ -25,7 +26,7 @@ class PageFactory extends Factory
         ];
     }
 
-    public function published() : self
+    public function published(): self
     {
         return $this->state([
             'publish_state' => PublishState::PUBLISHED,

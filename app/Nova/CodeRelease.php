@@ -2,7 +2,6 @@
 
 namespace App\Nova;
 
-use App\Helpers\NovaHelper;
 use App\Nova\Metrics\ViewsPerDay;
 use Laravel\Nova\Exceptions\HelperNotSupported;
 use Laravel\Nova\Fields\BelongsTo;
@@ -40,11 +39,8 @@ class CodeRelease extends Resource
 
     /**
      * Get the fields displayed by the resource.
-     *
-     * @param  NovaRequest  $request
-     * @return array
      */
-    public function fields(NovaRequest $request) : array
+    public function fields(NovaRequest $request): array
     {
         return [
             ID::make()->sortable(),
@@ -55,18 +51,21 @@ class CodeRelease extends Resource
                 ->rules(['required'])
                 ->required(),
             Text::make(__('Version'), 'version')
-                ->rules(['required','string', 'regex:/\d+\.\d+\.\d+/'])
+                ->rules(['required', 'string', 'regex:/\d+\.\d+\.\d+/'])
                 ->required(),
             Text::make(__('View Count'), function () {
                 $resource = $this->resource;
-                if (!($resource instanceof self::$model)) return '-';
-                return  $resource->views()->count();
+                if (! ($resource instanceof self::$model)) {
+                    return '-';
+                }
+
+                return $resource->views()->count();
             })->exceptOnForms(),
             $this->makeRating(__('Completeness'), 'completeness'),
             $this->makeRating(__('Fun'), 'fun'),
             $this->makeRating(__('Complexity'), 'complexity'),
             MorphToMany::make(__('Attachments'), 'attachments', Attachment::class)
-                ->fields(new AttachablePivotFields()),
+                ->fields(new AttachablePivotFields),
 
         ];
     }
@@ -74,7 +73,7 @@ class CodeRelease extends Resource
     public function makeRating(
         string $label,
         string $attribute
-    ) : Number {
+    ): Number {
         return Number::make($label, $attribute)
             ->rules(['required', 'float', 'min:0', 'max:1'])
             ->step('0.01')
@@ -85,11 +84,9 @@ class CodeRelease extends Resource
     /**
      * Get the cards available for the request.
      *
-     * @param NovaRequest $request
-     * @return array
      * @throws HelperNotSupported
      */
-    public function cards(NovaRequest $request) : array
+    public function cards(NovaRequest $request): array
     {
         return [
             (new ViewsPerDay(self::$model)),
@@ -99,33 +96,24 @@ class CodeRelease extends Resource
 
     /**
      * Get the filters available for the resource.
-     *
-     * @param  NovaRequest  $request
-     * @return array
      */
-    public function filters(NovaRequest $request) : array
+    public function filters(NovaRequest $request): array
     {
         return [];
     }
 
     /**
      * Get the lenses available for the resource.
-     *
-     * @param  NovaRequest  $request
-     * @return array
      */
-    public function lenses(NovaRequest $request) : array
+    public function lenses(NovaRequest $request): array
     {
         return [];
     }
 
     /**
      * Get the actions available for the resource.
-     *
-     * @param  NovaRequest  $request
-     * @return array
      */
-    public function actions(NovaRequest $request) : array
+    public function actions(NovaRequest $request): array
     {
         return [];
     }

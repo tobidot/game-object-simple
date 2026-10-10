@@ -9,14 +9,9 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphPivot;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
-use Laravel\Nova\Fields\MorphedByMany;
 
 /**
  * App\Models\CodeRelease
@@ -31,6 +26,7 @@ use Laravel\Nova\Fields\MorphedByMany;
  * @property int $project_id
  * @property-read Collection<int, Attachment> $attachments
  * @property-read int|null $attachments_count
+ *
  * @method static CodeReleaseFactory factory($count = null, $state = [])
  * @method static Builder|CodeRelease newModelQuery()
  * @method static Builder|CodeRelease newQuery()
@@ -43,8 +39,11 @@ use Laravel\Nova\Fields\MorphedByMany;
  * @method static Builder|CodeRelease whereProjectId($value)
  * @method static Builder|CodeRelease whereUpdatedAt($value)
  * @method static Builder|CodeRelease whereVersion($value)
+ *
  * @mixin Eloquent
- * @property-read \App\Models\Project $project
+ *
+ * @property-read Project $project
+ *
  * @mixin \Eloquent
  */
 class CodeRelease extends Model
@@ -75,6 +74,6 @@ class CodeRelease extends Model
 
     public function getTitleAttribute(): string
     {
-        return $this->version . ' - ' . $this->project->title;
+        return $this->version.' - '.$this->project->title;
     }
 }

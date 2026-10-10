@@ -20,6 +20,7 @@ use Illuminate\Support\Carbon;
  * @property int $loggable_id
  * @property string $loggable_type
  * @property-read Model|Eloquent $loggable
+ *
  * @method static Builder|LogEvent newModelQuery()
  * @method static Builder|LogEvent newQuery()
  * @method static Builder|LogEvent query()
@@ -29,6 +30,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|LogEvent whereLoggableType($value)
  * @method static Builder|LogEvent whereType($value)
  * @method static Builder|LogEvent whereUpdatedAt($value)
+ *
  * @mixin Eloquent
  */
 class LogEvent extends Model
@@ -39,7 +41,8 @@ class LogEvent extends Model
         'type' => LogEventTypes::class,
     ];
 
-    public function loggable() : MorphTo {
+    public function loggable(): MorphTo
+    {
         return $this->morphTo();
     }
 }

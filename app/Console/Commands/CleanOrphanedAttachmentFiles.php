@@ -3,9 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Attachment;
-use App\Models\LogEvent;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class CleanOrphanedAttachmentFiles extends Command
@@ -28,8 +26,6 @@ class CleanOrphanedAttachmentFiles extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return int
      */
     public function handle(): int
     {
@@ -46,7 +42,7 @@ class CleanOrphanedAttachmentFiles extends Command
                 continue;
             }
             // Check if there is a corresponding model in the database
-            if (!Attachment::where('attachments.path', '/'.$directory)->exists()) {
+            if (! Attachment::where('attachments.path', '/'.$directory)->exists()) {
                 $this->handleOrphanedDirectory($directory);
                 $count++;
             }
@@ -56,6 +52,7 @@ class CleanOrphanedAttachmentFiles extends Command
         } else {
             $this->info("Deleted $count folders");
         }
+
         return self::SUCCESS;
     }
 
@@ -64,7 +61,8 @@ class CleanOrphanedAttachmentFiles extends Command
     ): void {
         if ($this->dry_run) {
             $this->info("Would have deleted $directory");
-            return ;
+
+            return;
         }
         $disk = Storage::disk('public');
         $disk->deleteDirectory($directory);

@@ -7,14 +7,37 @@ use App\Http\Requests\UploadTobidotElementRequest;
 use App\Http\Resources\TobidotElementResource;
 use App\Models\TobidotElement;
 use App\Services\Models\TobidotElementService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class TobidotElementController extends Controller
 {
+    /**
+     * Show a single tobidot element loaded fullscreen and borderless, without the desktop shell.
+     */
+    public function view(TobidotElement $tobidotElement): View
+    {
+        return view('tobidot-elements.view', [
+            'element' => $tobidotElement,
+        ]);
+    }
+
+    /**
+     * Fullscreen play page for the latest version of an element, addressed by its name.
+     */
+    public function play(string $name): View
+    {
+        $element = TobidotElement::query()
+            ->where('name', $name)
+            ->where('kind', 'element')
+            ->orderByDesc('major')->orderByDesc('minor')->orderByDesc('patch')
+            ->firstOrFail();
+
+        return $this->view($element);
+    }
+
     public function index(): JsonResponse
     {
         return response()->json([
@@ -25,7 +48,7 @@ class TobidotElementController extends Controller
                 ->groupBy('name')
                 ->map(
                     function (Collection $items) {
-                        return $items->map(fn(TobidotElement $element) => new TobidotElementResource($element));
+                        return $items->map(fn (TobidotElement $element) => new TobidotElementResource($element));
                     }
                 ),
         ]);

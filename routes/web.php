@@ -5,6 +5,8 @@ use App\Http\Controllers\CommentsController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TceGeneratorController;
+use App\Http\Controllers\TobidotElementController;
 use App\Http\Middleware\TrackView;
 use Illuminate\Support\Facades\Route;
 
@@ -19,13 +21,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
 /**
  * Content
  */
 Route::middleware([
     TrackView::class,
-])->group(function() {
+])->group(function () {
     Route::get('/', [Controller::class, 'home'])
         ->name('home');
     Route::get('/imprint', [PageController::class, 'imprint'])
@@ -62,4 +63,19 @@ Route::middleware([
     // Comments
     Route::post('/comments', [CommentsController::class, 'store'])
         ->name('comments.store');
+
+    // TCE Generator
+    Route::get('/tce-generator', [TceGeneratorController::class, 'index'])
+        ->name('tce-generator.index');
+    Route::post('/tce-generator', [TceGeneratorController::class, 'download'])
+        ->name('tce-generator.download');
 });
+
+/**
+ * Tobidot elements
+ */
+Route::get('/tobidot-elements/{tobidotElement}/view', [TobidotElementController::class, 'view'])
+    ->name('tobidot-elements.view');
+Route::get('/tce/{name}', [TobidotElementController::class, 'play'])
+    ->where('name', '[a-z][a-z0-9]*(-[a-z0-9]+)+')
+    ->name('tobidot-elements.play');

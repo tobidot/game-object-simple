@@ -10,9 +10,6 @@ class DiskUsage extends Partition
 {
     /**
      * Calculate the value of the metric.
-     *
-     * @param NovaRequest $request
-     * @return PartitionResult
      */
     public function calculate(NovaRequest $request): PartitionResult
     {
@@ -40,8 +37,6 @@ class DiskUsage extends Partition
 
     /**
      * Get the URI key for the metric.
-     *
-     * @return string
      */
     public function uriKey(): string
     {

@@ -6,13 +6,14 @@ use Illuminate\Support\Facades\DB;
 
 trait LookupEnumTrait
 {
-    public abstract static function table(): string;
+    abstract public static function table(): string;
 
-    public static function options() : array {
+    public static function options(): array
+    {
         return DB::table(self::table())
             ->get(['id', 'name', 'label'])
-            ->mapWithKeys(fn($entry)=>[
-                $entry->id => $entry->label
+            ->mapWithKeys(fn ($entry) => [
+                $entry->id => $entry->label,
             ])
             ->all();
     }

@@ -8,10 +8,8 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up() : void
+    public function up(): void
     {
         Schema::create('log_events', function (Blueprint $table) {
             $table->id()->index();
@@ -29,8 +27,6 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down(): void
     {

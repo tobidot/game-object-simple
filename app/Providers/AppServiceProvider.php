@@ -12,8 +12,6 @@ class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
-     *
-     * @return void
      */
     public function register(): void
     {
@@ -22,10 +20,8 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap any application services.
-     *
-     * @return void
      */
-    public function boot() : void
+    public function boot(): void
     {
         // get the called view name inside the layout
         View::composer('*', function (\Illuminate\View\View $view) {
@@ -35,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
             $captcha_service = AppHelper::resolve(CaptchaService::class);
             if ($captcha_service->isCaptchaRequired()) {
                 View::share('captcha', $captcha_service->generateCaptcha());
-            };
+            }
         });
     }
 }

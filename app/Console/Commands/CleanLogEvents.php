@@ -24,17 +24,15 @@ class CleanLogEvents extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return int
      */
-    public function handle() : int
+    public function handle(): int
     {
         $log_events = LogEvent::query()
-            ->whereDate('created_at', '<', now()->subMonths(3))
-        ;
+            ->whereDate('created_at', '<', now()->subMonths(3));
         $count = $log_events->count();
         $log_events->delete();
         Log::info("Cleaned $count Log Events");
+
         return self::SUCCESS;
     }
 }

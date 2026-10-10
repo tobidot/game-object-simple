@@ -8,8 +8,6 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up(): void
     {
@@ -18,15 +16,12 @@ return new class extends Migration
                 ->nullable()
                 ->constrained()
                 ->references('id')
-                ->on('attachments')
-            ;
+                ->on('attachments');
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down(): void
     {

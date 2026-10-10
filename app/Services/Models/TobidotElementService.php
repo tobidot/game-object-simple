@@ -12,13 +12,6 @@ use JetBrains\PhpStorm\ArrayShape;
 class TobidotElementService
 {
     /**
-     * @param  string  $name
-     * @param  UploadedFile  $zip
-     * @param  string|null  $version
-     * @param  string|null  $kind
-     * @param  string|null  $description
-     * @param  UploadedFile|null  $icon
-     * @return TobidotElement
      * @throws \Exception|\Throwable
      */
     public function upload(
@@ -55,7 +48,7 @@ class TobidotElementService
             $attachmentService = AppHelper::resolve(AttachmentService::class);
             $attachment = $attachmentService->createFromUploadedZipFile(
                 $zip,
-                "tobidot-elements",
+                'tobidot-elements',
                 Str::slug($name),
             );
 
@@ -63,13 +56,13 @@ class TobidotElementService
             if ($icon) {
                 $iconAttachment = $attachmentService->createFromUploadedSingleFile(
                     $icon,
-                    "media",
+                    'media',
                     Str::slug($name),
                 );
             }
 
             // Create new element
-            $element = new TobidotElement();
+            $element = new TobidotElement;
             $element->name = $name;
             $element->major = $major;
             $element->minor = $minor;
@@ -102,24 +95,23 @@ class TobidotElementService
 
     #[ArrayShape(['int', 'int', 'int'])]
     protected function determineNextVersion(
-        TobidotElement $last_element = null,
-        string $version = null
+        ?TobidotElement $last_element = null,
+        ?string $version = null
     ): array {
         if (empty($version) && empty($last_element)) {
             return [0, 0, 1];
         }
 
-
         if (empty($version) && $last_element instanceof TobidotElement) {
             return [
                 $last_element->major,
                 $last_element->minor,
-                $last_element->patch + 1
+                $last_element->patch + 1,
             ];
         }
 
-        if (!preg_match('/^(\d+)\.(\d+)\.(\d+)$/', $version, $matches)) {
-            throw new \InvalidArgumentException("Invalid Semver Version");
+        if (! preg_match('/^(\d+)\.(\d+)\.(\d+)$/', $version, $matches)) {
+            throw new \InvalidArgumentException('Invalid Semver Version');
         }
         $major = (int) $matches[1];
         $minor = (int) $matches[2];
@@ -135,7 +127,7 @@ class TobidotElementService
         return [
             $major,
             $minor,
-            $patch
+            $patch,
         ];
     }
 }

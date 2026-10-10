@@ -5,7 +5,9 @@ namespace Tests\Feature;
 use App\Models\TobidotElement;
 use App\Nova\Lenses\LatestTobidotElements;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Routing\Route;
 use Laravel\Nova\Http\Requests\LensRequest;
+use Laravel\Nova\Nova;
 use Tests\TestCase;
 
 class LatestTobidotElementsLensTest extends TestCase
@@ -26,7 +28,14 @@ class LatestTobidotElementsLensTest extends TestCase
         // Project C (only one version)
         $latestC = TobidotElement::factory()->create(['name' => 'Project C', 'major' => 2, 'minor' => 0, 'patch' => 0]);
 
+        Nova::resources([\App\Nova\TobidotElement::class]);
+
         $request = LensRequest::create('/nova-api/tobidot-elements/lens/latest-tobidot-elements');
+        $route = (new Route('GET', 'nova-api/{resource}/lens/{lens}', []))
+            ->bind($request);
+        $route->setParameter('resource', 'tobidot-elements');
+        $route->setParameter('lens', 'latest-tobidot-elements');
+        $request->setRouteResolver(fn () => $route);
 
         $query = LatestTobidotElements::query($request, TobidotElement::query());
         $results = $query->get();

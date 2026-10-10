@@ -7,15 +7,11 @@ use App\Helpers\NovaHelper;
 use App\Nova\Metrics\ViewsPerDay;
 use Illuminate\Http\Request;
 use Laravel\Nova\Exceptions\HelperNotSupported;
-use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Boolean;
-use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\MorphMany;
-use Laravel\Nova\Fields\MorphToMany;
-use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -42,14 +38,12 @@ class Page extends Resource
      * @var array
      */
     public static $search = [
-        'id', 'title'
+        'id', 'title',
     ];
 
     /**
      * Get the fields displayed by the resource.
      *
-     * @param NovaRequest $request
-     * @return array
      * @throws \Exception
      */
     public function fields(NovaRequest $request): array
@@ -73,15 +67,21 @@ class Page extends Resource
                 ->onlyOnForms(),
             Text::make(__('Uri'), function () {
                 $page = $this->resource;
-                if (!($page instanceof \App\Models\Page)) return '-';
+                if (! ($page instanceof \App\Models\Page)) {
+                    return '-';
+                }
                 $url = route('pages.show', ['page' => $page]);
+
                 return "<a class='link-default' href='$url' target='_blank'>Open Page: $url</a>";
             })
                 ->exceptOnForms()
                 ->asHtml(),
             Text::make(__('View Count'), function () {
                 $resource = $this->resource;
-                if (!($resource instanceof self::$model)) return '-';
+                if (! ($resource instanceof self::$model)) {
+                    return '-';
+                }
+
                 return $resource->views()->count();
             })->exceptOnForms(),
             Trix::make(__('Content'), 'content')
@@ -98,7 +98,10 @@ class Page extends Resource
                 })
                 ->resolveUsing(function () {
                     $value = $this->content ?? '';
-                    if (!is_string($value)) return $value;
+                    if (! is_string($value)) {
+                        return $value;
+                    }
+
                     return str_replace(['<h2>', '</h2>'], ['<h1>', '</h1>'], $value);
                 }),
             Boolean::make(__('Allow Comments'), 'allow_comments')->default(true),
@@ -112,8 +115,6 @@ class Page extends Resource
     /**
      * Get the cards available for the request.
      *
-     * @param NovaRequest $request
-     * @return array
      * @throws HelperNotSupported
      */
     public function cards(NovaRequest $request): array
@@ -126,9 +127,6 @@ class Page extends Resource
 
     /**
      * Get the filters available for the resource.
-     *
-     * @param NovaRequest $request
-     * @return array
      */
     public function filters(NovaRequest $request): array
     {
@@ -137,9 +135,6 @@ class Page extends Resource
 
     /**
      * Get the lenses available for the resource.
-     *
-     * @param NovaRequest $request
-     * @return array
      */
     public function lenses(NovaRequest $request): array
     {
@@ -148,9 +143,6 @@ class Page extends Resource
 
     /**
      * Get the actions available for the resource.
-     *
-     * @param NovaRequest $request
-     * @return array
      */
     public function actions(NovaRequest $request): array
     {

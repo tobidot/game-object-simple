@@ -8,17 +8,14 @@ use LogicException;
 class NovaHelper
 {
     /**
-     * @param string $label
-     * @param string $key
-     * @param class-string $enum
-     * @return Select
+     * @param  class-string  $enum
      */
     public static function makeEnum(
         string $label,
         string $key,
         string $enum
-    ) : Select {
-        if (!is_subclass_of($enum, \BackedEnum::class)) {
+    ): Select {
+        if (! is_subclass_of($enum, \BackedEnum::class)) {
             throw new LogicException("$enum is not a valid backed enum type.");
         }
 
@@ -27,7 +24,7 @@ class NovaHelper
             $options[$case->value] = $case->name;
         }
 
-        return Select::make($label,$key)
+        return Select::make($label, $key)
             ->options($options)
             ->displayUsingLabels();
     }

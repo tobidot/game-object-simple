@@ -2,16 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\CodeRelease;
-use App\Models\Page;
-use App\Models\Project;
-use App\Models\View;
 use Illuminate\Console\Command;
-use Illuminate\Database\Query\JoinClause;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\URL;
 
 class Test extends Command
 {
@@ -31,10 +22,8 @@ class Test extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return int
      */
-    public function handle() : int
+    public function handle(): int
     {
 
         return self::SUCCESS;

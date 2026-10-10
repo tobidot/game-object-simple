@@ -18,8 +18,6 @@ class TobidotElementTest extends TestCase
             'major' => 1,
             'minor' => 2,
             'patch' => 3,
-            'content' => 'tobidot-elements/uuid/index.js',
-            'icon' => 'test-icon.png',
             'width' => 100,
             'height' => 100,
             'extra' => ['foo' => 'bar'],
@@ -57,9 +55,9 @@ class TobidotElementTest extends TestCase
                                 ],
                             ],
                         ],
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $data = $response->json();

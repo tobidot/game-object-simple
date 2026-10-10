@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum PublishState : string
+enum PublishState: string
 {
     case PRIVATE = 'private';
     case PUBLISHED = 'published';

@@ -8,10 +8,8 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up() : void
+    public function up(): void
     {
         Schema::create('lu_project_states', function (Blueprint $table) {
             $table->id()->index();
@@ -37,10 +35,8 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down() : void
+    public function down(): void
     {
         Schema::dropIfExists('lu_publish_states');
         Schema::dropIfExists('lu_project_states');

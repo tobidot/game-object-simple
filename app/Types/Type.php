@@ -3,11 +3,9 @@
 namespace App\Types;
 
 use App\Exceptions\TypeException;
-use Exception;
 
 class Type
 {
-
     /**
      * @throws TypeException
      */
@@ -21,18 +19,15 @@ class Type
     }
 
     /**
-     * @param string $name
-     * @param array $input
-     * @param mixed $default The fallback value if value is not given in the array
-     * @return void
+     * @param  mixed  $default  The fallback value if value is not given in the array
+     *
      * @throws TypeException
      */
     protected function fillProperty(
         string $name,
-        array  $input,
-        mixed  $default,
-    ): void
-    {
+        array $input,
+        mixed $default,
+    ): void {
         if (array_key_exists($name, $input)) {
             $value = $this->maybeCastProperty($name, $input[$name]);
         } else {
@@ -55,9 +50,9 @@ class Type
      */
     protected function maybeCastProperty(
         string $name,
-        mixed  $value,
+        mixed $value,
     ): mixed {
-        if (!method_exists($this, $name)) {
+        if (! method_exists($this, $name)) {
             return $value;
         }
         try {
@@ -73,7 +68,8 @@ class Type
         }
     }
 
-    public function toArray() : array {
+    public function toArray(): array
+    {
         return get_object_vars($this);
     }
 }

@@ -10,10 +10,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -27,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property string $content
  * @property PublishState $publish_state
  * @property-read Collection<int, LogEvent> $logEvents
+ *
  * @method static Builder|Page newModelQuery()
  * @method static Builder|Page newQuery()
  * @method static Builder|Page query()
@@ -37,6 +36,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Page whereTitle($value)
  * @method static Builder|Page whereUpdatedAt($value)
  * @method static Builder|Page whereUri($value)
+ *
  * @property string|null $thumbnail
  * @property-read int|null $log_events_count
  * @property-read Collection<int, Page> $pages
@@ -45,8 +45,10 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $projects_count
  * @property-read Collection<int, Page> $relatingPages
  * @property-read int|null $related_pages_count
+ *
  * @method static PageFactory factory($count = null, $state = [])
  * @method static Builder|Page whereThumbnail($value)
+ *
  * @mixin Eloquent
  */
 class Page extends Model
@@ -62,7 +64,7 @@ class Page extends Model
     protected static function booted()
     {
         parent::booted();
-        self::addGlobalScope(new VisibleScope());
+        self::addGlobalScope(new VisibleScope);
     }
 
     public function getRouteKeyName(): string

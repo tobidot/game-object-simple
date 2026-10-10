@@ -26,7 +26,7 @@ class TobidotElementUploadTest extends TestCase
             'name' => 'test-widget',
             'zip' => $zip,
             'version' => '1.0.0',
-            'kind' => 'widget',
+            'kind' => 'element',
             'description' => 'A test widget',
         ]);
 
@@ -40,12 +40,11 @@ class TobidotElementUploadTest extends TestCase
             'major' => 1,
             'minor' => 0,
             'patch' => 0,
-            'kind' => 'widget',
+            'kind' => 'element',
         ]);
 
         $element = TobidotElement::where('name', 'test-widget')->first();
-        $this->assertNotNull($element->attachment_id);
-        $this->assertNotNull($element->content);
+        $this->assertNotNull($element->codeAttachment()->first());
 
         // Check if files were "extracted" (Storage::fake doesn't actually extract,
         // but AttachmentService will try to call ZipArchive, which might fail on a fake file if not careful.

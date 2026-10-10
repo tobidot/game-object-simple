@@ -2,7 +2,4 @@
 
 namespace App\Services\Models;
 
-class LogEventService
-{
-
-}
+class LogEventService {}

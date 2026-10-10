@@ -6,7 +6,7 @@ use App\Models\TobidotElement;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\TobidotElement>
+ * @extends Factory<TobidotElement>
  */
 class TobidotElementFactory extends Factory
 {
@@ -25,7 +25,6 @@ class TobidotElementFactory extends Factory
             'major' => $this->faker->numberBetween(1, 10),
             'minor' => $this->faker->numberBetween(0, 50),
             'patch' => $this->faker->numberBetween(0, 100),
-            'content' => 'tobidot-elements/uuid/index.js',
             'width' => 200,
             'height' => 200,
         ];

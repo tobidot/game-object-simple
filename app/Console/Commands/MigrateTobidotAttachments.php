@@ -32,13 +32,15 @@ class MigrateTobidotAttachments extends Command
         // We use DB::table to access columns that might be dropped in the migration
         $elements = DB::table('tobidot_elements')->get();
 
-        $this->info("Found " . $elements->count() . " elements to migrate.");
+        $this->info('Found '.$elements->count().' elements to migrate.');
 
         foreach ($elements as $element) {
             $this->comment("Migrating element: {$element->name} (v{$element->major}.{$element->minor}.{$element->patch})");
 
             $model = TobidotElement::find($element->id);
-            if (!$model) continue;
+            if (! $model) {
+                continue;
+            }
 
             // 1. Migrate Code Attachment
             if (isset($element->attachment_id) && $element->attachment_id) {
@@ -69,7 +71,7 @@ class MigrateTobidotAttachments extends Command
             }
         }
 
-        $this->info("Migration completed.");
+        $this->info('Migration completed.');
     }
 
     private function attachIfMissing(TobidotElement $model, $attachmentId, $relation)
@@ -81,7 +83,7 @@ class MigrateTobidotAttachments extends Command
             ->where('relation', $relation)
             ->exists();
 
-        if (!$exists) {
+        if (! $exists) {
             $model->attachments()->attach($attachmentId, ['relation' => $relation]);
             $this->info("  Attached $relation (ID: $attachmentId)");
         } else {
@@ -92,14 +94,16 @@ class MigrateTobidotAttachments extends Command
     private function extractPathFromContent($content)
     {
         // /tobidot-elements/UUID/index.zip -> tobidot-elements/UUID
-        $temp = array_filter(explode('/', $content), fn($item) => !empty($item));
+        $temp = array_filter(explode('/', $content), fn ($item) => ! empty($item));
         if (count($temp) > 0 && $temp[array_key_first($temp)] === 'storage') {
             array_shift($temp);
         }
         if (count($temp) > 1) {
             array_pop($temp);
+
             return implode('/', $temp);
         }
+
         return null;
     }
 
@@ -114,8 +118,10 @@ class MigrateTobidotAttachments extends Command
         $temp = explode('/', $path);
         if (count($temp) > 1) {
             array_pop($temp);
+
             return implode('/', $temp);
         }
+
         return null;
     }
 }

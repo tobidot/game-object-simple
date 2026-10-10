@@ -17,7 +17,7 @@ class ProjectFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition() : array
+    public function definition(): array
     {
         return [
             'title' => $this->faker->sentence($this->faker->numberBetween(1, 9)),
@@ -27,7 +27,7 @@ class ProjectFactory extends Factory
         ];
     }
 
-    public function published() : self
+    public function published(): self
     {
         return $this->state([
             'publish_state' => PublishState::PUBLISHED,

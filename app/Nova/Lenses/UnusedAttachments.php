@@ -5,6 +5,8 @@ namespace App\Nova\Lenses;
 use App\Enums\AttachmentType;
 use App\Enums\PublishState;
 use App\Helpers\NovaHelper;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
@@ -24,19 +26,18 @@ class UnusedAttachments extends Lens
     /**
      * Get the query builder / paginator for the lens.
      *
-     * @param  \Laravel\Nova\Http\Requests\LensRequest  $request
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  Builder  $query
      * @return mixed
      */
     public static function query(LensRequest $request, $query)
     {
         return $request->withOrdering($request->withFilters(
             $query->whereNotExists(function ($query) {
-                $query->select(\Illuminate\Support\Facades\DB::raw(1))
+                $query->select(DB::raw(1))
                     ->from('attachables')
                     ->whereColumn('attachables.attachment_id', 'attachments.id');
             })->whereNotExists(function ($query) {
-                $query->select(\Illuminate\Support\Facades\DB::raw(1))
+                $query->select(DB::raw(1))
                     ->from('projects')
                     ->whereColumn('projects.thumbnail', 'attachments.url');
             })
@@ -46,7 +47,6 @@ class UnusedAttachments extends Lens
     /**
      * Get the fields available to the lens.
      *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
      * @return array
      */
     public function fields(NovaRequest $request)
@@ -64,7 +64,6 @@ class UnusedAttachments extends Lens
     /**
      * Get the cards available on the lens.
      *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
      * @return array
      */
     public function cards(NovaRequest $request)
@@ -75,7 +74,6 @@ class UnusedAttachments extends Lens
     /**
      * Get the filters available for the lens.
      *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
      * @return array
      */
     public function filters(NovaRequest $request)
@@ -86,7 +84,6 @@ class UnusedAttachments extends Lens
     /**
      * Get the actions available on the lens.
      *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
      * @return array
      */
     public function actions(NovaRequest $request)

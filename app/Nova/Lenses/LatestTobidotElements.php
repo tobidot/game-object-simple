@@ -3,16 +3,20 @@
 namespace App\Nova\Lenses;
 
 use App\Helpers\AppHelper;
+use App\Models\TobidotElement as TobidotElementModel;
+use App\Nova\Filters\StandaloneFilter;
+use App\Nova\Filters\TobidotElementKindFilter;
 use App\Services\Models\AttachmentService;
+use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\Number;
-    use Laravel\Nova\Fields\Select;
-    use Laravel\Nova\Fields\Image;
+use Laravel\Nova\Fields\Select;
+use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\LensRequest;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Lenses\Lens;
-use Illuminate\Support\Facades\DB;
 
 class LatestTobidotElements extends Lens
 {
@@ -28,12 +32,8 @@ class LatestTobidotElements extends Lens
 
     /**
      * Get the query builder / paginator for the lens.
-     *
-     * @param  \Laravel\Nova\Http\Requests\LensRequest  $request
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return mixed
      */
-    public static function query(LensRequest $request, $query)
+    public static function query(LensRequest $request, $query): Builder
     {
         return $request->withOrdering($request->withFilters(
             $query->whereIn('id', function ($query) {
@@ -49,19 +49,18 @@ class LatestTobidotElements extends Lens
 
     /**
      * Get the fields available to the lens.
-     *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @return array
      */
-    public function fields(NovaRequest $request)
+    public function fields(NovaRequest $request): array
     {
         return [
             ID::make(__('ID'), 'id')->sortable(),
             Image::make(__('Icon'), function () {
+                /** @var TobidotElementModel $this */
                 $iconAttachment = $this->iconAttachment()->first();
-                if (!$iconAttachment) {
+                if (! $iconAttachment) {
                     return null;
                 }
+
                 return AppHelper::resolve(AttachmentService::class)->getUrl($iconAttachment);
             }),
             Text::make(__('Name'), 'name')->sortable(),
@@ -77,56 +76,43 @@ class LatestTobidotElements extends Lens
 
     /**
      * Get the cards available on the lens.
-     *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @return array
      */
-    public function cards(NovaRequest $request)
+    public function cards(NovaRequest $request): array
     {
         return [];
     }
 
     /**
      * Get the filters available for the lens.
-     *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @return array
      */
-    public function filters(NovaRequest $request)
+    public function filters(NovaRequest $request): array
     {
         return [
-            new \App\Nova\Filters\TobidotElementKindFilter(),
-            new \App\Nova\Filters\StandaloneFilter(),
+            new TobidotElementKindFilter,
+            new StandaloneFilter,
         ];
     }
 
     /**
      * Get the actions available on the lens.
-     *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @return array
      */
-    public function actions(NovaRequest $request)
+    public function actions(NovaRequest $request): array
     {
         return parent::actions($request);
     }
 
     /**
      * Get the URI key for the lens.
-     *
-     * @return string
      */
-    public function uriKey()
+    public function uriKey(): string
     {
         return 'latest-tobidot-elements';
     }
 
     /**
      * Get the displayable name of the lens.
-     *
-     * @return string
      */
-    public function name()
+    public function name(): string
     {
         return __('Latest Versions');
     }

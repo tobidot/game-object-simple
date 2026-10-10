@@ -17,6 +17,7 @@ class CodeReleaseController extends Controller
         AppHelper::resolve(ViewService::class)->associate($codeRelease);
         $code_attachment = $codeRelease->code();
         $url = "$code_attachment->url/index.html";
+
         return redirect($url, 302);
     }
 
@@ -29,7 +30,7 @@ class CodeReleaseController extends Controller
         $ending = ltrim($path, '/');
         $ending = explode('.', $ending);
         $ending = end($ending);
-        $content_type = match ( $ending ) {
+        $content_type = match ($ending) {
             'html' => 'text/html',
             'js' => 'application/javascript',
             'css' => 'text/css',
@@ -41,8 +42,9 @@ class CodeReleaseController extends Controller
             'json' => 'application/json',
             default => 'text/plain',
         };
+
         return response()->file(public_path("$code_attachment->path/$path"), [
-            'Content-Type' => $content_type
+            'Content-Type' => $content_type,
         ]);
     }
 
@@ -51,10 +53,9 @@ class CodeReleaseController extends Controller
         return redirect(
             route('code-releases.proxy', [
                 'codeRelease' => $codeRelease->id,
-                'path' => 'index.html'
+                'path' => 'index.html',
             ]),
             302
         );
     }
-
 }

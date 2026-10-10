@@ -2,41 +2,37 @@
 
 namespace App\Traits;
 
-use App\Helpers\AppHelper;
-use App\Models\Project;
-use App\Services\Models\ViewService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Validator;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 
 trait Filterable
 {
     public function filterable(
-        array   $params
+        array $params
     ): View {
         // build the paginator
         $search = $this->getSearchInput();
         $paginator = $this->getBaseQuery()
             ->orderByDesc('created_at', 'DESC')
             ->when($search !== null, function ($query) use ($search) {
-                $query->where('title', 'like', '%' . $search . '%');
+                $query->where('title', 'like', '%'.$search.'%');
             })
             ->paginate($this->getPerPage())
             ->withPath($this->getBaseUrl());
         $paginator->onEachSide = 2;
+
         return $this->buildFilterView($paginator);
     }
 
-    public abstract function getBaseQuery(): Builder;
+    abstract public function getBaseQuery(): Builder;
 
     public function getPerPage(): int
     {
         return 9;
     }
 
-    public function getFilterViewName() : string {
+    public function getFilterViewName(): string
+    {
         return 'components.pagination.section';
     }
 
@@ -57,17 +53,16 @@ trait Filterable
         $base_url_path = request()->getBaseUrl();
         $search = $this->getSearchInput();
         if ($search !== null) {
-            $base_url_path .= '?search=' . $search;
+            $base_url_path .= '?search='.$search;
         }
+
         return $base_url_path;
     }
 
-    /**
-     */
-    public function getSearchInput() : string|null
+    public function getSearchInput(): ?string
     {
         $search = request()->query('search', null);
-        if (empty($search) ) {
+        if (empty($search)) {
             return null;
         }
         if (preg_match('/[^a-zA-Z0-9\s]/', $search)) {
@@ -76,6 +71,7 @@ trait Filterable
         if (strlen($search) > 255) {
             return substr($search, 0, 255);
         }
+
         return $search;
     }
 }

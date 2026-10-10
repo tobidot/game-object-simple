@@ -6,8 +6,6 @@ use App\Enums\AttachmentType;
 use App\Enums\PublishState;
 use App\Helpers\AppHelper;
 use App\Helpers\NovaHelper;
-use App\Nova\CodeRelease;
-use App\Nova\TobidotElement;
 use App\Services\Models\AttachmentService;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\DateTime;
@@ -56,9 +54,6 @@ class Attachment extends Resource
 
     /**
      * Get the fields displayed by the resource.
-     *
-     * @param  NovaRequest  $request
-     * @return array
      */
     public function fields(NovaRequest $request): array
     {
@@ -69,19 +64,19 @@ class Attachment extends Resource
                 ->exceptOnForms(),
             URL::make(
                 __('Url'),
-                function(\App\Models\Attachment $value) {
+                function (\App\Models\Attachment $value) {
                     return AppHelper::resolve(AttachmentService::class)->getUrl($value);
                 }
             )
                 ->readonly()
-                ->canSee(fn() => $this->type !== AttachmentType::IMAGE),
+                ->canSee(fn () => $this->type !== AttachmentType::IMAGE),
             Image::make(__('Preview'),
-                function(\App\Models\Attachment $value) {
+                function (\App\Models\Attachment $value) {
                     return AppHelper::resolve(AttachmentService::class)->getPublicFilePath($value);
                 })
                 ->readonly()
                 ->exceptOnForms()
-                ->canSee(fn() => $this->type === AttachmentType::IMAGE),
+                ->canSee(fn () => $this->type === AttachmentType::IMAGE),
             Text::make(__('Path'), 'path')
                 ->hideFromIndex()
                 ->readonly(),
@@ -108,22 +103,16 @@ class Attachment extends Resource
 
     /**
      * Get the cards available for the request.
-     *
-     * @param  NovaRequest  $request
-     * @return array
      */
     public function cards(NovaRequest $request): array
     {
         return [
-            new Metrics\DiskUsage(),
+            new Metrics\DiskUsage,
         ];
     }
 
     /**
      * Get the filters available for the resource.
-     *
-     * @param  NovaRequest  $request
-     * @return array
      */
     public function filters(NovaRequest $request): array
     {
@@ -135,28 +124,22 @@ class Attachment extends Resource
 
     /**
      * Get the lenses available for the resource.
-     *
-     * @param  NovaRequest  $request
-     * @return array
      */
     public function lenses(NovaRequest $request): array
     {
         return [
-            new Lenses\UnusedAttachments(),
+            new Lenses\UnusedAttachments,
         ];
     }
 
     /**
      * Get the actions available for the resource.
-     *
-     * @param  NovaRequest  $request
-     * @return array
      */
     public function actions(NovaRequest $request): array
     {
         return [
-            new Actions\CleanupAttachment(),
-            new Actions\UploadAttachment(),
+            new Actions\CleanupAttachment,
+            new Actions\UploadAttachment,
         ];
     }
 }

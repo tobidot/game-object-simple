@@ -10,16 +10,13 @@ use Laravel\Nova\Dashboards\Main as Dashboard;
 
 class Main extends Dashboard
 {
-
     /**
      * Get the cards for the dashboard.
-     *
-     * @return array
      */
-    public function cards() : array
+    public function cards(): array
     {
         return [
-//            new Help,
+            //            new Help,
             new DiskUsage,
             new ViewsPerDay,
             new ViewsPerUrl,

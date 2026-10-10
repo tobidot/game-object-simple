@@ -1,6 +1,10 @@
 {
+  "_preload-helper-DrInE4Zr.js": {
+    "file": "assets/preload-helper-DrInE4Zr.js",
+    "name": "preload-helper"
+  },
   "resources/css/app.scss": {
-    "file": "assets/app-CzpKzVQQ.css",
+    "file": "assets/app-DEmZ6Ulw.css",
     "name": "app",
     "names": [
       "app.css"
@@ -17,16 +21,37 @@
     "src": "resources/css/desktop.scss",
     "isEntry": true
   },
+  "resources/css/tobidot-element-viewer.scss": {
+    "file": "assets/tobidot-element-viewer-NCiswl-l.css",
+    "name": "tobidot-element-viewer",
+    "names": [
+      "tobidot-element-viewer.css"
+    ],
+    "src": "resources/css/tobidot-element-viewer.scss",
+    "isEntry": true
+  },
   "resources/js/app.ts": {
-    "file": "assets/app-C6YZ2YJD.js",
+    "file": "assets/app-CiJenoQu.js",
     "name": "app",
     "src": "resources/js/app.ts",
     "isEntry": true
   },
   "resources/js/desktop.ts": {
-    "file": "assets/desktop-nONv41mu.js",
+    "file": "assets/desktop-BUJGE0eP.js",
     "name": "desktop",
     "src": "resources/js/desktop.ts",
-    "isEntry": true
+    "isEntry": true,
+    "imports": [
+      "_preload-helper-DrInE4Zr.js"
+    ]
+  },
+  "resources/js/tobidot-element-viewer.ts": {
+    "file": "assets/tobidot-element-viewer-DPYfmWBg.js",
+    "name": "tobidot-element-viewer",
+    "src": "resources/js/tobidot-element-viewer.ts",
+    "isEntry": true,
+    "imports": [
+      "_preload-helper-DrInE4Zr.js"
+    ]
   }
 }

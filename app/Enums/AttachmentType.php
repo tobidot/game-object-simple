@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum AttachmentType : string
+enum AttachmentType: string
 {
     case ZIP = 'zip';
     case BINARY = 'binary';

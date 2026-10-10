@@ -4,23 +4,21 @@ namespace App\View\Components;
 
 use App\Exceptions\TypeException;
 use App\Types\View\LinkType;
-use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
 class Navigation extends Component
 {
-
     /**
      * Create a new component instance.
      *
      * @return void
+     *
      * @throws TypeException
      */
     public function __construct(
         public ?array $links = null,
-    )
-    {
+    ) {
         if ($this->links === null) {
             $this->links = [
                 new LinkType([
@@ -36,6 +34,10 @@ class Navigation extends Component
                     'href' => route('projects'),
                 ]),
                 new LinkType([
+                    'label' => 'TCE Generator',
+                    'href' => route('tce-generator.index'),
+                ]),
+                new LinkType([
                     'label' => 'Imprint',
                     'href' => route('imprint'),
                 ]),
@@ -46,10 +48,8 @@ class Navigation extends Component
 
     /**
      * Get the view / contents that represent the component.
-     *
-     * @return View
      */
-    public function render() : View
+    public function render(): View
     {
         return view('components.navigation');
     }

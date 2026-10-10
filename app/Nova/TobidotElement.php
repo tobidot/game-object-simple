@@ -5,25 +5,18 @@ namespace App\Nova;
 use App\Helpers\AppHelper;
 use App\Services\Models\AttachmentService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
-use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\Code;
-use Laravel\Nova\Fields\File;
-use Laravel\Nova\Fields\HasOne;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Image;
+use Laravel\Nova\Fields\MorphToMany;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
-use Laravel\Nova\Fields\URL;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Laravel\Nova\Fields\MorphToMany;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class TobidotElement extends Resource
 {
@@ -43,7 +36,7 @@ class TobidotElement extends Resource
 
     public function subtitle(): string
     {
-        /** @var  \App\Models\TobidotElement $this */
+        /** @var \App\Models\TobidotElement $this */
         return "$this->major.$this->minor.$this->patch";
     }
 
@@ -60,9 +53,6 @@ class TobidotElement extends Resource
 
     /**
      * Get the fields displayed by the resource.
-     *
-     * @param NovaRequest $request
-     * @return array
      */
     public function fields(NovaRequest $request): array
     {
@@ -76,9 +66,10 @@ class TobidotElement extends Resource
             ])->displayUsingLabels(),
             Image::make(__('Icon'), function () {
                 $iconAttachment = $this->iconAttachment()->first();
-                if (!$iconAttachment) {
+                if (! $iconAttachment) {
                     return null;
                 }
+
                 return AppHelper::resolve(AttachmentService::class)->getPublicFilePath($iconAttachment);
             }, 'public')
                 ->readonly()
@@ -111,16 +102,18 @@ class TobidotElement extends Resource
         ];
     }
 
+    /**
+     * @noinspection PhpUnusedParameterInspection
+     */
     public function store_file(
-        Request                    $request,
+        Request $request,
         \App\Models\TobidotElement $model,
-        string                     $attribute,
-        string                     $requestAttribute
-    ): void
-    {
+        string $attribute,
+        string $requestAttribute
+    ): void {
         $file = $request->file($requestAttribute);
 
-        if (!$file) {
+        if (! $file) {
             return;
         }
         if ($file->getClientOriginalExtension() === 'zip') {
@@ -142,9 +135,6 @@ class TobidotElement extends Resource
 
     /**
      * Get the cards available for the request.
-     *
-     * @param NovaRequest $request
-     * @return array
      */
     public function cards(NovaRequest $request): array
     {
@@ -153,23 +143,17 @@ class TobidotElement extends Resource
 
     /**
      * Get the filters available for the resource.
-     *
-     * @param NovaRequest $request
-     * @return array
      */
     public function filters(NovaRequest $request): array
     {
         return [
-            new Filters\TobidotElementKindFilter(),
-            new Filters\StandaloneFilter(),
+            new Filters\TobidotElementKindFilter,
+            new Filters\StandaloneFilter,
         ];
     }
 
     /**
      * Get the lenses available for the resource.
-     *
-     * @param NovaRequest $request
-     * @return array
      */
     public function lenses(NovaRequest $request): array
     {
@@ -180,14 +164,15 @@ class TobidotElement extends Resource
 
     /**
      * Get the actions available for the resource.
-     *
-     * @param NovaRequest $request
-     * @return array
      */
     public function actions(NovaRequest $request): array
     {
         return [
-            new Actions\UploadAttachment(),
+            new Actions\UploadAttachment,
+            Action::openInNewTab(
+                __('View Fullscreen'),
+                fn (\App\Models\TobidotElement $model) => route('tobidot-elements.view', $model)
+            )->sole(),
         ];
     }
 }

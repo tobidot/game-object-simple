@@ -2,6 +2,7 @@
 
 namespace App\Nova\Filters;
 
+use Illuminate\Database\Eloquent\Builder;
 use Laravel\Nova\Filters\BooleanFilter;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
@@ -10,18 +11,17 @@ class StandaloneFilter extends BooleanFilter
     /**
      * Apply the filter to the given query.
      *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  Builder  $query
      * @param  mixed  $value
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function apply(NovaRequest $request, $query, $value)
     {
-        if ($value['standalone'] && !$value['not_standalone']) {
+        if ($value['standalone'] && ! $value['not_standalone']) {
             return $query->where('standalone', true);
         }
 
-        if (!$value['standalone'] && $value['not_standalone']) {
+        if (! $value['standalone'] && $value['not_standalone']) {
             return $query->where('standalone', false);
         }
 
@@ -31,7 +31,6 @@ class StandaloneFilter extends BooleanFilter
     /**
      * Get the filter's available options.
      *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
      * @return array
      */
     public function options(NovaRequest $request)

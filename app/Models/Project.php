@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -30,6 +29,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, Comment> $comments
  * @property-read Collection<int, CodeRelease> $codeReleases
  * @property-read int|null $code_releases_count
+ *
  * @method static Builder|Project newModelQuery()
  * @method static Builder|Project newQuery()
  * @method static Builder|Project query()
@@ -40,7 +40,9 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Project whereState($value)
  * @method static Builder|Project whereTitle($value)
  * @method static Builder|Project whereUpdatedAt($value)
+ *
  * @mixin Eloquent
+ *
  * @property string|null $thumbnail
  * @property-read Collection<int, Page> $pages
  * @property-read int|null $pages_count
@@ -48,9 +50,9 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $projects_count
  * @property-read Collection<int, Project> $relatingProjects
  * @property-read int|null $relating_projects_count
+ *
  * @method static ProjectFactory factory($count = null, $state = [])
  * @method static Builder|Project whereThumbnail($value)
- *
  */
 class Project extends Model
 {
@@ -64,7 +66,7 @@ class Project extends Model
     protected static function booted()
     {
         parent::booted();
-        self::addGlobalScope(new VisibleScope());
+        self::addGlobalScope(new VisibleScope);
     }
 
     public function codeReleases(): HasMany
@@ -104,5 +106,4 @@ class Project extends Model
     {
         return $query->where('publish_state', PublishState::PUBLISHED);
     }
-
 }

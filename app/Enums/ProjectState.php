@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum ProjectState : string
+enum ProjectState: string
 {
     case DRAFT = 'draft';
     case IN_DEVELOPMENT = 'in_development';

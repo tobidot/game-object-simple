@@ -8,14 +8,11 @@ use Carbon\Carbon;
 use Closure;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Support\Facades\Log;
 
 class CustomCaptcha implements ValidationRule
 {
     /**
      * Indicates whether the rule should be implicit.
-     *
-     * @var bool
      */
     public bool $implicit = true;
 
@@ -25,21 +22,25 @@ class CustomCaptcha implements ValidationRule
         if ($value === null) {
             if ($captcha_service->isCaptchaRequired()) {
                 $fail('The captcha is required.');
+
                 return;
             }
+
             // no captcha required and not provided => pass
-            return ;
+            return;
         }
         $token = intval($value['token']);
         $minutes = Carbon::createFromTimestamp($token)->diffInMinutes(now());
         if ($minutes > 60) {
-            $fail( 'The captcha has expired.');
+            $fail('The captcha has expired.');
+
             return;
         }
         $solution = $value['solution'];
-        if (!$captcha_service->isCaptchaSolved($token, $solution)) {
-            $fail( 'CAPTCHA failed.');
-            return ;
+        if (! $captcha_service->isCaptchaSolved($token, $solution)) {
+            $fail('CAPTCHA failed.');
+
+            return;
         }
         $captcha_service->markSessionAsSolvedCaptcha();
     }
