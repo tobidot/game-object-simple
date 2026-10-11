@@ -38,7 +38,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function gate(): void
     {
         Gate::define('viewNova', function ($user) {
-            return $user->email == 'object.name@live.de';
+            return strtolower($user->email ?? '') === 'object.name@live.de';
         });
     }
 

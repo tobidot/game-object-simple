@@ -33,7 +33,7 @@ class ChunkedUploadServiceProvider extends ServiceProvider
         }
 
         Route::middleware(config('nova.api_middleware', ['web', Authenticate::class]))
-            ->prefix('nova-vendor/chunked-upload')
+            ->prefix('nova-api/chunked-upload')
             ->group(__DIR__.'/../routes/api.php');
     }
 

@@ -242,7 +242,7 @@ export default {
       formData.append('total_size', this.file.size)
       formData.append('chunk', chunkBlob, this.file.name)
 
-      const uploadUrl = this.field.uploadUrl || '/nova-vendor/chunked-upload/upload'
+      const uploadUrl = this.field.uploadUrl || '/nova-api/chunked-upload/upload'
       const requester = this.getRequester()
 
       try {
@@ -335,7 +335,7 @@ export default {
       this.aborted = true
       this.isUploading = false
       if (this.uploadId) {
-        const cancelUrl = this.field.cancelUrl || '/nova-vendor/chunked-upload/cancel'
+        const cancelUrl = this.field.cancelUrl || '/nova-api/chunked-upload/cancel'
         const requester = this.getRequester()
         try {
           if (requester) {
