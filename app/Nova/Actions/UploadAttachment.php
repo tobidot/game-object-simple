@@ -12,9 +12,9 @@ use Illuminate\Support\Collection;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Actions\ActionResponse;
 use Laravel\Nova\Fields\ActionFields;
-use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Tobidot\ChunkedUpload\ChunkedFile;
 
 class UploadAttachment extends Action
 {
@@ -60,7 +60,7 @@ class UploadAttachment extends Action
     public function fields(NovaRequest $request): array
     {
         $fields = [
-            File::make(__('File'), 'file')
+            ChunkedFile::make(__('File'), 'file')
                 ->rules(['required'])
                 ->required(),
             Select::make(__('Prefix'), 'prefix')

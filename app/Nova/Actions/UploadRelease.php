@@ -12,10 +12,10 @@ use Illuminate\Support\Collection;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Actions\ActionResponse;
 use Laravel\Nova\Fields\ActionFields;
-use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Tobidot\ChunkedUpload\ChunkedFile;
 
 class UploadRelease extends Action
 {
@@ -77,7 +77,7 @@ class UploadRelease extends Action
         }
 
         return [
-            File::make(__('Release Zip'), 'zip')
+            ChunkedFile::make(__('Release Zip'), 'zip')
                 ->rules(['required'])
                 ->required(),
             Text::make(__('Version'), 'version')

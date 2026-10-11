@@ -1,0 +1,31 @@
+{
+    "name": "tobidot/chunked-upload",
+    "description": "A Laravel Nova field and component for chunked and split file uploads.",
+    "keywords": [
+        "laravel",
+        "nova",
+        "chunked-upload",
+        "split-upload"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^8.2|^8.3|^8.4|^8.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Tobidot\\ChunkedUpload\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Tobidot\\ChunkedUpload\\ChunkedUploadServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

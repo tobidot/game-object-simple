@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1f55a1ec3716bace46bc2b269da174ad",
+    "content-hash": "b91705b6632c4e300c3b5c2eb147f55f",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -9747,6 +9747,44 @@
             }
         },
         {
+            "name": "tobidot/chunked-upload",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "./nova-components/ChunkedUpload",
+                "reference": "a17c1ecc76e0bd2f1a526987e1278ea277fb3645"
+            },
+            "require": {
+                "php": "^8.2|^8.3|^8.4|^8.5"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Tobidot\\ChunkedUpload\\ChunkedUploadServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Tobidot\\ChunkedUpload\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A Laravel Nova field and component for chunked and split file uploads.",
+            "keywords": [
+                "chunked-upload",
+                "laravel",
+                "nova",
+                "split-upload"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "vlucas/phpdotenv",
             "version": "v5.7.0",
             "source": {
@@ -13920,7 +13958,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "tobidot/api-token-copier": 20
+        "tobidot/api-token-copier": 20,
+        "tobidot/chunked-upload": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

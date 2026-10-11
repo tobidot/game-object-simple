@@ -15,6 +15,10 @@
         {
             "type": "path",
             "url": "./nova-components/ApiTokenCopier"
+        },
+        {
+            "type": "path",
+            "url": "./nova-components/ChunkedUpload"
         }
     ],
     "require": {
@@ -33,7 +37,8 @@
         "laravel/sanctum": "^4.3",
         "laravel/tinker": "^3.0",
         "livewire/livewire": "^4.2",
-        "tobidot/api-token-copier": "@dev"
+        "tobidot/api-token-copier": "@dev",
+        "tobidot/chunked-upload": "@dev"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.7",

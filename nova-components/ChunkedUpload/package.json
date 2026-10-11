@@ -1,0 +1,13 @@
+{
+  "name": "tobidot-chunked-upload",
+  "private": true,
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "vite": "^6.0.7"
+  },
+  "dependencies": {}
+}
