@@ -20,8 +20,6 @@ class UploadAttachment extends Action
 {
     use InteractsWithQueue, Queueable;
 
-    public $standalone = true;
-
     /**
      * Perform the action on the given models.
      *
@@ -45,6 +43,9 @@ class UploadAttachment extends Action
                     $model->attachments()->attach($attachment->id, ['relation' => $relation]);
                 } elseif ($model instanceof Page) {
                     $relation = $fields->relation ?? 'thumbnail';
+                    $model->attachments()->attach($attachment->id, ['relation' => $relation]);
+                } elseif (method_exists($model, 'attachments')) {
+                    $relation = $fields->relation ?? 'attachment';
                     $model->attachments()->attach($attachment->id, ['relation' => $relation]);
                 }
             }
@@ -72,7 +73,10 @@ class UploadAttachment extends Action
                 ->required(),
         ];
 
-        if ($request->resource() === \App\Nova\TobidotElement::class || $request->resource() === TobidotElement::class) {
+        $resourceClass = rescue(fn () => $request->resource(), null);
+        $resourceKey = $request->route('resource');
+
+        if ($resourceClass === \App\Nova\TobidotElement::class || $resourceClass === TobidotElement::class || $resourceKey === 'tobidot-elements') {
             $fields[] = Select::make(__('Relation'), 'relation')
                 ->options([
                     'icon' => 'Icon',
@@ -81,11 +85,22 @@ class UploadAttachment extends Action
                 ->default('icon')
                 ->rules(['required'])
                 ->required();
-        } elseif ($request->resource() === \App\Nova\Page::class || $request->resource() === Page::class) {
+        } elseif ($resourceClass === \App\Nova\Page::class || $resourceClass === Page::class || $resourceKey === 'pages') {
             $fields[] = Select::make(__('Relation'), 'relation')
                 ->options([
                     'thumbnail' => 'Thumbnail',
                     'attachment' => 'Attachment',
+                ])
+                ->default('thumbnail')
+                ->rules(['required'])
+                ->required();
+        } else {
+            $fields[] = Select::make(__('Relation'), 'relation')
+                ->options([
+                    'thumbnail' => 'Thumbnail',
+                    'attachment' => 'Attachment',
+                    'icon' => 'Icon',
+                    'code' => 'Code',
                 ])
                 ->default('thumbnail')
                 ->rules(['required'])

@@ -14,6 +14,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Nova\Actions\ActionResponse;
 use Laravel\Nova\Fields\ActionFields;
+use Laravel\Nova\Http\Requests\NovaRequest;
 use Tests\TestCase;
 
 class PageAttachmentAndThumbnailTest extends TestCase
@@ -83,6 +84,72 @@ class PageAttachmentAndThumbnailTest extends TestCase
         $this->assertEquals('thumbnail', $page->attachments()->first()->pivot->relation);
         $this->assertNotNull($page->thumbnail);
         $this->assertStringContainsString('nova-cover.png', $page->thumbnail);
+    }
+
+    public function test_upload_attachment_action_fields_resolve_safely(): void
+    {
+        $action = new UploadAttachment;
+
+        // 1. Without route parameter
+        $requestNoRoute = new NovaRequest;
+        $fieldsNoRoute = $action->fields($requestNoRoute);
+        $this->assertNotEmpty($fieldsNoRoute);
+
+        // 2. For pages resource
+        $requestPage = new NovaRequest;
+        $requestPage->setRouteResolver(fn () => new class
+        {
+            public function parameter($key, $default = null)
+            {
+                return $key === 'resource' ? 'pages' : $default;
+            }
+        });
+        $fieldsPage = $action->fields($requestPage);
+        $this->assertNotEmpty($fieldsPage);
+    }
+
+    public function test_attachment_service_deduplication_and_multiple_page_thumbnails(): void
+    {
+        Storage::fake('public');
+
+        /** @var Page $page */
+        $page = Page::factory()->create([
+            'title' => 'Multi Thumb Page',
+            'uri' => 'multi-thumb-page',
+            'publish_state' => PublishState::PUBLISHED,
+        ]);
+
+        $file1 = UploadedFile::fake()->image('thumb1.png', 200, 200);
+        $file2 = UploadedFile::fake()->image('thumb2.png', 300, 300);
+
+        $action = new UploadAttachment;
+
+        // Upload first thumbnail
+        $fields1 = new ActionFields(collect([
+            'file' => $file1,
+            'prefix' => 'media',
+            'relation' => 'thumbnail',
+        ]), collect([]));
+        $action->handle($fields1, collect([$page]));
+
+        $page->refresh();
+        $this->assertStringContainsString('thumb1.png', $page->thumbnail);
+
+        // Upload second thumbnail (should become active thumbnail as latest)
+        $fields2 = new ActionFields(collect([
+            'file' => $file2,
+            'prefix' => 'media',
+            'relation' => 'thumbnail',
+        ]), collect([]));
+        $action->handle($fields2, collect([$page]));
+
+        $page->refresh();
+        $this->assertCount(2, $page->attachments);
+        $this->assertStringContainsString('thumb2.png', $page->thumbnail);
+
+        // Re-uploading exact same file (thumb1) deduplicates without throwing
+        $action->handle($fields1, collect([]));
+        $this->assertDatabaseCount('attachments', 2);
     }
 
     public function test_view_helper_renders_image_for_attachment_and_string(): void

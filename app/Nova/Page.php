@@ -169,7 +169,7 @@ class Page extends Resource
     public function actions(NovaRequest $request): array
     {
         return [
-            new UploadAttachment,
+            (new UploadAttachment)->showInline(),
         ];
     }
 }

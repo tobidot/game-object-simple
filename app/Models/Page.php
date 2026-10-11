@@ -116,9 +116,10 @@ class Page extends Model
     {
         return $this->attachments()
             ->wherePivot('relation', 'thumbnail')
+            ->latest('attachments.id')
             ->first()
-            ?? $this->attachments()->where('type', AttachmentType::IMAGE)->first()
-            ?? $this->attachments()->first();
+            ?? $this->attachments()->where('type', AttachmentType::IMAGE)->latest('attachments.id')->first()
+            ?? $this->attachments()->latest('attachments.id')->first();
     }
 
     public function getThumbnailAttribute(): ?string

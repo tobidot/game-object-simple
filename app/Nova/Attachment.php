@@ -98,6 +98,7 @@ class Attachment extends Resource
 
             MorphToMany::make(__('Tobidot Elements'), 'tobidotElements', TobidotElement::class),
             MorphToMany::make(__('Code Releases'), 'codeReleases', CodeRelease::class),
+            MorphToMany::make(__('Pages'), 'pages', Page::class),
         ];
     }
 
@@ -139,7 +140,7 @@ class Attachment extends Resource
     {
         return [
             new Actions\CleanupAttachment,
-            new Actions\UploadAttachment,
+            (new Actions\UploadAttachment)->standalone(),
         ];
     }
 }

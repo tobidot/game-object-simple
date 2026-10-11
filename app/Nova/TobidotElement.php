@@ -168,7 +168,7 @@ class TobidotElement extends Resource
     public function actions(NovaRequest $request): array
     {
         return [
-            new Actions\UploadAttachment,
+            (new Actions\UploadAttachment)->showInline(),
             Action::openInNewTab(
                 __('View Fullscreen'),
                 fn (\App\Models\TobidotElement $model) => route('tobidot-elements.view', $model)

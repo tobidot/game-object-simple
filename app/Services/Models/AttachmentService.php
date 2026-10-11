@@ -92,8 +92,8 @@ class AttachmentService
             ->first();
 
         if ($existing) {
-            $existing_content = $disk->get($public_file_path);
-            if ($existing_content === $file->getContent()) {
+            $existing_file_path = join_paths($existing->path, $existing->file_name);
+            if ($disk->exists($existing_file_path) && $disk->get($existing_file_path) === $file->getContent()) {
                 // I already uploaded the exact same file
                 return $existing;
             }
