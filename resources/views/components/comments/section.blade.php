@@ -12,12 +12,12 @@
 @endphp
 
 <div class="comment-section js-active">
-    <h2>
+    <h2 class="comment-section__title">
         Comments
     </h2>
     <button
             id="write-comment"
-            class="{{ $open_comments ? "js-hidden" : "" }}"
+            class="comment-section__button {{ $open_comments ? "js-hidden" : "" }}"
     >Write a comment
     </button>
     <x-comments.form

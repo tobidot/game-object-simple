@@ -4,7 +4,7 @@
     "name": "preload-helper"
   },
   "resources/css/app.scss": {
-    "file": "assets/app-DEmZ6Ulw.css",
+    "file": "assets/app-BE9E7JgA.css",
     "name": "app",
     "names": [
       "app.css"
@@ -13,7 +13,7 @@
     "isEntry": true
   },
   "resources/css/desktop.scss": {
-    "file": "assets/desktop-Gy33g3ga.css",
+    "file": "assets/desktop-ClEutIkd.css",
     "name": "desktop",
     "names": [
       "desktop.css"
@@ -37,7 +37,7 @@
     "isEntry": true
   },
   "resources/js/desktop.ts": {
-    "file": "assets/desktop-BUJGE0eP.js",
+    "file": "assets/desktop-CBdOnshL.js",
     "name": "desktop",
     "src": "resources/js/desktop.ts",
     "isEntry": true,
@@ -46,7 +46,7 @@
     ]
   },
   "resources/js/tobidot-element-viewer.ts": {
-    "file": "assets/tobidot-element-viewer-DPYfmWBg.js",
+    "file": "assets/tobidot-element-viewer-DULcqmqE.js",
     "name": "tobidot-element-viewer",
     "src": "resources/js/tobidot-element-viewer.ts",
     "isEntry": true,

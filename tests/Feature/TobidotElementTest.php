@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\TobidotElement;
+use Database\Seeders\TobidotElementSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -103,5 +104,46 @@ class TobidotElementTest extends TestCase
         $this->assertEquals(2, $dependency['version']['major']);
         $this->assertEquals(1, $dependency['version']['minor']);
         $this->assertArrayNotHasKey('patch', $dependency['version']);
+    }
+
+    public function test_packages_are_serialized_as_indexed_arrays()
+    {
+        TobidotElement::factory()->create(['name' => 'first-pkg']);
+        TobidotElement::factory()->create(['name' => 'second-pkg']);
+
+        $response = $this->getJson('/api/public/tobidot-elements');
+
+        $response->assertStatus(200);
+        $content = $response->getContent();
+        $decoded = json_decode($content, true);
+
+        $this->assertTrue(array_is_list($decoded['packages']['first-pkg']));
+        $this->assertTrue(array_is_list($decoded['packages']['second-pkg']));
+    }
+
+    public function test_empty_packages_serialized_as_json_object()
+    {
+        TobidotElement::query()->delete();
+
+        $response = $this->getJson('/api/public/tobidot-elements');
+
+        $response->assertStatus(200);
+        $content = $response->getContent();
+        $this->assertStringContainsString('"packages":{}', $content);
+    }
+
+    public function test_tobidot_element_seeder_seeds_required_packages()
+    {
+        $this->seed(TobidotElementSeeder::class);
+
+        $response = $this->getJson('/api/public/tobidot-elements');
+        $response->assertStatus(200);
+
+        $packages = $response->json('packages');
+        $this->assertArrayHasKey('dll-tce-package-registry', $packages);
+        $this->assertArrayHasKey('dll-tce-desktop', $packages);
+        $this->assertArrayHasKey('tce-desktop', $packages);
+        $this->assertArrayHasKey('tce-bootloader', $packages);
+        $this->assertArrayHasKey('tce-clock', $packages);
     }
 }

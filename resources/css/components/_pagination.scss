@@ -1,4 +1,78 @@
+@use "../globals/variables";
 @use "../globals/mixins";
+
+.pagination {
+    &__list {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        gap: 0.25rem;
+    }
+
+    &__item {
+        display: inline-block;
+        margin: 0;
+
+        &--active,
+        &.active {
+            .pagination__link {
+                border-top: 2px solid variables.$color-black;
+                border-left: 2px solid variables.$color-black;
+                border-right: 2px solid variables.$color-win95-light;
+                border-bottom: 2px solid variables.$color-win95-light;
+                box-shadow: inset 1px 1px 0 variables.$color-win95-dark, inset -1px -1px 0 variables.$color-win95-highlight;
+                background-color: variables.$color-win95-highlight;
+                font-weight: bold;
+                color: variables.$color-orange;
+            }
+        }
+
+        &--disabled,
+        &.disabled {
+            .pagination__link {
+                color: variables.$color-win95-dark;
+                text-shadow: 1px 1px 0 variables.$color-white;
+                cursor: not-allowed;
+                border-color: variables.$color-win95-highlight variables.$color-win95-dark variables.$color-win95-dark variables.$color-win95-highlight;
+            }
+        }
+    }
+
+    &__link {
+        @include mixins.win95-button(variables.$color-win95-surface);
+        display: inline-flex;
+        padding: 0.35rem 0.65rem;
+        font-family: variables.$font-family-mono;
+        font-size: 0.85rem;
+        color: variables.$color-black;
+        text-decoration: none;
+
+        &:hover:not(&--disabled) {
+            background-color: variables.$color-win95-highlight;
+            color: variables.$color-blue;
+        }
+
+        &--disabled {
+            color: variables.$color-win95-dark;
+            text-shadow: 1px 1px 0 variables.$color-white;
+            cursor: not-allowed;
+        }
+
+        &--active {
+            border-top: 2px solid variables.$color-black;
+            border-left: 2px solid variables.$color-black;
+            border-right: 2px solid variables.$color-win95-light;
+            border-bottom: 2px solid variables.$color-win95-light;
+            box-shadow: inset 1px 1px 0 variables.$color-win95-dark, inset -1px -1px 0 variables.$color-win95-highlight;
+            background-color: variables.$color-win95-highlight;
+            font-weight: bold;
+            color: variables.$color-orange;
+        }
+    }
+}
 
 .pagination-section {
     display: flex;
@@ -6,6 +80,10 @@
     align-items: center;
     margin-top: 1rem;
     margin-bottom: 1rem;
+    padding: 0.5rem;
+    gap: 1rem;
+    @include mixins.win95-outset(variables.$color-win95-surface);
+    font-family: variables.$font-family-mono;
 
     &__links {
         display: flex;
@@ -13,54 +91,54 @@
         align-items: center;
     }
 
+    &__total,
     &__info {
-        span {
-            font-size: 1.2rem;
-            font-weight: 500;
-            color: #6b7280;
+        font-size: 0.85rem;
+        font-weight: bold;
+        color: variables.$color-black;
+        white-space: nowrap;
+        padding: 0.25rem 0.5rem;
+        @include mixins.win95-inset(variables.$color-win95-highlight);
+    }
+
+    &__search {
+        display: flex;
+        flex: 1 1 auto;
+        max-width: 300px;
+    }
+
+    &__search-form {
+        width: 100%;
+        margin: 0;
+    }
+
+    &__search-label {
+        width: 100%;
+        display: block;
+    }
+
+    &__search-input {
+        width: 100%;
+        padding: 0.35rem 0.5rem;
+        @include mixins.win95-inset(variables.$color-white);
+        font-family: variables.$font-family-mono;
+        font-size: 0.85rem;
+        color: variables.$color-black;
+
+        &:focus {
+            outline: 1px dotted variables.$color-blue;
         }
     }
 
-
     nav {
         ul {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            list-style: none;
-            padding: 0;
-            margin: 0;
+            @extend .pagination__list;
 
             li {
-                display: inline-block;
-                margin: 0 0.5rem;
+                @extend .pagination__item;
 
                 a, span {
-                    display: block;
-                    padding: 0.5rem 1rem;
-                    border-radius: 0.25rem;
-                    color: #6b7280;
-                    text-decoration: none;
-                    transition: background-color 0.3s;
-
-                    &:hover {
-                        background-color: #f3f4f6;
-                    }
-                }
-
-                &.active {
-                    > span {
-                        background-color: #f3f4f6;
-                        font-weight: bold;
-                        color: #111827;
-                    }
-                }
-
-                &.disabled {
-                    > span {
-                        color: #6b7280;
-                        cursor: not-allowed;
-                    }
+                    @extend .pagination__link;
                 }
             }
         }
@@ -75,17 +153,21 @@
     * {
         width: 100%;
     }
-
 }
 
 @include mixins.mobile-tablet {
-    // make smaller on tablet
+    .pagination {
+        &__link {
+            padding: 0.25rem 0.4rem;
+        }
+    }
+
     .pagination-section {
         nav {
             ul {
                 li {
                     a, span {
-                        padding: 0.25rem 0.125rem;
+                        padding: 0.25rem 0.4rem;
                     }
                 }
             }
@@ -94,19 +176,28 @@
 }
 
 @include mixins.mobile {
-    // make smaller on mobile and column layout
     .pagination-section {
         flex-direction: column;
+        align-items: stretch;
 
         &__links {
             margin-bottom: 0.25rem;
+            justify-content: center;
+        }
+
+        &__total {
+            text-align: center;
+        }
+
+        &__search {
+            max-width: 100%;
         }
 
         nav {
             ul {
                 li {
                     a, span {
-                        padding: 0.125rem 0;
+                        padding: 0.15rem 0.3rem;
                     }
                 }
             }

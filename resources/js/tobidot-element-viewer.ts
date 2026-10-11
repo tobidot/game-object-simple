@@ -25,12 +25,15 @@ import {TceRoot} from '@game.object/tce-common';
     const package_groups = json.packages;
 
     // 2. Find and import the registry package
+    const raw_registry_versions = package_groups?.['dll-tce-package-registry'];
     const registry_item_versions: Array<{
         major: number,
         minor: number,
         patch: number,
         [key: string]: any,
-    }> = package_groups['dll-tce-package-registry'];
+    }> = Array.isArray(raw_registry_versions)
+        ? raw_registry_versions
+        : (raw_registry_versions ? Object.values(raw_registry_versions) : []);
 
     if (!registry_item_versions || !registry_item_versions.length) {
         throw new Error('Registry package "dll-tce-package-registry" not found');

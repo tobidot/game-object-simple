@@ -19,8 +19,8 @@ class PageFactory extends Factory
     public function definition(): array
     {
         return [
-            'uri' => implode('/', $this->faker->words($this->faker->numberBetween(1, 3))),
-            'title' => $this->faker->sentence($this->faker->numberBetween(1, 9)),
+            'uri' => $this->faker->unique()->slug(2),
+            'title' => $this->faker->sentence($this->faker->numberBetween(2, 6)),
             'content' => $this->faker->randomHtml(4, 4),
             'publish_state' => $this->faker->randomElement(PublishState::cases()),
         ];
@@ -30,6 +30,13 @@ class PageFactory extends Factory
     {
         return $this->state([
             'publish_state' => PublishState::PUBLISHED,
+        ]);
+    }
+
+    public function private(): self
+    {
+        return $this->state([
+            'publish_state' => PublishState::PRIVATE,
         ]);
     }
 }

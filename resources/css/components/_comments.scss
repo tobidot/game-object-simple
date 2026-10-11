@@ -1,43 +1,81 @@
-@use "../../css/globals/mixins";
+@use "../globals/variables";
+@use "../globals/mixins";
 
 .comment {
     display: flex;
     flex-direction: column;
     width: 100%;
     height: auto;
-    border: 3px solid white;
-    border-radius: 5px;
-    padding: 0.5rem;
+    @include mixins.win95-window(variables.$color-win95-surface);
+    padding: 0.35rem;
+    font-family: variables.$font-family-mono;
+    gap: 0.25rem;
 
     &__title {
-        font-size: 1.5rem;
+        font-size: 1.1rem;
         display: flex;
         margin: 0;
-        border-bottom: 2px solid;
+        @include mixins.win95-titlebar(variables.$color-blue, variables.$color-white);
     }
+
     &__meta {
-        border-bottom: 2px solid;
+        @include mixins.win95-inset(variables.$color-win95-highlight);
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
         font-size: 0.8rem;
-        background: rgba(0,0,0,0.5);
+        padding: 0.2rem 0.5rem;
+        color: variables.$color-black;
     }
+
     &__content {
-        margin: 0.25rem;
+        margin: 0;
+        padding: 0.5rem;
+        @include mixins.win95-inset(variables.$color-white);
+        color: variables.$color-black;
+        font-size: 0.9rem;
+        line-height: 1.4;
     }
 }
 
+.comment-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    font-family: variables.$font-family-mono;
+
+    &__title {
+        font-size: 1.5rem;
+        margin: 0;
+        color: variables.$color-blue;
+    }
+
+    &__button {
+        @include mixins.win95-button(variables.$color-win95-surface);
+        align-self: flex-start;
+        padding: 0.5rem 1rem;
+    }
+}
 
 .comment-list {
     list-style: none;
-    padding: 0;
-    background: rgba(0,0,0,0.5);
+    padding: 0.5rem;
+    margin: 0;
+    @include mixins.win95-inset(variables.$color-win95-highlight);
+
+    &__item {
+        margin-bottom: 0.75rem;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
 }
 
 .comment-entry {
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 .comment-form {
@@ -45,12 +83,12 @@
     flex-direction: column;
     width: 100%;
     height: auto;
-    border: 3px solid white;
-    border-radius: 5px;
-    padding: 0.5rem;
+    @include mixins.win95-outset(variables.$color-win95-surface);
+    padding: 0.75rem;
+    font-family: variables.$font-family-mono;
 
     grid-template-columns: repeat(8, 1fr);
-    gap: 0.25rem;
+    gap: 0.5rem;
 
     &__row {
         display: grid;
@@ -62,7 +100,6 @@
 
         &:fullscreen {
             width: 100%;
-
             grid-template-columns: repeat(4, 1fr);
             grid-template-rows: 1fr auto auto 1fr;
 
@@ -77,21 +114,35 @@
     &__label {
         grid-column: span 2;
         display: flex;
-
         white-space: nowrap;
-
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
+        font-weight: bold;
+        font-size: 0.85rem;
+        color: variables.$color-black;
+
+        &--narrow,
         &.narrow {
             grid-column: span 1;
         }
-        &.wrap{
+
+        &--wrap,
+        &.wrap {
             white-space: normal;
         }
     }
 
     &__input {
         grid-column: span 2;
+        padding: 0.35rem 0.5rem;
+        @include mixins.win95-inset(variables.$color-white);
+        font-family: variables.$font-family-mono;
+        font-size: 0.85rem;
+        color: variables.$color-black;
+
+        &:focus {
+            outline: 1px dotted variables.$color-blue;
+        }
     }
 
     &__captcha-image {
@@ -99,10 +150,16 @@
         width: 100%;
         margin: 0;
         grid-column: span 3;
+        @include mixins.win95-inset(variables.$color-black);
+        padding: 2px;
+
         > img {
             width: 100%;
             height: auto;
+            image-rendering: pixelated;
+            display: block;
         }
+
         > a {
             position: absolute;
             bottom: 0;
@@ -117,6 +174,7 @@
         grid-column: span 4;
         grid-template-columns: subgrid;
 
+        &--column,
         &.column {
             flex-direction: column;
             .comment-form {
@@ -129,6 +187,7 @@
             }
         }
 
+        &--full,
         &.full {
             grid-column: span 8;
             .comment-form {
@@ -140,41 +199,39 @@
     }
 
     &__submit {
+        @include mixins.win95-button(variables.$color-win95-surface);
         grid-column: 4/6;
+        padding: 0.5rem 1rem;
     }
-
 
     &__success {
         grid-column: 1/-1;
-        /* color: white; */
-        background: rgba(0,255,0,0.5);
+        @include mixins.win95-inset(#ddffdd);
+        color: #006600;
         font-weight: bold;
-        padding: 0.125rem;
+        padding: 0.5rem;
     }
 
     &__errors {
         grid-column: 1/-1;
         display: flex;
         width: 100%;
-        padding: 0.25rem;
+        padding: 0.5rem;
         margin: 0;
         gap: 0.25rem;
-
         list-style: none;
-
         flex-direction: column;
+        @include mixins.win95-inset(#ffdddd);
     }
 
     &__error {
         display: flex;
         width: 100%;
-        background: red;
+        color: #990000;
+        font-size: 0.85rem;
     }
 
-
-
     @include mixins.tablet {
-
         &__field {
             grid-column: span 4;
 
@@ -223,12 +280,12 @@
     }
 }
 
-#comment-content{
+#comment-content {
     resize: vertical;
-    height: 4rem;
+    min-height: 4rem;
 }
 
 #comment-title {
-    font-size: 1.75rem;
+    font-size: 1rem;
 }
 

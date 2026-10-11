@@ -1,10 +1,17 @@
 @use "../globals/variables";
 
 .link {
-    color: variables.$primary-color;
+    color: variables.$color-blue;
     font-weight: bold;
+    font-family: variables.$font-family-mono;
+    text-decoration: underline;
 
     &:hover {
+        color: variables.$color-orange;
         text-decoration: underline;
+    }
+
+    &:active {
+        color: variables.$color-black;
     }
 }

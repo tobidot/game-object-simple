@@ -4,24 +4,24 @@
 ])
 
 @php
-/**
- * @var LengthAwarePaginator $paginator
- */
+    /**
+     * @var LengthAwarePaginator $paginator
+     */
 @endphp
 
 
 <div class="pagination-section">
     <div class="pagination-section__links">
-        {{ $paginator->links('pagination::default') }}
+        {{ $paginator->links('components.pagination.links') }}
+    </div>
+    <div class="pagination-section__total">
+        {{ __('Total Hits: ') . $paginator->total() }}
     </div>
     <div class="pagination-section__search">
-        <form id="search">
-            <label>
-                <input name="text" type="text" placeholder="Search..." value="{{request()->get('search')}}"/>
+        <form id="search" class="pagination-section__search-form" method="GET" action="{{ url()->current() }}">
+            <label class="pagination-section__search-label">
+                <input name="text" type="text" class="pagination-section__search-input" placeholder="Search..." value="{{ request()->get('search') }}"/>
             </label>
         </form>
     </div>
-{{--    <div class="pagination-section__info">--}}
-{{--        <span>Page {{ $paginator->currentPage() }} of {{ $paginator->lastPage() }}</span>--}}
-{{--    </div>--}}
 </div>

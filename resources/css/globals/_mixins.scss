@@ -1,20 +1,18 @@
 @use "variables";
 
-/** Mixin for mobile layout */
+/** Breakpoint Mixins */
 @mixin mobile {
     @media (max-width: 480px) {
         @content;
     }
 }
 
-/** Mixin for tablet layout */
 @mixin tablet {
     @media (min-width: 481px) and (max-width: 768px) {
         @content;
     }
 }
 
-/** Mixin for desktop layout */
 @mixin desktop {
     @media (min-width: 769px) {
         @content;
@@ -33,11 +31,159 @@
     }
 }
 
-/** Mixin for page-like layout */
+/** Dithered Gradient Backgrounds */
+@mixin dither-gradient($base-color: variables.$color-turquoise, $dot-color: variables.$color-blue) {
+    background-color: $base-color;
+    background-image:
+        radial-gradient($dot-color 16%, transparent 17%),
+        radial-gradient($dot-color 16%, transparent 17%),
+        linear-gradient(180deg, $base-color 0%, rgba(38, 48, 106, 0.4) 100%);
+    background-size: 4px 4px, 4px 4px, 100% 100%;
+    background-position: 0 0, 2px 2px, 0 0;
+}
+
+@mixin dither-subtle($base-color: variables.$color-turquoise, $dot-color: rgba(38, 48, 106, 0.2)) {
+    background-color: $base-color;
+    background-image:
+        radial-gradient($dot-color 15%, transparent 16%),
+        radial-gradient($dot-color 15%, transparent 16%);
+    background-size: 4px 4px;
+    background-position: 0 0, 2px 2px;
+}
+
+/** Windows 95 Pseudo-3D Border Mixins */
+@mixin win95-outset($bg: variables.$color-win95-surface) {
+    background-color: $bg;
+    border-top: 2px solid variables.$color-win95-light;
+    border-left: 2px solid variables.$color-win95-light;
+    border-right: 2px solid variables.$color-win95-black;
+    border-bottom: 2px solid variables.$color-win95-black;
+    box-shadow: inset 1px 1px 0 variables.$color-win95-highlight, inset -1px -1px 0 variables.$color-win95-dark;
+}
+
+@mixin win95-inset($bg: variables.$color-white) {
+    background-color: $bg;
+    border-top: 2px solid variables.$color-win95-dark;
+    border-left: 2px solid variables.$color-win95-dark;
+    border-right: 2px solid variables.$color-win95-light;
+    border-bottom: 2px solid variables.$color-win95-light;
+    box-shadow: inset 1px 1px 0 variables.$color-win95-black, inset -1px -1px 0 variables.$color-win95-highlight;
+}
+
+@mixin win95-button($bg: variables.$color-win95-surface) {
+    @include win95-outset($bg);
+    font-family: variables.$font-family-mono;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: variables.$color-black;
+    padding: 0.35rem 0.75rem;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0;
+    line-height: 1.2;
+
+    &:hover {
+        background-color: variables.$color-win95-highlight;
+    }
+
+    &:active,
+    &.active,
+    &--active {
+        border-top: 2px solid variables.$color-win95-black;
+        border-left: 2px solid variables.$color-win95-black;
+        border-right: 2px solid variables.$color-win95-light;
+        border-bottom: 2px solid variables.$color-win95-light;
+        box-shadow: inset 1px 1px 0 variables.$color-win95-dark, inset -1px -1px 0 variables.$color-win95-highlight;
+    }
+
+    &:focus-visible {
+        outline: 1px dotted variables.$color-black;
+        outline-offset: -4px;
+    }
+
+    &:disabled,
+    &--disabled {
+        color: variables.$color-win95-dark;
+        text-shadow: 1px 1px 0 variables.$color-white;
+        cursor: not-allowed;
+    }
+}
+
+@mixin win95-titlebar($bg: variables.$color-blue, $text: variables.$color-white) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: $bg;
+    color: $text;
+    padding: 0.25rem 0.5rem;
+    font-family: variables.$font-family-mono;
+    font-weight: bold;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+@mixin win95-window($bg: variables.$color-win95-surface) {
+    @include win95-outset($bg);
+    padding: 3px;
+    border-radius: 0;
+}
+
+/** 6 - 15 FPS Stepped Animations */
+@keyframes win95-cursor-blink {
+    0%, 49% {
+        opacity: 1;
+    }
+    50%, 100% {
+        opacity: 0;
+    }
+}
+
+@keyframes win95-stepped-bounce {
+    0% {
+        transform: translateY(0);
+    }
+    25% {
+        transform: translateY(-2px);
+    }
+    50% {
+        transform: translateY(0);
+    }
+    75% {
+        transform: translateY(2px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+@keyframes win95-stepped-highlight {
+    0% {
+        background-color: variables.$color-orange;
+        color: variables.$color-white;
+    }
+    50% {
+        background-color: variables.$color-blue;
+        color: variables.$color-white;
+    }
+    100% {
+        background-color: variables.$color-orange;
+        color: variables.$color-white;
+    }
+}
+
 @mixin page-like {
     h2 {
-        font-size: 2.5rem;
-        margin: 2rem 0 1rem 1.5rem;
+        font-family: variables.$font-family-mono;
+        font-size: 1.8rem;
+        margin: 1.5rem 0 1rem;
+        color: variables.$color-blue;
+        border-bottom: 2px solid variables.$color-gray;
+        padding-bottom: 0.25rem;
     }
 
     > div {
@@ -46,38 +192,29 @@
 }
 
 @mixin page-centered(
-    $border-color: variables.$background-color-light,
-    $background-color: variables.$background-color
+    $border-color: variables.$color-win95-dark,
+    $background-color: variables.$color-win95-surface
 ) {
-    max-width: 1024px;
-    margin: auto;
-    background: /* Fade out to the bottom*/
-        linear-gradient(0deg,
-            $background-color 0px,
-            transparent 10px,
-        ),
-            /* bars left and right */
-        linear-gradient(90deg,
-            transparent 0px,
-            $border-color 5px,
-            transparent 10px,
-            transparent calc(100% - 10px),
-            $border-color calc(100% - 5px),
-            transparent calc(100% - 0px),
-            transparent 100%
-        );
+    max-width: 1080px;
+    margin: 1rem auto;
+    @include win95-window($background-color);
+    padding: 1rem;
 }
 
 @mixin teaser {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-bottom: 1rem;
+    @include win95-inset(variables.$color-black);
+    padding: 0.5rem;
 
     img {
         max-width: 100%;
         max-height: 400px;
         width: auto;
         height: auto;
+        image-rendering: pixelated;
     }
 }
 
@@ -89,6 +226,8 @@
         margin-left: 0;
         justify-content: center;
         align-items: center;
+        @include win95-inset(variables.$color-win95-surface);
+        padding: 0.5rem;
 
         > a {
             display: table;
@@ -98,24 +237,39 @@
                 height: 100%;
                 max-width: 100%;
                 max-height: 300px;
+                image-rendering: pixelated;
             }
             figcaption {
                 display: table-caption;
                 caption-side: bottom;
                 text-align: left;
+                font-family: variables.$font-family-mono;
+                font-size: 0.85rem;
+                padding-top: 0.25rem;
+                color: variables.$color-gray;
             }
         }
-
     }
 
     strong {
-        text-shadow: 3px 3px 3px black;
+        color: variables.$color-blue;
+        font-weight: bold;
     }
 
     pre {
-        border: dashed;
-        padding: 0.25rem;
-        background: #22a;
+        @include win95-inset(#000000);
+        padding: 0.75rem;
+        color: #00ff66;
+        font-family: variables.$font-family-mono;
         overflow-x: auto;
+        font-size: 0.9rem;
+    }
+
+    blockquote {
+        @include win95-inset(variables.$color-win95-highlight);
+        border-left: 4px solid variables.$color-blue;
+        margin: 1rem 0;
+        padding: 0.5rem 1rem;
+        font-style: italic;
     }
 }

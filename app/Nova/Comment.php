@@ -8,6 +8,7 @@ use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\Email;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\MorphTo;
+use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
@@ -47,8 +48,8 @@ class Comment extends Resource
             ID::make()->sortable(),
             Boolean::make('Visible', 'visible')->sortable()->filterable(),
             DateTime::make('Created At', 'created_at')->sortable(),
-            \Laravel\Nova\Fields\Text::make('Title', 'title')->filterable(),
-            \Laravel\Nova\Fields\Text::make('Author', 'author')->sortable()->filterable(),
+            Text::make('Title', 'title')->filterable(),
+            Text::make('Author', 'author')->sortable()->filterable(),
             Email::make('Email', 'email')->sortable()->filterable(),
             Trix::make('Content', 'content')
                 ->rules(['required', 'string', 'max:65535'])

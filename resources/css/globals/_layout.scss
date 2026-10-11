@@ -1,17 +1,21 @@
 @use "./variables";
+@use "./mixins";
 
 .meta {
     display: flex;
-
-    color: variables.$text-color-light;
-    font-size: 0.8rem;
-
+    color: variables.$color-black;
+    font-size: 0.85rem;
+    font-family: variables.$font-family-mono;
     justify-content: space-between;
     align-items: center;
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 0.75rem;
+    @include mixins.win95-inset(variables.$color-win95-highlight);
 
     h4 {
         margin: 0;
         font-weight: bold;
-        font-size: 1rem;
+        font-size: 0.95rem;
+        color: variables.$color-blue;
     }
 }

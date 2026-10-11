@@ -10,12 +10,15 @@ import {TceRoot} from '@game.object/tce-common';
     const package_groups = json.packages;
 
     // 2. Find and import the registry package
+    const raw_registry_versions = package_groups?.['dll-tce-package-registry'];
     let registry_item_versions: Array<{
         major: number,
         minor: number,
         patch: number,
         [key: string]: any,
-    }> = package_groups['dll-tce-package-registry'];
+    }> = Array.isArray(raw_registry_versions)
+        ? raw_registry_versions
+        : (raw_registry_versions ? Object.values(raw_registry_versions) : []);
     // compare numerically: as strings "1.0.9" would wrongly be newer than "1.0.19"
     const is_newer = (a: typeof registry_item_versions[number], b: typeof registry_item_versions[number]) =>
         a.major !== b.major ? a.major > b.major : a.minor !== b.minor ? a.minor > b.minor : a.patch > b.patch;
@@ -144,4 +147,27 @@ import {TceRoot} from '@game.object/tce-common';
     console.log('Application ready.');
 }).catch((error) => {
     console.error('Error initializing application:', error);
+    const $desktop = document.getElementById('desktop');
+    if ($desktop) {
+        $desktop.innerHTML = '';
+        const $errorContainer = document.createElement('div');
+        $errorContainer.style.cssText = 'margin: auto; padding: 2rem; max-width: 560px; background: rgba(30, 41, 59, 0.95); color: #f1f5f9; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; border: 1px solid #475569; border-radius: 8px; text-align: center; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);';
+
+        const $title = document.createElement('h2');
+        $title.style.cssText = 'margin: 0 0 0.75rem 0; color: #f87171; font-size: 1.25rem; font-weight: 600;';
+        $title.textContent = 'Desktop Initialization Error';
+
+        const $msg = document.createElement('p');
+        $msg.style.cssText = 'margin: 0.5rem 0; font-size: 0.95rem; line-height: 1.5; color: #cbd5e1;';
+        $msg.textContent = error instanceof Error ? error.message : String(error);
+
+        const $help = document.createElement('p');
+        $help.style.cssText = 'margin-top: 1rem; margin-bottom: 0; font-size: 0.85rem; color: #94a3b8; line-height: 1.4;';
+        $help.textContent = 'Please make sure that the required TCE packages (such as "dll-tce-package-registry" and "tce-desktop") are uploaded and available in the registry.';
+
+        $errorContainer.appendChild($title);
+        $errorContainer.appendChild($msg);
+        $errorContainer.appendChild($help);
+        $desktop.appendChild($errorContainer);
+    }
 });

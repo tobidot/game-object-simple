@@ -50,7 +50,7 @@
             <div class="archive__item">
                 <a href="{{route('projects.proxy', ['project'=>$project, 'path' => 'index.html'])}}"
                    target="_blank"
-                   style="display: flex; justify-content: center; align-items: center; font-size: 1.35rem;">
+                   class="project__main-release-link">
                     Latest Version
                 </a>
             </div>
@@ -63,7 +63,7 @@
 
     @if($project->codeReleases !== null && $project->codeReleases->count() > 0)
         <div class="project__releases">
-            <h2>
+            <h2 class="project__releases-title">
                 Releases
             </h2>
             <div class="archive archive--button">
@@ -79,7 +79,7 @@
 
     @if($relatedItems !== null && $relatedItems->count() > 0)
         <div class="project__related">
-            <h2>
+            <h2 class="project__related-title">
                 Related
             </h2>
 

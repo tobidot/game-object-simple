@@ -1,28 +1,34 @@
 @use "../globals/variables";
+@use "../globals/mixins";
 
 .excerpt {
     grid-area: span 6;
     position: relative;
     display: grid;
     height: 100%;
-
     flex-direction: column;
     grid-template-rows: subgrid;
-    grid-gap: 0.25rem;
+    grid-gap: 0.35rem;
     overflow: hidden;
+    font-family: variables.$font-family-mono;
 
     &__title {
         h3 {
             display: flex;
             width: 100%;
             height: 100%;
-
-            font-size: 1.5rem;
-            margin: 0 0 0.25rem;
-            text-align: center;
-
-            justify-content: center;
+            font-size: 1.05rem;
+            margin: 0;
+            padding: 0.25rem 0.5rem;
+            color: variables.$color-white;
+            background-color: variables.$color-blue;
+            justify-content: flex-start;
             align-items: center;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
         }
     }
 
@@ -30,8 +36,9 @@
         display: flex;
         width: 100%;
         height: auto;
-
         overflow: hidden;
+        @include mixins.win95-inset(variables.$color-black);
+        padding: 2px;
 
         > img {
             display: flex;
@@ -39,6 +46,7 @@
             height: auto;
             max-height: 100%;
             margin: auto;
+            image-rendering: pixelated;
         }
     }
 
@@ -46,20 +54,30 @@
         display: flex;
         font-size: 0.75rem;
         justify-content: space-between;
+        align-items: center;
+        padding: 0.15rem 0.35rem;
+        @include mixins.win95-inset(variables.$color-win95-highlight);
+        color: variables.$color-black;
     }
 
     &__content {
-        font-size: 1.2rem;
-        padding: 0.25rem 0;
-        margin: auto;
+        font-size: 0.9rem;
+        padding: 0.5rem;
+        margin: 0;
+        @include mixins.win95-inset(variables.$color-white);
+        color: variables.$color-black;
+        line-height: 1.4;
+        position: relative;
+        z-index: 20;
     }
 
     &__actions {
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-end;
         align-items: center;
+        gap: 0.5rem;
+        padding-top: 0.25rem;
     }
-
 
     &__background {
         position: absolute;
@@ -70,21 +88,16 @@
         width: calc(100% + 1rem);
         height: auto;
         margin: -0.5rem;
-        opacity: 0.3;
+        opacity: 0.15;
         overflow: hidden;
-
         transform: translate(0, -50%);
 
         img {
             margin: auto;
             width: 100%;
             height: auto;
+            image-rendering: pixelated;
         }
-    }
-
-    &__content {
-        position: relative;
-        z-index: 20;
     }
 
     &--button {
@@ -95,7 +108,6 @@
         margin: 0;
 
         .excerpt {
-            // Override font-size to make it more compact
             &__title {
                 display: flex;
                 margin: 0;
@@ -105,24 +117,32 @@
                 max-width: calc(100% - 6rem);
 
                 h3 {
+                    background: transparent;
+                    color: variables.$color-black;
                     white-space: normal;
-                    font-size: 1.3rem;
+                    font-size: 1rem;
                     margin: 0;
+                    padding: 0;
                 }
             }
 
             &__content {
-                font-size: 1rem;
+                font-size: 0.85rem;
+                background: transparent;
+                border: none;
+                box-shadow: none;
+                padding: 0;
             }
 
             &__image {
                 flex: 1 1 auto;
                 height: auto;
-                margin: 0 1rem 0 0;
+                margin: 0 0.5rem 0 0;
 
                 img {
                     width: 100%;
                     height: auto;
+                    image-rendering: pixelated;
                 }
             }
         }

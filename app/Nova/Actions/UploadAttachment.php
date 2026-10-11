@@ -19,6 +19,8 @@ class UploadAttachment extends Action
 {
     use InteractsWithQueue, Queueable;
 
+    public $standalone;
+
     /**
      * Perform the action on the given models.
      *

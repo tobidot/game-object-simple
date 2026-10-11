@@ -27,7 +27,7 @@
     </div>
 
     @if($relatingItems !== null && $relatingItems->count() > 0)
-        <div class="project__relating">
+        <div class="page__relating">
             <div class="archive archive--button">
                 @foreach($relatingItems as $item)
                     <div class="archive__item">
@@ -43,8 +43,8 @@
     </div>
 
     @if($relatedItems !== null && $relatedItems->count() > 0)
-        <div class="project__related">
-            <h2>
+        <div class="page__related">
+            <h2 class="page__related-title">
                 Related
             </h2>
 

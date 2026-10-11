@@ -1,18 +1,25 @@
 @use "../globals/variables";
+@use "../globals/mixins";
 
 * {
     box-sizing: border-box;
 }
 
+::selection {
+    background-color: variables.$color-blue;
+    color: variables.$color-white;
+}
+
 // Global styles
 html,
 body {
-    background-color: variables.$background-color;
+    @include mixins.dither-gradient(variables.$color-turquoise, variables.$color-blue);
     color: variables.$text-color;
-    font-family: Arial, sans-serif;
+    font-family: variables.$font-family-mono;
     font-size: 16px;
     margin: 0;
     padding: 0;
+    min-height: 100vh;
 
     @media (max-width: 1024px) {
         font-size: 14px;
@@ -23,24 +30,33 @@ body {
 }
 
 a {
-    color: variables.$primary-color;
-    text-decoration: none;
+    color: variables.$color-blue;
+    text-decoration: underline;
+
+    &:hover {
+        color: variables.$color-orange;
+    }
 }
 
-header {
-
+button, input, select, textarea {
+    font-family: variables.$font-family-mono;
 }
 
 main {
-    min-height: calc(100dvh - 5rem - 3rem + 0.5rem );
+    min-height: calc(100dvh - 4.5rem - 3.5rem);
     padding: 1rem;
 }
 
-// Footer
+// Footer / Status Bar
 footer {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
     height: 3rem;
-    padding: 1rem;
-    //border-top: 2px solid variables.$background-color-light;
-    background-color: variables.$background-color;
+    padding: 0.25rem 0.75rem;
+    @include mixins.win95-outset(variables.$color-win95-surface);
+    color: variables.$color-black;
+    font-family: variables.$font-family-mono;
+    font-size: 0.85rem;
+    margin: 0.5rem;
 }

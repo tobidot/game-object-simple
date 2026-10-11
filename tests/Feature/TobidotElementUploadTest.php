@@ -79,4 +79,20 @@ class TobidotElementUploadTest extends TestCase
             'patch' => 1,
         ]);
     }
+
+    public function test_invalid_version_format()
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $response = $this->postJson(route('tobidot-elements.upload'), [
+            'name' => 'invalid-version',
+            'zip' => UploadedFile::fake()->create('element.zip', 10),
+            'version' => 'invalid.1.0',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['version']);
+    }
 }

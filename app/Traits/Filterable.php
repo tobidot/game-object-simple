@@ -50,7 +50,7 @@ trait Filterable
 
     public function getBaseUrl(): string
     {
-        $base_url_path = request()->getBaseUrl();
+        $base_url_path = request()->url();
         $search = $this->getSearchInput();
         if ($search !== null) {
             $base_url_path .= '?search='.$search;

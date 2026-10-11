@@ -84,7 +84,7 @@ class Page extends Model
 
     public function pages(): BelongsToMany
     {
-        return $this->belongsToMany(Page::class);
+        return $this->belongsToMany(Page::class, 'page_page', 'page_id', 'related_page_id');
     }
 
     public function relatingPages(): BelongsToMany

@@ -4,12 +4,27 @@
 main.page {
     @include mixins.page-centered;
     @include mixins.page-like;
+
     .page {
         &__teaser {
             @include mixins.teaser;
         }
+
         &__content {
             @include mixins.trix-content;
+            @include mixins.win95-inset(variables.$color-white);
+            padding: 1rem;
+            color: variables.$color-black;
+            margin-bottom: 1.5rem;
+        }
+
+        &__relating-title,
+        &__related-title {
+            font-size: 1.3rem;
+            color: variables.$color-blue;
+            border-bottom: 2px solid variables.$color-gray;
+            padding-bottom: 0.25rem;
+            margin: 1.5rem 0 1rem;
         }
     }
 }

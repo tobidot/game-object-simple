@@ -1,13 +1,11 @@
-<x-layouts.raw>
-    <x-slot name="title">
-        Tce Desktop
-    </x-slot>
+<x-layouts.app class="home desktop-view" title="Home">
     <x-slot name="head">
+        @vite(['resources/css/desktop.scss'])
     </x-slot>
     <x-slot name="foot">
-        @vite(['resources/js/desktop.ts', 'resources/css/desktop.scss'])
+        @vite(['resources/js/desktop.ts'])
     </x-slot>
-    <main id="desktop">
+    <div id="desktop">
 
-    </main>
-</x-layouts.raw>
+    </div>
+</x-layouts.app>

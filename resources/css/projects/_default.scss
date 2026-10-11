@@ -4,12 +4,44 @@
 main.project {
     @include mixins.page-centered;
     @include mixins.page-like;
+
     .project {
         &__teaser {
             @include mixins.teaser;
         }
+
         &__content {
             @include mixins.trix-content;
+            @include mixins.win95-inset(variables.$color-white);
+            padding: 1rem;
+            color: variables.$color-black;
+            margin-bottom: 1.5rem;
+        }
+
+        &__main-release-link {
+            @include mixins.win95-button(variables.$color-win95-surface);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: variables.$color-blue;
+            padding: 0.75rem 1.5rem;
+
+            &:hover {
+                color: variables.$color-orange;
+                background-color: variables.$color-win95-highlight;
+            }
+        }
+
+        &__releases-title,
+        &__related-title {
+            font-size: 1.3rem;
+            color: variables.$color-blue;
+            border-bottom: 2px solid variables.$color-gray;
+            padding-bottom: 0.25rem;
+            margin: 1.5rem 0 1rem;
         }
     }
 }

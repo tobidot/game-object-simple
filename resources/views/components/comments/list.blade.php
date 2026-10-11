@@ -13,7 +13,7 @@
 <ul class="comment-list">
     @foreach($comments as $comment)
         @if($comment->visible)
-            <li class="comment-entry">
+            <li class="comment-list__item comment-entry">
                 <x-comments.entry :comment="$comment"></x-comments.entry>
             </li>
         @endif

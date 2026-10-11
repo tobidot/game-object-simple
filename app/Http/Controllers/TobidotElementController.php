@@ -40,17 +40,20 @@ class TobidotElementController extends Controller
 
     public function index(): JsonResponse
     {
+        $grouped = TobidotElement::query()
+            ->with('dependencies')
+            ->get()
+            ->filter($this->isValid(...))
+            ->groupBy('name')
+            ->map(
+                function (Collection $items) {
+                    return $items->values()->map(fn (TobidotElement $element) => new TobidotElementResource($element));
+                }
+            );
+
         return response()->json([
             'version' => 1,
-            'packages' => TobidotElement::query()
-                ->with('dependencies')
-                ->get()
-                ->groupBy('name')
-                ->map(
-                    function (Collection $items) {
-                        return $items->map(fn (TobidotElement $element) => new TobidotElementResource($element));
-                    }
-                ),
+            'packages' => $grouped->isEmpty() ? (object) [] : $grouped,
         ]);
     }
 
@@ -76,5 +79,10 @@ class TobidotElementController extends Controller
             'message' => 'Tobidot element uploaded successfully',
             'element' => new TobidotElementResource($element),
         ]);
+    }
+
+    protected function isValid(TobidotElement $element): bool
+    {
+        return (bool) $element->name;
     }
 }
