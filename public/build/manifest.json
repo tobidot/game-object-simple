@@ -1,57 +1,45 @@
 {
-  "_preload-helper-DrInE4Zr.js": {
-    "file": "assets/preload-helper-DrInE4Zr.js",
-    "name": "preload-helper"
+  "_root-0SRFKtRh.js": {
+    "file": "assets/root-0SRFKtRh.js",
+    "name": "root"
   },
   "resources/css/app.scss": {
-    "file": "assets/app-BE9E7JgA.css",
-    "name": "app",
-    "names": [
-      "app.css"
-    ],
+    "file": "assets/app-C96GSZX2.css",
     "src": "resources/css/app.scss",
     "isEntry": true
   },
   "resources/css/desktop.scss": {
-    "file": "assets/desktop-ClEutIkd.css",
-    "name": "desktop",
-    "names": [
-      "desktop.css"
-    ],
+    "file": "assets/desktop-CicFOwMJ.css",
     "src": "resources/css/desktop.scss",
     "isEntry": true
   },
   "resources/css/tobidot-element-viewer.scss": {
-    "file": "assets/tobidot-element-viewer-NCiswl-l.css",
-    "name": "tobidot-element-viewer",
-    "names": [
-      "tobidot-element-viewer.css"
-    ],
+    "file": "assets/tobidot-element-viewer-B38tUVDX.css",
     "src": "resources/css/tobidot-element-viewer.scss",
     "isEntry": true
   },
   "resources/js/app.ts": {
-    "file": "assets/app-CiJenoQu.js",
+    "file": "assets/app-uphcUuL_.js",
     "name": "app",
     "src": "resources/js/app.ts",
     "isEntry": true
   },
   "resources/js/desktop.ts": {
-    "file": "assets/desktop-CBdOnshL.js",
+    "file": "assets/desktop-Cx4HgseB.js",
     "name": "desktop",
     "src": "resources/js/desktop.ts",
     "isEntry": true,
     "imports": [
-      "_preload-helper-DrInE4Zr.js"
+      "_root-0SRFKtRh.js"
     ]
   },
   "resources/js/tobidot-element-viewer.ts": {
-    "file": "assets/tobidot-element-viewer-DULcqmqE.js",
+    "file": "assets/tobidot-element-viewer-DB5D8B1B.js",
     "name": "tobidot-element-viewer",
     "src": "resources/js/tobidot-element-viewer.ts",
     "isEntry": true,
     "imports": [
-      "_preload-helper-DrInE4Zr.js"
+      "_root-0SRFKtRh.js"
     ]
   }
 }

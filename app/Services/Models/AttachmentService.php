@@ -130,9 +130,9 @@ class AttachmentService
         // Save the attachment
         $attachment = new Attachment;
         $attachment->path = $public_folder_path;
-        $attachment->url = join_paths('/storage', $attachment->path, $attachment->file_name);
-        $attachment->hash = $hash;
         $attachment->file_name = $file_name;
+        $attachment->url = join_paths('/storage', $attachment->path, $file_name);
+        $attachment->hash = $hash;
         $attachment->content_type = $mime_type;
         $attachment->publish_state = PublishState::PUBLISHED;
         $attachment->type = $attachment_type;

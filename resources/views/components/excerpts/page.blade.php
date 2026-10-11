@@ -5,22 +5,25 @@
 @props([
     'model',
 ])
-<?php
-$page = $model;
-/**
- * @var Page $page
- */
-?>
+@php
+    /** @var Page $page */
+    $page = $model;
+    $thumbnail = $page->thumbnail;
+@endphp
 
 <div class="excerpt">
     <div class="excerpt__title">
-        <h3>
-            {{$page->title}}
+        <h3 title="{{ $page->title }}">
+            {{ $page->title }}
         </h3>
     </div>
-    @isset($page->thumbnail)
+    @if(!empty($thumbnail))
         <div class="excerpt__thumbnail">
-            {!! ViewHelper::mediaImageHtml($page->thumbnail, 'cover') !!}
+            {!! ViewHelper::mediaImageHtml($thumbnail, $page->title) !!}
+        </div>
+    @else
+        <div class="excerpt__thumbnail excerpt__thumbnail--placeholder" aria-label="No thumbnail">
+            <div class="excerpt__placeholder"></div>
         </div>
     @endif
     <div class="excerpt__meta">
@@ -34,8 +37,8 @@ $page = $model;
         {{ substr( strip_tags( html_entity_decode( str_replace("<br>"," ", $page->content) ) ) , 0, 255) }}
     </div>
     <div class="excerpt__actions">
-        <x-link :href="route('pages.show', ['page'=>$page])">
-            {{__("Read More")}}
+        <x-link :href="route('pages.show', ['page' => $page])">
+            {{ __("Read More") }}
         </x-link>
     </div>
 </div>

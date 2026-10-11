@@ -2,14 +2,17 @@
 
 namespace Database\Seeders;
 
+use App\Enums\AttachmentType;
 use App\Enums\ProjectState;
 use App\Enums\PublishState;
+use App\Models\Attachment;
 use App\Models\CodeRelease;
 use App\Models\Comment;
 use App\Models\Page;
 use App\Models\Project;
 use App\Models\View;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class ProjectSeeder extends Seeder
 {
@@ -25,6 +28,7 @@ class ProjectSeeder extends Seeder
                 'publish_state' => PublishState::PUBLISHED,
                 'state' => ProjectState::FINISHED,
                 'releases' => ['1.0.0', '1.1.0', '1.2.0'],
+                'has_thumbnail' => true,
             ],
             [
                 'title' => 'Cyberpunk Roguelike',
@@ -32,6 +36,7 @@ class ProjectSeeder extends Seeder
                 'publish_state' => PublishState::PUBLISHED,
                 'state' => ProjectState::IN_DEVELOPMENT,
                 'releases' => ['0.8.0', '0.9.1'],
+                'has_thumbnail' => true,
             ],
             [
                 'title' => 'Pixel Physics Platformer',
@@ -39,6 +44,7 @@ class ProjectSeeder extends Seeder
                 'publish_state' => PublishState::PUBLISHED,
                 'state' => ProjectState::FINISHED,
                 'releases' => ['1.0.0', '1.0.5'],
+                'has_thumbnail' => false,
             ],
             [
                 'title' => 'Voxel Engine Sandbox',
@@ -46,6 +52,7 @@ class ProjectSeeder extends Seeder
                 'publish_state' => PublishState::PUBLISHED,
                 'state' => ProjectState::IN_DEVELOPMENT,
                 'releases' => ['0.5.0'],
+                'has_thumbnail' => true,
             ],
             [
                 'title' => 'Multiplayer Card Arena',
@@ -53,6 +60,7 @@ class ProjectSeeder extends Seeder
                 'publish_state' => PublishState::PUBLISHED,
                 'state' => ProjectState::IN_DEVELOPMENT,
                 'releases' => ['0.3.0'],
+                'has_thumbnail' => false,
             ],
             [
                 'title' => 'Retro Arcade Collection',
@@ -60,6 +68,7 @@ class ProjectSeeder extends Seeder
                 'publish_state' => PublishState::PUBLISHED,
                 'state' => ProjectState::FINISHED,
                 'releases' => ['1.0.0'],
+                'has_thumbnail' => true,
             ],
             [
                 'title' => 'AI Dungeon Crawler',
@@ -67,6 +76,7 @@ class ProjectSeeder extends Seeder
                 'publish_state' => PublishState::PRIVATE,
                 'state' => ProjectState::DRAFT,
                 'releases' => [],
+                'has_thumbnail' => false,
             ],
             [
                 'title' => 'Shader Experiments Lab',
@@ -74,6 +84,7 @@ class ProjectSeeder extends Seeder
                 'publish_state' => PublishState::PUBLISHED,
                 'state' => ProjectState::DRAFT,
                 'releases' => ['0.1.0'],
+                'has_thumbnail' => false,
             ],
         ];
 
@@ -81,7 +92,20 @@ class ProjectSeeder extends Seeder
 
         foreach ($showcaseProjects as $data) {
             $releases = $data['releases'] ?? [];
-            unset($data['releases']);
+            $hasThumbnail = $data['has_thumbnail'] ?? false;
+            unset($data['releases'], $data['has_thumbnail']);
+
+            if ($hasThumbnail && empty($data['thumbnail'])) {
+                $filename = 'project-'.str_replace(' ', '-', strtolower($data['title'])).'-thumb.png';
+                $attachment = $this->createSampleImageAttachment(
+                    $filename,
+                    $data['title'],
+                    212,
+                    140,
+                    23
+                );
+                $data['thumbnail'] = $attachment->url;
+            }
 
             /** @var Project $project */
             $project = Project::query()->updateOrCreate(
@@ -154,5 +178,68 @@ class ProjectSeeder extends Seeder
                 $project->pages()->syncWithoutDetaching($randomPageIds);
             }
         }
+    }
+
+    private function createSampleImageAttachment(
+        string $filename,
+        string $title,
+        int $bgR = 212,
+        int $bgG = 140,
+        int $bgB = 23
+    ): Attachment {
+        $disk = Storage::disk('public');
+        $folder = 'media/samples';
+        $disk->makeDirectory($folder);
+        $filePath = $folder.'/'.$filename;
+
+        // Generate retro 320x200 pixel art thumbnail
+        $im = imagecreatetruecolor(320, 200);
+        $bg = imagecolorallocate($im, $bgR, $bgG, $bgB);
+        $turquoise = imagecolorallocate($im, 108, 218, 217);
+        $blue = imagecolorallocate($im, 38, 48, 106);
+        $white = imagecolorallocate($im, 255, 255, 255);
+        $black = imagecolorallocate($im, 17, 17, 17);
+
+        imagefill($im, 0, 0, $bg);
+
+        // Dithered dot pattern
+        for ($x = 0; $x < 320; $x += 6) {
+            for ($y = 0; $y < 200; $y += 6) {
+                if (($x + $y) % 12 === 0) {
+                    imagesetpixel($im, $x, $y, $blue);
+                }
+            }
+        }
+
+        // Window border
+        imagerectangle($im, 4, 4, 315, 195, $black);
+        imagerectangle($im, 6, 6, 313, 193, $turquoise);
+
+        // Title box
+        imagefilledrectangle($im, 12, 75, 308, 125, $blue);
+        imagerectangle($im, 12, 75, 308, 125, $turquoise);
+        imagestring($im, 5, 24, 92, substr($title, 0, 28), $white);
+
+        ob_start();
+        imagepng($im);
+        $content = ob_get_clean();
+        imagedestroy($im);
+
+        $disk->put($filePath, $content);
+        $disk->setVisibility($filePath, 'public');
+
+        $hash = hash('sha256', $content);
+
+        return Attachment::query()->updateOrCreate(
+            ['hash' => $hash],
+            [
+                'path' => $folder,
+                'file_name' => $filename,
+                'url' => '/storage/'.$filePath,
+                'content_type' => 'image/png',
+                'publish_state' => PublishState::PUBLISHED,
+                'type' => AttachmentType::IMAGE,
+            ]
+        );
     }
 }

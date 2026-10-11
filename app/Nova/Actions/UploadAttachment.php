@@ -3,6 +3,7 @@
 namespace App\Nova\Actions;
 
 use App\Helpers\AppHelper;
+use App\Models\Page;
 use App\Models\TobidotElement;
 use App\Services\Models\AttachmentService;
 use Illuminate\Bus\Queueable;
@@ -19,7 +20,7 @@ class UploadAttachment extends Action
 {
     use InteractsWithQueue, Queueable;
 
-    public $standalone;
+    public $standalone = true;
 
     /**
      * Perform the action on the given models.
@@ -41,6 +42,9 @@ class UploadAttachment extends Action
             foreach ($models as $model) {
                 if ($model instanceof TobidotElement) {
                     $relation = $fields->relation ?? 'icon';
+                    $model->attachments()->attach($attachment->id, ['relation' => $relation]);
+                } elseif ($model instanceof Page) {
+                    $relation = $fields->relation ?? 'thumbnail';
                     $model->attachments()->attach($attachment->id, ['relation' => $relation]);
                 }
             }
@@ -68,13 +72,22 @@ class UploadAttachment extends Action
                 ->required(),
         ];
 
-        if ($request->resource() === TobidotElement::class) {
+        if ($request->resource() === \App\Nova\TobidotElement::class || $request->resource() === TobidotElement::class) {
             $fields[] = Select::make(__('Relation'), 'relation')
                 ->options([
                     'icon' => 'Icon',
                     'code' => 'Code',
                 ])
                 ->default('icon')
+                ->rules(['required'])
+                ->required();
+        } elseif ($request->resource() === \App\Nova\Page::class || $request->resource() === Page::class) {
+            $fields[] = Select::make(__('Relation'), 'relation')
+                ->options([
+                    'thumbnail' => 'Thumbnail',
+                    'attachment' => 'Attachment',
+                ])
+                ->default('thumbnail')
                 ->rules(['required'])
                 ->required();
         }

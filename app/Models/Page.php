@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\AttachmentType;
 use App\Enums\PublishState;
+use App\Helpers\AppHelper;
 use App\Models\Scopes\VisibleScope;
+use App\Services\Models\AttachmentService;
 use Barryvdh\LaravelIdeHelper\Eloquent;
 use Database\Factories\PageFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,6 +15,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -100,5 +104,30 @@ class Page extends Model
     public function comments(): MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function attachments(): MorphToMany
+    {
+        return $this->morphToMany(Attachment::class, 'attachable', 'attachables')
+            ->withPivot('relation');
+    }
+
+    public function thumbnailAttachment(): ?Attachment
+    {
+        return $this->attachments()
+            ->wherePivot('relation', 'thumbnail')
+            ->first()
+            ?? $this->attachments()->where('type', AttachmentType::IMAGE)->first()
+            ?? $this->attachments()->first();
+    }
+
+    public function getThumbnailAttribute(): ?string
+    {
+        $attachment = $this->thumbnailAttachment();
+        if ($attachment) {
+            return $attachment->url ?? AppHelper::resolve(AttachmentService::class)->getUrl($attachment);
+        }
+
+        return $this->attributes['thumbnail'] ?? null;
     }
 }

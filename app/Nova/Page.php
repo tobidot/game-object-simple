@@ -3,8 +3,11 @@
 namespace App\Nova;
 
 use App\Enums\PublishState;
+use App\Helpers\AppHelper;
 use App\Helpers\NovaHelper;
+use App\Nova\Actions\UploadAttachment;
 use App\Nova\Metrics\ViewsPerDay;
+use App\Services\Models\AttachmentService;
 use Illuminate\Http\Request;
 use Laravel\Nova\Exceptions\HelperNotSupported;
 use Laravel\Nova\Fields\BelongsToMany;
@@ -12,6 +15,7 @@ use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\MorphMany;
+use Laravel\Nova\Fields\MorphToMany;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -54,9 +58,21 @@ class Page extends Resource
                 ->rules(['required', 'string', 'max:255'])
                 ->required()
                 ->asHtml(),
-            Image::make(__('Thumbnail'), 'thumbnail')
-                ->rules(['nullable'])
-                ->nullable(),
+            Image::make(__('Thumbnail'), function () {
+                $page = $this->resource;
+                if (! ($page instanceof \App\Models\Page)) {
+                    return null;
+                }
+                $attachment = $page->thumbnailAttachment();
+                if (! $attachment) {
+                    return null;
+                }
+
+                return AppHelper::resolve(AttachmentService::class)->getPublicFilePath($attachment);
+            }, 'public')
+                ->readonly()
+                ->showOnIndex()
+                ->showOnDetail(),
             NovaHelper::makeEnum('Publish State', 'publish_state', PublishState::class)
                 ->rules(['required'])
                 ->required(),
@@ -107,6 +123,12 @@ class Page extends Resource
             Boolean::make(__('Allow Comments'), 'allow_comments')->default(true),
             MorphMany::make(__('Log Events'), 'logEvents', LogEvent::class),
             MorphMany::make(__('Comments'), 'comments', Comment::class),
+            MorphToMany::make(__('Attachments'), 'attachments', Attachment::class)
+                ->fields(function () {
+                    return [
+                        Text::make(__('Relation'), 'relation'),
+                    ];
+                }),
             BelongsToMany::make(__('Pages'), 'pages', Page::class),
             BelongsToMany::make(__('Projects'), 'projects', Project::class),
         ];
@@ -146,6 +168,8 @@ class Page extends Resource
      */
     public function actions(NovaRequest $request): array
     {
-        return [];
+        return [
+            new UploadAttachment,
+        ];
     }
 }

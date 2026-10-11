@@ -10,43 +10,61 @@
     grid-template-rows: subgrid;
     grid-gap: 0.35rem;
     overflow: hidden;
+    min-width: 0;
     font-family: variables.$font-family-mono;
 
     &__title {
+        min-width: 0;
+        width: 100%;
+
         h3 {
-            display: flex;
+            display: block;
             width: 100%;
-            height: 100%;
             font-size: 1.05rem;
             margin: 0;
             padding: 0.25rem 0.5rem;
             color: variables.$color-white;
             background-color: variables.$color-blue;
-            justify-content: flex-start;
-            align-items: center;
             font-weight: bold;
             letter-spacing: 0.5px;
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
+            box-sizing: border-box;
         }
     }
 
     &__thumbnail {
         display: flex;
         width: 100%;
-        height: auto;
+        height: 160px;
         overflow: hidden;
         @include mixins.win95-inset(variables.$color-black);
         padding: 2px;
+        align-items: center;
+        justify-content: center;
 
         > img {
-            display: flex;
+            display: block;
             width: 100%;
-            height: auto;
-            max-height: 100%;
-            margin: auto;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
             image-rendering: pixelated;
+        }
+
+        &--placeholder {
+            @include mixins.dither-placeholder(variables.$color-turquoise, variables.$color-orange);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .excerpt__placeholder {
+            width: 100%;
+            height: 100%;
+            @include mixins.dither-placeholder(variables.$color-turquoise, variables.$color-orange);
         }
     }
 

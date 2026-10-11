@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Enums\AttachmentType;
 use App\Helpers\AppHelper;
 use App\Models\TobidotElement;
 use App\Services\Models\AttachmentService;

@@ -27,6 +27,8 @@ class Attachment extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     protected $casts = [
         'publish_state' => PublishState::class,
         'type' => AttachmentType::class,
@@ -40,5 +42,10 @@ class Attachment extends Model
     public function tobidotElements(): MorphToMany
     {
         return $this->morphedByMany(TobidotElement::class, 'attachable');
+    }
+
+    public function pages(): MorphToMany
+    {
+        return $this->morphedByMany(Page::class, 'attachable');
     }
 }

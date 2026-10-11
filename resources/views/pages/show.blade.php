@@ -48,7 +48,7 @@
                 Related
             </h2>
 
-            <div class="archive">
+            <div class="archive archive--with-excerpts">
                 @foreach($relatedItems as $item)
                     <div class="archive__item">
                         <x-excerpt :model="$item"></x-excerpt>

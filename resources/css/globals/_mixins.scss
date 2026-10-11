@@ -51,6 +51,16 @@
     background-position: 0 0, 2px 2px;
 }
 
+@mixin dither-placeholder($color1: variables.$color-turquoise, $color2: variables.$color-orange) {
+    background-color: $color1;
+    background-image:
+        radial-gradient($color2 18%, transparent 19%),
+        radial-gradient($color2 18%, transparent 19%),
+        linear-gradient(135deg, $color1 0%, $color2 100%);
+    background-size: 4px 4px, 4px 4px, 100% 100%;
+    background-position: 0 0, 2px 2px, 0 0;
+}
+
 /** Windows 95 Pseudo-3D Border Mixins */
 @mixin win95-outset($bg: variables.$color-win95-surface) {
     background-color: $bg;
