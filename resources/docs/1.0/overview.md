@@ -29,6 +29,10 @@ The `Project` was adding some description, context and or documentation to the p
 A simple blog-page where i can write about my projects, ideas and other stuff.
 This will in future replace the `Projects` resource.
 
+Pages and their media can also be created and edited by AI agents through the MCP server.
+
+[More](./features/mcp/index)
+
 ### Tobidot Elements
 
 An entry to the `Tobidot Element`s library.

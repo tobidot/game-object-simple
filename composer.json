@@ -31,6 +31,7 @@
         "emilianotisato/nova-tinymce": "^2.0",
         "guzzlehttp/guzzle": "^7.10",
         "laravel/framework": "^13.0.0",
+        "laravel/mcp": "^1.0.1",
         "laravel/nova": "5.10.2",
         "laravel/nova-log-viewer": "^1.2",
         "laravel/passport": "^13.7",

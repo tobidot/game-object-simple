@@ -6,3 +6,4 @@
 
 - ## Features    
     - [Tce Framework](/{{route}}/{{version}}/features/tce-framework/index)
+    - [MCP Server](/{{route}}/{{version}}/features/mcp/index)

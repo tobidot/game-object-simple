@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TceGeneratorController;
 use App\Http\Controllers\TobidotElementController;
@@ -32,6 +33,11 @@ Route::group([
             'release',
         ])->name('projects.release')
             ->whereNumber('project');
+
+        Route::post('/attachments', [
+            AttachmentController::class,
+            'upload',
+        ])->name('attachments.upload');
 
         Route::post('/tobidot-elements', [
             TobidotElementController::class,
