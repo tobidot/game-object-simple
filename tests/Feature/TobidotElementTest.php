@@ -13,7 +13,7 @@ class TobidotElementTest extends TestCase
 
     public function test_index_endpoint_matches_schema()
     {
-        TobidotElement::factory()->create([
+        TobidotElement::factory()->withCode()->create([
             'name' => 'test-element',
             'kind' => 'element',
             'major' => 1,
@@ -71,14 +71,14 @@ class TobidotElementTest extends TestCase
 
     public function test_index_endpoint_includes_dependencies()
     {
-        $dep = TobidotElement::factory()->create([
+        $dep = TobidotElement::factory()->withCode()->create([
             'name' => 'dependency-pkg',
             'major' => 2,
             'minor' => 0,
             'patch' => 0,
         ]);
 
-        $element = TobidotElement::factory()->create([
+        $element = TobidotElement::factory()->withCode()->create([
             'name' => 'main-pkg',
         ]);
 
@@ -108,8 +108,8 @@ class TobidotElementTest extends TestCase
 
     public function test_packages_are_serialized_as_indexed_arrays()
     {
-        TobidotElement::factory()->create(['name' => 'first-pkg']);
-        TobidotElement::factory()->create(['name' => 'second-pkg']);
+        TobidotElement::factory()->withCode()->create(['name' => 'first-pkg']);
+        TobidotElement::factory()->withCode()->create(['name' => 'second-pkg']);
 
         $response = $this->getJson('/api/public/tobidot-elements');
 
@@ -119,6 +119,23 @@ class TobidotElementTest extends TestCase
 
         $this->assertTrue(array_is_list($decoded['packages']['first-pkg']));
         $this->assertTrue(array_is_list($decoded['packages']['second-pkg']));
+    }
+
+    public function test_elements_without_code_are_excluded_from_index()
+    {
+        // e.g. a failed upload: the element row exists but no code was attached. Listing it with
+        // "root": null makes the client registry reject the whole response and the desktop fails.
+        TobidotElement::factory()->create(['name' => 'tce-broken-upload']);
+        TobidotElement::factory()->withCode()->create(['name' => 'tce-working']);
+
+        $response = $this->getJson('/api/public/tobidot-elements');
+
+        $response->assertStatus(200);
+        $packages = $response->json('packages');
+        $this->assertArrayNotHasKey('tce-broken-upload', $packages);
+        $this->assertArrayHasKey('tce-working', $packages);
+        $this->assertIsString($packages['tce-working'][0]['root']);
+        $this->assertIsString($packages['tce-working'][0]['content']);
     }
 
     public function test_empty_packages_serialized_as_json_object()

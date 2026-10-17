@@ -41,6 +41,8 @@ class TobidotElementController extends Controller
     public function index(): JsonResponse
     {
         $grouped = TobidotElement::query()
+            // Elements without code (e.g. a failed upload) can't be loaded and break client-side registry validation.
+            ->whereHas('codeAttachment')
             ->with('dependencies')
             ->get()
             ->filter($this->isValid(...))
