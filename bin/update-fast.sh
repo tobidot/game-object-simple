@@ -1,6 +1,3 @@
 # Update the project
 git pull
-# Load profile
-~/.bashrc
-# npm run install --save false
-npm run build
+# Frontend assets are built locally and committed in public/build (Strato has no Node.js).

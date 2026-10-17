@@ -16,12 +16,23 @@ Go to Strato server and run the update script at `./bin/update.sh`.
 
 The update script
 ```bash
-bash
-git pull && composer install && php artisan migrate --force && npm install && npm run build
+git pull && composer install --no-dev && php artisan migrate --force
 ```
 
-- php cli is at `/opt/RZphp82/bin/php-cli`
-- to use composer run `/opt/RZphp82/bin/php-cli /mnt/web506/e1/17/511267217/htdocs/composer.phar --working-dir="$(pwd)"`
+- php cli is at `/opt/RZphp85/bin/php-cli`
+- to use composer run `/opt/RZphp85/bin/php-cli /mnt/web506/e1/17/511267217/htdocs/composer.phar --working-dir="$(pwd)"`
+
+### Frontend assets
+
+The Strato server has no Node.js, so assets are **not** built on the server.
+Build them locally and commit the output before pushing:
+
+```bash
+npm run build
+git add public/build
+```
+
+Forgetting this deploys stale (or missing) JS/CSS, since the server serves `public/build` as committed.
 
 ## Notes
 
