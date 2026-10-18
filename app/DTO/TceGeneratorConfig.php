@@ -2,22 +2,33 @@
 
 namespace App\DTO;
 
-use App\Http\Requests\GenerateTceRequest;
-use App\Services\TceGeneratorService;
-use ArrayAccess;
-use BadMethodCallException;
-use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use JsonSerializable;
 
-readonly class TceGeneratorConfig implements Arrayable, ArrayAccess, JsonSerializable
+/**
+ * Everything a generated v3 project is rendered from — normalized, validated input plus the
+ * registry facts (dependency versions, SDK packages) resolved for it. See "TCE Project
+ * Generator" in the specification.
+ */
+readonly class TceGeneratorConfig implements JsonSerializable
 {
+    public const array KINDS = ['element', 'library'];
+
+    public const array TEMPLATES = ['standard', 'canvas', 'minimal'];
+
+    /** A valid custom-element name: lower-case, at least one hyphen. Libraries follow the same shape. */
+    public const string NAME_PATTERN = '/^[a-z][a-z0-9]*(-[a-z0-9]+)+$/';
+
+    public const string IDENTIFIER_PATTERN = '/^[0-9a-zA-Z\-_]+$/';
+
     /**
-     * @param  array<string, string>  $dependencies
-     * @param  array<int, array<string, mixed>>  $tceDependencies
+     * @param  array<int, array{namespace: string, name: string, kind: string, version: string}>  $dependencies  resolved registry packages this project declares
+     * @param  array<int, array{name: string, npm_name: string, path: string, version: string}>  $sdk  SDK packages vendored into the project
      */
     public function __construct(
+        public string $namespace,
         public string $name,
         public string $className,
         public string $title,
@@ -28,159 +39,92 @@ readonly class TceGeneratorConfig implements Arrayable, ArrayAccess, JsonSeriali
         public int $height,
         public string $template,
         public array $dependencies,
-        public array $tceDependencies,
-        public string $iconPath = 'assets/icon.svg',
-        public ?UploadedFile $iconFile = null,
-        public ?string $iconSvg = null,
+        public array $sdk,
+        public string $siteUrl,
+        public string $iconFileName = 'icon.svg',
+        public ?string $iconContent = null,
     ) {}
 
     /**
-     * Instantiate DTO from raw input options array.
+     * Builds a config from (already validated) request/CLI input.
      *
      * @param  array<string, mixed>  $options
-     * @param  array<string, mixed>  $availableElements
+     * @param  array<string, array{namespace: string, name: string, kind: string, version: string}>  $available_dependencies  keyed `namespace/name`
+     * @param  array<int, array{name: string, npm_name: string, path: string, version: string, kinds: string[]}>  $sdk_packages
+     *
+     * @throws InvalidArgumentException for a name/namespace/dependency that cannot be used
      */
-    public static function fromArray(array $options, array $availableElements = []): self
-    {
-        $rawName = trim((string) ($options['name'] ?? $options['element-name'] ?? 'my-custom-element'));
-        $slug = Str::slug($rawName);
-
-        // Ensure the element tag name has a hyphen (valid custom element name)
-        $tagName = str_contains($slug, '-') ? $slug : "tce-$slug";
-        if (! str_starts_with($tagName, 'tce-') && ($options['prefix_tce'] ?? false)) {
-            $tagName = "tce-$tagName";
+    public static function fromArray(
+        array $options,
+        array $available_dependencies,
+        array $sdk_packages,
+        string $default_namespace,
+        string $site_url,
+    ): self {
+        $namespace = trim((string) ($options['namespace'] ?? '')) ?: $default_namespace;
+        if (! preg_match(self::IDENTIFIER_PATTERN, $namespace)) {
+            throw new InvalidArgumentException("'$namespace' is not a valid namespace (letters, digits, '-' and '_' only).");
         }
 
-        $className = Str::studly(str_replace('tce-', '', $tagName));
-        if (empty($className)) {
-            $className = 'CustomElement';
+        $name = strtolower(trim((string) ($options['name'] ?? '')));
+        if (! preg_match(self::NAME_PATTERN, $name)) {
+            throw new InvalidArgumentException("'$name' is not a valid package name: lower-case, digits and hyphens, with at least one hyphen (e.g. tce-my-element, dll-my-library).");
         }
 
-        $title = ! empty($options['title']) ? trim((string) $options['title']) : Str::headline($tagName);
-        $description = ! empty($options['description']) ? trim((string) $options['description']) : "Tobidot Custom Element for $title.";
-        $version = ! empty($options['version']) && preg_match('/^\d+\.\d+\.\d+$/', (string) $options['version'])
-            ? (string) $options['version']
-            : '1.0.0';
-        $rawKind = (string) ($options['kind'] ?? 'element');
-        $kind = in_array($rawKind, ['element', 'library'], true) ? $rawKind : 'element';
-        $width = max(50, (int) ($options['width'] ?? 400));
-        $height = max(50, (int) ($options['height'] ?? 300));
-        $rawTemplate = (string) ($options['template'] ?? 'standard');
-        $template = in_array($rawTemplate, ['standard', 'canvas', 'minimal'], true) ? $rawTemplate : 'standard';
+        $raw_kind = (string) ($options['kind'] ?? 'element');
+        if (! in_array($raw_kind, self::KINDS, true)) {
+            throw new InvalidArgumentException("Unknown kind '$raw_kind'.");
+        }
+        $kind = $raw_kind;
 
-        $dependencies = ['@game.object/tce-common' => '^1.0.6'];
-        $tceDependencies = [];
+        $raw_template = (string) ($options['template'] ?? 'standard');
+        if (! in_array($raw_template, self::TEMPLATES, true)) {
+            throw new InvalidArgumentException("Unknown template '$raw_template'.");
+        }
+        $template = $kind === 'library' ? 'standard' : $raw_template;
 
-        // 1. Process tce_dependencies
-        $rawTceDeps = $options['tce_dependencies'] ?? [];
-        if (is_string($rawTceDeps)) {
-            $rawTceDeps = preg_split('/[\r\n,]+/', $rawTceDeps);
+        $version = trim((string) ($options['version'] ?? ''));
+        if ($version === '') {
+            $version = '0.1.0';
+        }
+        if (! preg_match('/^\d+\.\d+\.\d+$/', $version)) {
+            throw new InvalidArgumentException("'$version' is not a major.minor.patch version.");
         }
 
-        // 2. Process dependencies array
-        $rawDeps = $options['dependencies'] ?? [];
-        if (is_string($rawDeps)) {
-            $rawDeps = preg_split('/[\r\n,]+/', $rawDeps);
-        }
+        $title = trim((string) ($options['title'] ?? '')) ?: Str::headline($name);
+        $description = trim((string) ($options['description'] ?? '')) ?: "$title, a Tobidot Custom Element.";
+        $width = $kind === 'library' ? 0 : max(50, (int) ($options['width'] ?? 400));
+        $height = $kind === 'library' ? 0 : max(50, (int) ($options['height'] ?? 300));
 
-        $allDepInputs = array_merge((array) $rawTceDeps, (array) $rawDeps);
-
-        foreach ($allDepInputs as $dep) {
-            if (empty($dep)) {
+        $dependencies = [];
+        foreach ((array) ($options['dependencies'] ?? []) as $raw) {
+            $raw = trim((string) $raw);
+            if ($raw === '') {
                 continue;
             }
-            if (is_array($dep)) {
-                $depName = $dep['name'] ?? '';
-                $depVer = $dep['version'] ?? ($availableElements[$depName]['version'] ?? '1.0.0');
-            } elseif (is_string($dep)) {
-                $dep = trim($dep);
-                if (empty($dep)) {
-                    continue;
-                }
-                // Check if it's JSON
-                if (str_starts_with($dep, '{') && str_ends_with($dep, '}')) {
-                    $decoded = json_decode($dep, true);
-                    if ($decoded && ! empty($decoded['name'])) {
-                        $depName = $decoded['name'];
-                        $depVer = $decoded['version'] ?? ($availableElements[$depName]['version'] ?? '1.0.0');
-                    } else {
-                        continue;
-                    }
-                } elseif (str_contains($dep, ':')) {
-                    [$depName, $depVer] = explode(':', $dep, 2);
-                } elseif (str_contains($dep, '@') && ! str_starts_with($dep, '@')) {
-                    [$depName, $depVer] = explode('@', $dep, 2);
-                } else {
-                    $depName = $dep;
-                    if (isset(TceGeneratorService::AVAILABLE_DEPENDENCIES[$depName])) {
-                        $depVer = TceGeneratorService::AVAILABLE_DEPENDENCIES[$depName];
-                    } elseif (isset($availableElements[$depName])) {
-                        $depVer = "^{$availableElements[$depName]['version']}";
-                    } else {
-                        $depVer = '^1.0.0';
-                    }
-                }
-            } else {
-                continue;
+            $key = str_contains($raw, '/') ? $raw : "$namespace/$raw";
+            if (! isset($available_dependencies[$key])) {
+                throw new InvalidArgumentException("Dependency '$key' is not published in this registry.");
             }
-
-            $depName = trim((string) $depName);
-            $depVer = trim((string) $depVer);
-
-            if (empty($depName)) {
-                continue;
-            }
-
-            $dependencies[$depName] = $depVer;
-
-            // Structure for tobidot-project.json
-            $tceDepEntry = [
-                'identifier' => [
-                    'namespace' => 'tobidot',
-                    'name' => $depName,
-                ],
-            ];
-            if (preg_match('/(\d+)(?:\.(\d+))?(?:\.(\d+))?/', $depVer, $m)) {
-                $tceDepEntry['version'] = array_filter([
-                    'major' => isset($m[1]) ? (int) $m[1] : 1,
-                    'minor' => isset($m[2]) ? (int) $m[2] : 0,
-                    'patch' => isset($m[3]) ? (int) $m[3] : 0,
-                ], fn ($v) => $v !== null);
-            }
-            $tceDependencies[$depName] = $tceDepEntry;
+            $dependencies[$key] = $available_dependencies[$key];
         }
+        unset($dependencies["$namespace/$name"]);
 
-        if (! empty($options['custom_dependencies']) && is_string($options['custom_dependencies'])) {
-            $customLines = preg_split('/[\r\n,]+/', $options['custom_dependencies']);
-            foreach ($customLines as $line) {
-                $line = trim($line);
-                if (empty($line)) {
-                    continue;
-                }
-                if (str_contains($line, ':')) {
-                    [$pkg, $ver] = explode(':', $line, 2);
-                    $dependencies[trim($pkg)] = trim($ver);
-                } elseif (str_contains($line, '@') && ! str_starts_with($line, '@')) {
-                    [$pkg, $ver] = explode('@', $line, 2);
-                    $dependencies[trim($pkg)] = trim($ver);
-                } else {
-                    $dependencies[$line] = 'latest';
-                }
-            }
-        }
-
-        $iconFile = (isset($options['icon']) && $options['icon'] instanceof UploadedFile) ? $options['icon'] : null;
-        $iconSvg = ! empty($options['icon_svg']) && is_string($options['icon_svg']) ? $options['icon_svg'] : null;
-
-        $iconPath = 'assets/icon.svg';
-        if ($iconFile) {
-            $extension = $iconFile->getClientOriginalExtension() ?: 'png';
-            $iconPath = "assets/icon.$extension";
+        $icon_file_name = 'icon.svg';
+        $icon_content = null;
+        $icon = $options['icon'] ?? null;
+        if ($icon instanceof UploadedFile) {
+            $extension = strtolower($icon->getClientOriginalExtension() ?: 'svg');
+            $icon_file_name = "icon.$extension";
+            $icon_content = (string) $icon->get();
+        } elseif (is_string($icon) && $icon !== '') {
+            $icon_content = $icon;
         }
 
         return new self(
-            name: $tagName,
-            className: $className,
+            namespace: $namespace,
+            name: $name,
+            className: Str::studly($name),
             title: $title,
             description: $description,
             version: $version,
@@ -188,32 +132,63 @@ readonly class TceGeneratorConfig implements Arrayable, ArrayAccess, JsonSeriali
             width: $width,
             height: $height,
             template: $template,
-            dependencies: $dependencies,
-            tceDependencies: array_values($tceDependencies),
-            iconPath: $iconPath,
-            iconFile: $iconFile,
-            iconSvg: $iconSvg,
+            dependencies: array_values($dependencies),
+            sdk: array_values(array_map(
+                fn (array $sdk) => ['name' => $sdk['name'], 'npm_name' => $sdk['npm_name'], 'path' => $sdk['path'], 'version' => $sdk['version']],
+                array_filter($sdk_packages, fn (array $sdk) => in_array($kind, $sdk['kinds'], true)),
+            )),
+            siteUrl: rtrim($site_url, '/'),
+            iconFileName: $icon_file_name,
+            iconContent: $icon_content,
         );
     }
 
     /**
-     * Instantiate DTO from a GenerateTceRequest instance.
-     *
-     * @param  array<string, mixed>  $availableElements
+     * @return array{major: int, minor: int, patch: int}
      */
-    public static function fromRequest(GenerateTceRequest $request, array $availableElements = []): self
+    public function versionParts(): array
     {
-        return self::fromArray($request->all(), $availableElements);
+        [$major, $minor, $patch] = array_map('intval', explode('.', $this->version));
+
+        return ['major' => $major, 'minor' => $minor, 'patch' => $patch];
+    }
+
+    /** The package instance variable in `src/index.ts`, e.g. `tce_my_element_package`. */
+    public function packageVariable(): string
+    {
+        return str_replace('-', '_', $this->name).'_package';
     }
 
     /**
-     * Convert DTO to an array.
-     *
+     * @return array<int, array{namespace: string, name: string, kind: string, version: string}>
+     */
+    public function libraryDependencies(): array
+    {
+        return array_values(array_filter($this->dependencies, fn (array $dependency) => $dependency['kind'] === 'library'));
+    }
+
+    public function getZipFilename(): string
+    {
+        return "$this->name-$this->version.zip";
+    }
+
+    /** Two upper-case letters for the generated default icon. */
+    public function getInitials(): string
+    {
+        $words = explode('-', $this->name);
+        $meaningful = array_values(array_filter($words, fn (string $word) => ! in_array($word, ['tce', 'dll'], true)));
+        $letters = implode('', array_map(fn (string $word) => substr($word, 0, 1), $meaningful ?: $words));
+
+        return strtoupper(substr($letters, 0, 2));
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function toArray(): array
     {
         return [
+            'namespace' => $this->namespace,
             'name' => $this->name,
             'className' => $this->className,
             'title' => $this->title,
@@ -224,100 +199,16 @@ readonly class TceGeneratorConfig implements Arrayable, ArrayAccess, JsonSeriali
             'height' => $this->height,
             'template' => $this->template,
             'dependencies' => $this->dependencies,
-            'tceDependencies' => $this->tceDependencies,
-            'icon_path' => $this->iconPath,
-            'iconPath' => $this->iconPath,
+            'sdk' => $this->sdk,
+            'icon' => $this->iconFileName,
         ];
     }
 
     /**
-     * Get the download package zip filename.
-     */
-    public function getZipFilename(): string
-    {
-        return $this->name.'-template.zip';
-    }
-
-    /**
-     * Get two-letter uppercase class initials for icon rendering.
-     */
-    public function getInitials(): string
-    {
-        return strtoupper(substr($this->className, 0, 2));
-    }
-
-    /**
-     * Get MIME type for the configured icon.
-     */
-    public function getIconMimeType(): string
-    {
-        if (str_ends_with($this->iconPath, '.svg')) {
-            return 'image/svg+xml';
-        }
-        if (str_ends_with($this->iconPath, '.png')) {
-            return 'image/png';
-        }
-
-        return 'image/x-icon';
-    }
-
-    /**
-     * ArrayAccess implementation: offsetExists.
-     */
-    public function offsetExists(mixed $offset): bool
-    {
-        $normalized = $this->normalizeKey($offset);
-
-        return property_exists($this, $normalized);
-    }
-
-    /**
-     * ArrayAccess implementation: offsetGet.
-     */
-    public function offsetGet(mixed $offset): mixed
-    {
-        $normalized = $this->normalizeKey($offset);
-
-        return $this->{$normalized} ?? null;
-    }
-
-    /**
-     * ArrayAccess implementation: offsetSet.
-     */
-    public function offsetSet(mixed $offset, mixed $value): void
-    {
-        throw new BadMethodCallException('TceGeneratorConfig DTO is immutable.');
-    }
-
-    /**
-     * ArrayAccess implementation: offsetUnset.
-     */
-    public function offsetUnset(mixed $offset): void
-    {
-        throw new BadMethodCallException('TceGeneratorConfig DTO is immutable.');
-    }
-
-    /**
-     * JsonSerializable implementation.
-     *
      * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
         return $this->toArray();
-    }
-
-    /**
-     * Normalize array offset key to property name.
-     */
-    private function normalizeKey(mixed $offset): string
-    {
-        return match ($offset) {
-            'icon_path', 'icon-path' => 'iconPath',
-            'element-name' => 'name',
-            'class-name' => 'className',
-            'tce-dependencies' => 'tceDependencies',
-            default => (string) $offset,
-        };
     }
 }

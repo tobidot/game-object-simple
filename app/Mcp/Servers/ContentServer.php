@@ -9,9 +9,11 @@ use App\Mcp\Tools\GetMediaTool;
 use App\Mcp\Tools\GetPageTool;
 use App\Mcp\Tools\ListMediaTool;
 use App\Mcp\Tools\ListPagesTool;
+use App\Mcp\Tools\ListTcePackagesTool;
 use App\Mcp\Tools\UpdateMediaTool;
 use App\Mcp\Tools\UpdatePageTool;
 use App\Mcp\Tools\UploadMediaTool;
+use App\Mcp\Tools\UploadTcePackageTool;
 use Laravel\Mcp\Server;
 use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -23,6 +25,8 @@ use Laravel\Mcp\Server\Attributes\Version;
 Manage the content of the game-object.de website: pages (blog posts / articles) and media (attachments such as images).
 Typical flow for a post with images: upload_media (get the url) -> create_page or update_page with <img src="url"> in the HTML content
 -> attach_media with relation "thumbnail" to set the cover image. New pages are private until publish_state is set to "published".
+TCE packages (desktop elements and libraries): list_tce_packages shows the registry; upload_tce_package publishes a built package,
+dependencies first.
 TEXT)]
 class ContentServer extends Server
 {
@@ -37,6 +41,8 @@ class ContentServer extends Server
         UpdateMediaTool::class,
         AttachMediaTool::class,
         DetachMediaTool::class,
+        ListTcePackagesTool::class,
+        UploadTcePackageTool::class,
     ];
 
     protected array $resources = [

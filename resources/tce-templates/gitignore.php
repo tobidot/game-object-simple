@@ -1,9 +1,4 @@
 node_modules/
 dist/
-build-tce/
-releases/
+release/
 .DS_Store
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*

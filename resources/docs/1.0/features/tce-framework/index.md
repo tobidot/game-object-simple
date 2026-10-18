@@ -1,77 +1,91 @@
 # Tobidot Custom Elements (TCE) Framework
 
-- [What is a TCE?](#what-is-a-tce)
-- [TCE Project Generator](#tce-project-generator)
-- [Current State (October 2026 Audit)](#current-state-october-2026-audit)
-- [Where to go next](#where-to-go-next)
+- [What Is a TCE?](#what-is-a-tce)
+- [The Three Kinds of Package](#the-three-kinds-of-package)
+- [Specification Documents](#specification-documents)
+- [How the Pieces Fit](#how-the-pieces-fit)
+- [Do's and Don'ts](#dos-and-donts)
 
-This page mirrors the latest TCE framework knowledge/audit document for browsability on this site.
-The canonical, always-up-to-date source lives in code, in the `collection-html-custom-elements`
-repository: `documentation/tce-framework-audit-2026-10.md`. Update that file first, then copy the
-relevant parts here when publishing a new app documentation version.
+This is the specification of TCE version 3. It is normative: it says how a package must be
+written, built, published and embedded. Where code and this specification disagree, one of them
+is wrong and gets fixed — the specification never describes a "current state", only the rule.
 
-## What is a TCE?
+<a name="what-is-a-tce"></a>
+## What Is a TCE?
 
-A "Tobidot Custom Element" (TCE) is a self-contained Web Component (built with TypeScript, usually
-bundled with Vite) that can be uploaded as a zip package to this app via
-`POST /api/v1/tobidot-elements` (or the Nova `UploadTobidotElement` action) and then dynamically
-loaded and rendered in the browser by `resources/js/tobidot-element-viewer.ts`, which fetches
-`GET /api/public/tobidot-elements`, loads the latest `dll-tce-package-registry`, and calls
-`document.createElement(name)` for the requested element.
+A Tobidot Custom Element is a self-contained Web Component (TypeScript, built with Vite into an
+ES module and an IIFE) that is published to a registry as a versioned package and can then be
 
-**Important naming rule:** an element's `name` is used directly as its HTML custom-element tag, so
-it must be a valid, hyphenated tag name (e.g. `tce-change`, not `change`).
+- embedded on any website with one `<script src>` tag and one HTML tag, with no build step and
+  no JavaScript on the embedding side ([Integration](./integration)),
+- opened as a window on the TCE desktop, which is this site's homepage, or
+- played fullscreen on its own page.
 
-## TCE Project Generator
+Packages never share source at runtime. They talk through three narrow channels — slots,
+bubbling request events, and library functions guarded by per-function contracts
+([Interfacing](./interfacing)) — and every input that crosses a package boundary is validated
+([Coding Style](./coding-style#validate-external-input)).
 
-You can quickly scaffold a new, complete TCE project template using the built-in **TCE Generator**:
-- **Web UI:** Navigate to `/tce-generator` in your browser. Configure element name, title, description, window resolution, icon, starter preset (Standard, 2D Canvas, Minimal), and **TCE dependencies** (select registered server elements and libraries such as `dll-tce-desktop`, `dll-tce-file-system`, etc. via interactive dropdowns and quick chips), then download the generated ZIP archive.
-- **Artisan CLI:** Run `php artisan tce:generate tce-my-element --width=800 --height=600 --template=canvas --tce-dependency=dll-tce-desktop` to generate the project directly from the command line.
-- **REST API:** `POST /api/public/tce-generator` or `POST /api/v1/tce-generator`.
+<a name="the-three-kinds-of-package"></a>
+## The Three Kinds of Package
 
-The generated package includes full TypeScript config, Vite bundler configuration, SCSS scoping, local dev testing harness (`npm start`), `tobidot-project.json` manifest with structured dependency identifiers, and a `Makefile` for packaging release zips with `make tce`.
+| Kind      | Has a DOM? | Loaded at runtime? | Examples                                      |
+|-----------|------------|--------------------|-----------------------------------------------|
+| `element` | yes        | yes                | `tce-notepad`, `tce-desktop`, `tce-window`    |
+| `library` | no         | yes                | `dll-tce-file-system`, `dll-tce-settings`     |
+| `sdk`     | no         | no — bundled at build time | `common` (`@tce-v3/common`), `desktop-protocol` (`@tce-v3/desktop-protocol`) |
 
-## Current State (October 2026 Audit)
+Elements and libraries are the same thing at the package level ([Package Model](./package-model)):
+both bind themselves into the page's loader, both have a version and `init()`, and a library
+additionally exposes functions. An SDK package is the TypeScript every package compiles against;
+it is published to the registry only so the [generator](./generator) can vendor it into new
+projects, and it never appears in the public registry response.
 
-- **Package inventory**: shared libraries (`common`, `dll-tce-package-registry`, `dll-tce-desktop`,
-  `dll-tce-file-system`) and individual elements (`tce-desktop`, `tce-bootloader`, `tce-clock`,
-  `tce-notepad`, `tce-explorer`, `tce-documentation`, `tce-shape-me`, and several prototypes).
-- **Runtime loading**: handled by `TcePackageLoader`/`TceRoot` (in `common`) and
-  `TcePackageRegistryLib` (binds remote packages; wraps raw `.html` content, e.g. Emscripten/WASM
-  builds, in a generic iframe custom element since those builds can't expose a JS module).
-- **Loader robustness fixes shipped in this pass**: packages no longer initialize twice,
-  `with_binding()` now supports an optional timeout instead of waiting forever, version
-  serialization no longer inverts valid/invalid versions, and version matching now uses real
-  caret-style SemVer ranges (same major, minor/patch as a floor) instead of requiring an exact
-  match.
-- **Desktop shell**: `tce-desktop` is an icon grid, taskbar (start button, system tray), draggable/resizable windows and a trash bin. Icon positions are stored through `dll-tce-file-system` (`/system/desktop/layout.json`) and restored on boot (see the desktop update below).
-- **Package manager**: `tce-bootloader` browses/installs/uninstalls packages and persists the installed set, autostart and shortcuts in the browser (see the update below); version pinning is not implemented yet.
+<a name="specification-documents"></a>
+## Specification Documents
 
-## Where to Go Next
+- [Naming & Identifiers](./naming) — `{ namespace, name }`, tag names, class names, prefixes.
+- [Coding Style](./coding-style) — snake_case/StudlyCase, `$`-prefixed DOM handles, explicit
+  accessibility, the five-way class split, validating external input, the lint rules.
+- [Styling Guide](./styling) — Shadow DOM, SCSS + BEM, the Windows95-esque palette, `attach_styles`.
+- [Declarative Structure](./declaration) — composition by nesting, slots, `init-` and `data-`
+  attributes, the parent/child contract.
+- [Element Lifecycle & Rendering](./lifecycle) — constructor, connect/disconnect, the entry
+  point that binds the package, boot vs. mount.
+- [Package Model & Versioning](./package-model) — the package interface, the loader, binding vs.
+  loading, dependencies, caret-range matching.
+- [Assets & Build](./assets-and-build) — `public/` assets and `resolve_asset_url`, cheap `init()`,
+  code splitting, the dual ES/IIFE build.
+- [Interfacing Between Elements](./interfacing) — slots, the desktop protocol events, library
+  functions and contracts, file handlers.
+- [Integration Into Websites](./integration) — the zero-script embed, the play pages, the
+  desktop, installing packages at runtime.
+- [The `tobidot-project.json` Manifest](./manifest) — the project metadata file.
+- [TCE Project Generator](./generator) — Web UI, CLI and REST API producing a complete project.
+- [Publishing & Discovery](./upload-and-registry) — the data model, the three ways to publish,
+  the registry response, the routes.
 
-See the full audit (package-by-package detail, exact file/line references, and the complete list of
-open gaps) in code at `collection-html-custom-elements/documentation/tce-framework-audit-2026-10.md`.
+<a name="how-the-pieces-fit"></a>
+## How the Pieces Fit
 
-## Bootloader, windows and fullscreen play (update)
+1. A project is generated ([Generator](./generator)) or laid out by hand to the same shape, with
+   the SDK as a build-time dependency.
+2. Its entry script binds the package into the page's single loader and registers its tag
+   ([Lifecycle: Bootstrapping](./lifecycle#bootstrapping-the-entry-point-binds-the-package)).
+3. `npm run pack` builds `dist/index.js` + `dist/index.global.js` and zips `dist/`
+   ([Assets & Build](./assets-and-build#dual-build-output-es-and-iife)).
+4. The zip is published to the registry, dependencies first
+   ([Publishing](./upload-and-registry)).
+5. Any page includes it through `/tce-elements/{namespace}/{name}`; the desktop's package manager
+   installs it the same way at runtime ([Integration](./integration)).
 
-- `tce-bootloader` is split into a headless `BootManager` and the `<tce-bootloader>` package manager window (a list next to a details pane, pagination, type/status filters, search, visible error banner and boot log). The boot runs when the package is initialised, even if the window is never opened.
-- **Installed** packages, **autostart** (opens a window on every boot), **desktop shortcuts** and the already-seen package list are persisted in `localStorage['tce.boot.config']` (schema version 2, older configs are migrated). Freshly uploaded packages get a NEW badge and an info banner.
-- **Uninstall** clears installed/autostart/shortcut and closes the windows the bootloader opened; a browser cannot unregister a custom element, so already running code stays until the next reload. System packages and libraries required by installed elements cannot be uninstalled.
-- Windows size their app (`::slotted(*)` fills the window). Apps may only bubble `tce.window.request` (`fullscreen`, `maximize`, `restore`, `minimize`, `close`, `resize`); see `documentation/v1/window-protocol.md` and `documentation/v1/bootloader.md` in `collection-html-custom-elements`.
-- Every element has a fullscreen page at `/tce/{name}` (latest version), besides `/tobidot-elements/{id}/view`.
+<a name="dos-and-donts"></a>
+## Do's and Don'ts
 
-## Desktop (update)
-
-- **Persistent icon layout**: icons snap to a 96 px grid, never overlap and keep their cell across reloads. The layout is written to `/system/desktop/layout.json` via `dll-tce-file-system`; icons are identified by `TceIconOptions.id`. A cell that does not fit a small screen is replaced by the nearest free one, but the original position is remembered.
-- **Start menu** (left) opens the package manager (`tce-bootloader`) if it is installed, otherwise it shows a notice.
-- **System tray** (bottom right): small elements such as a clock via `create_tray_item`; the package manager has a "system tray" option per element.
-- **New elements** are previewed on the desktop (image, name, description) via `set_news` before the package manager is ever opened.
-- Throwing an icon into the trash bin removes it for good (event `tce.desktop.icon-removed`).
-- Details: `documentation/v1/desktop.md` in `collection-html-custom-elements`.
-
-## Explorer and "open with" (update)
-
-- `tce-explorer` shows real folders (derived from the flat keys of `dll-tce-file-system`): double click to enter, path field, up button, Backspace, F5.
-- Right click on a file offers **Open** (first fitting application) and **Open with** (all registered applications, fitting ones first).
-- Elements that can open files register with `register_file_handler({ element, title, extensions, attribute })` on the file system library when their package initialises (`tce-notepad` does so for text-like files). The opener creates the element, sets the attribute to the absolute path and shows it in a desktop window; the element only reacts to the attribute.
-- Details: `documentation/v1/file-handlers.md` in `collection-html-custom-elements`.
+- ✅ Do read [Coding Style](./coding-style), [Lifecycle](./lifecycle) and
+  [Interfacing](./interfacing) before writing a package.
+- ✅ Do treat these pages as the rule: when code disagrees, fix the code or change the rule here —
+  in the same change.
+- ❌ Don't write "currently", "for now" or version history into these pages; a rule is a rule.
+- ❌ Don't assume a publisher namespace anywhere — `namespace` is data
+  ([Naming](./naming#namespace)).

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TceGeneratorController;
+use App\Http\Controllers\TcePackageController;
 use App\Http\Controllers\TobidotElementController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -44,6 +45,11 @@ Route::group([
             'upload',
         ])->name('tobidot-elements.upload');
 
+        Route::post('/tce-packages', [
+            TcePackageController::class,
+            'upload',
+        ])->name('tce-packages.upload');
+
         Route::get(
             '/validate-token',
             function () {
@@ -62,6 +68,11 @@ Route::group([
         TobidotElementController::class,
         'index',
     ])->name('tobidot-elements.index');
+
+    Route::get('/tce-packages', [
+        TcePackageController::class,
+        'index',
+    ])->name('tce-packages.index');
 
     Route::post('/tce-generator', [
         TceGeneratorController::class,

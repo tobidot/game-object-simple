@@ -1,74 +1,32 @@
 <?php
-
-use App\DTO\TceGeneratorConfig;
-
-/** @var TceGeneratorConfig $config */
+/** @var \App\DTO\TceGeneratorConfig $config */
+$e = fn (string $value): string => htmlspecialchars($value, ENT_QUOTES);
 ?>
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="<?= $config->getIconMimeType() ?>" href="./<?= htmlspecialchars($config->iconPath) ?>" />
-    <title><?= htmlspecialchars($config->title) ?> - TCE Dev Harness</title>
+<head>
+    <meta charset="utf-8">
+    <title><?= $e($config->name) ?> — dev harness</title>
     <style>
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        padding: 24px;
-        background-color: #0f172a;
-        color: #f8fafc;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-height: 100vh;
-      }
-      header {
-        margin-bottom: 20px;
-        text-align: center;
-      }
-      header h1 {
-        margin: 0 0 6px 0;
-        font-size: 1.5rem;
-      }
-      header p {
-        margin: 0;
-        color: #94a3b8;
-        font-size: 0.9rem;
-      }
-      #stage {
-        border: 2px dashed #334155;
-        border-radius: 8px;
-        padding: 16px;
-        background: #1e293b;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: min(100%, <?= $config->width ?>px + 32px);
-        min-height: <?= $config->height ?>px;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
-      }
-      <?= $config->name ?> {
-        display: block;
-        width: <?= $config->width ?>px;
-        height: <?= $config->height ?>px;
-      }
+        html, body { margin: 0; min-height: 100%; background: #6c6c6c; font-family: monospace; color: #111111; }
+        body { padding: 24px; }
+        p { color: #ffffff; }
+<?php if ($config->kind === 'element'): ?>
+        <?= $config->name ?> { display: block; width: <?= $config->width ?>px; height: <?= $config->height ?>px; background: #ffffff; border: 2px solid #111111; }
+<?php endif; ?>
     </style>
-  </head>
-  <body>
-    <header>
-      <h1><?= htmlspecialchars($config->title) ?></h1>
-      <p>Custom Element Tag: <code>&lt;<?= htmlspecialchars($config->name) ?>&gt;</code> | Resolution: <?= $config->width ?> &times; <?= $config->height ?></p>
-    </header>
-
-    <div id="stage">
-      <<?= $config->name ?>></<?= $config->name ?>>
-    </div>
-
-    <script type="module" src="./src/index.ts"></script>
-    <script type="module" src="./src/import.ts"></script>
-  </body>
+<?php foreach ($config->dependencies as $dependency): ?>
+    <!-- Dependency, exactly as an embedding page includes it ("Integration Into Websites: Dependencies Stay Explicit"). -->
+    <script src="<?= $e($config->siteUrl) ?>/tce-elements/<?= $e($dependency['namespace']) ?>/<?= $e($dependency['name']) ?>"></script>
+<?php endforeach; ?>
+    <script type="module" src="/src/index.ts"></script>
+</head>
+<body>
+    <p>&lt;<?= $e($config->name) ?>&gt; — <?= $e($config->title) ?> <?= $e($config->version) ?></p>
+<?php if ($config->kind === 'element'): ?>
+    <<?= $config->name ?>></<?= $config->name ?>>
+<?php else: ?>
+    <p>Library packages have no DOM. Open the console: <code>window.tobidot.tce_package_loader.list()</code> lists this package's binding.</p>
+<?php endif; ?>
+</body>
 </html>

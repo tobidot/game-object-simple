@@ -16,13 +16,6 @@
             "Tobidot\\ChunkedUpload\\": "src/"
         }
     },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Tobidot\\ChunkedUpload\\ChunkedUploadServiceProvider"
-            ]
-        }
-    },
     "config": {
         "sort-packages": true
     },

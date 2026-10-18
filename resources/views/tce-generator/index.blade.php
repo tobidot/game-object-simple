@@ -1,15 +1,32 @@
 <x-layouts.app class="page tce-generator" title="TCE Project Generator">
+    <x-slot name="head">
+        <style>
+            .tce-generator .selected-deps-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+            .tce-generator .selected-dep-card { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; }
+            .tce-generator .selected-dep-card input { margin-top: 3px; }
+            .tce-generator .dep-meta { display: flex; flex-direction: column; gap: 2px; }
+            .tce-generator .dep-meta .form-text { margin: 0; }
+        </style>
+    </x-slot>
     <div class="tce-generator-container">
         <div class="generator-header">
             <p class="lead">
-                Generate a ready-to-use <strong>Tobidot Custom Element (TCE)</strong> TypeScript project template.
-                Configure your element details below, download the generated ZIP archive, and start coding right away.
+                Generate a complete, building <strong>Tobidot Custom Element v3</strong> project: TypeScript, Vite,
+                SCSS, lint rules and the SDK it was generated against, laid out exactly as the
+                <a href="{{ url(config('larecipe.docs.route').'/'.config('larecipe.versions.default').'/features/tce-framework/index') }}">specification</a> prescribes.
             </p>
         </div>
 
+        @if (! $sdk_published)
+            <div class="alert alert-danger">
+                The SDK packages ({{ implode(', ', array_keys(config('tce.sdk_packages'))) }}) are not published to this
+                registry yet, so nothing can be generated. Publish them from the v3 workspace first.
+            </div>
+        @endif
+
         @if ($errors->any())
             <div class="alert alert-danger">
-                <h4>Please correct the following errors:</h4>
+                <h4>Please correct the following:</h4>
                 <ul>
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -22,306 +39,178 @@
             @csrf
 
             <div class="form-grid">
-                <!-- Left Column: Core Configuration -->
                 <div class="form-column">
                     <fieldset class="form-section">
-                        <legend>Element Details</legend>
+                        <legend>Package</legend>
 
-                        <div class="form-group">
-                            <label for="element-name">
-                                Element Name / Tag Name <span class="required">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                id="element-name"
-                                name="element-name"
-                                value="{{ old('element-name', 'tce-my-element') }}"
-                                placeholder="tce-my-element"
-                                required
-                                class="form-control"
-                            >
-                            <small class="form-text">
-                                Used as the HTML tag name (e.g. <code>&lt;tce-my-element&gt;</code>). Must contain a hyphen.
-                            </small>
+                        <div class="form-row">
+                            <div class="form-group col-half">
+                                <label for="namespace">Namespace <span class="required">*</span></label>
+                                <input type="text" id="namespace" name="namespace" class="form-control"
+                                       value="{{ old('namespace', $default_namespace) }}" pattern="[0-9a-zA-Z\-_]+" required>
+                                <small class="form-text">The publisher. Packages are identified as <code>namespace/name</code>.</small>
+                            </div>
+                            <div class="form-group col-half">
+                                <label for="name">Name <span class="required">*</span></label>
+                                <input type="text" id="name" name="name" class="form-control"
+                                       value="{{ old('name', 'tce-my-element') }}" pattern="[a-z][a-z0-9]*(-[a-z0-9]+)+" required>
+                                <small class="form-text">The tag name: lower-case, at least one hyphen. <code>tce-</code> for elements, <code>dll-</code> for libraries.</small>
+                            </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="title">Title / Display Name</label>
-                            <input
-                                type="text"
-                                id="title"
-                                name="title"
-                                value="{{ old('title', 'My Custom Element') }}"
-                                placeholder="My Custom Element"
-                                class="form-control"
-                            >
+                            <label for="title">Title</label>
+                            <input type="text" id="title" name="title" class="form-control" value="{{ old('title') }}" placeholder="My Element">
                         </div>
 
                         <div class="form-group">
                             <label for="description">Description</label>
-                            <textarea
-                                id="description"
-                                name="description"
-                                rows="3"
-                                placeholder="Describe what this custom element does..."
-                                class="form-control"
-                            >{{ old('description', 'A custom element for the Tobidot platform.') }}</textarea>
+                            <textarea id="description" name="description" rows="3" class="form-control"
+                                      placeholder="What this package does, in one or two sentences.">{{ old('description') }}</textarea>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group col-half">
-                                <label for="version">Initial Version</label>
-                                <input
-                                    type="text"
-                                    id="version"
-                                    name="version"
-                                    value="{{ old('version', '1.0.0') }}"
-                                    placeholder="1.0.0"
-                                    class="form-control"
-                                >
+                                <label for="version">Initial version</label>
+                                <input type="text" id="version" name="version" class="form-control" value="{{ old('version', '0.1.0') }}" pattern="\d+\.\d+\.\d+">
                             </div>
-
                             <div class="form-group col-half">
-                                <label for="kind">Element Kind</label>
+                                <label for="kind">Kind</label>
                                 <select id="kind" name="kind" class="form-control">
-                                    <option value="element" {{ old('kind') === 'element' ? 'selected' : '' }}>Element (Interactive Web Component)</option>
-                                    <option value="library" {{ old('kind') === 'library' ? 'selected' : '' }}>Library / DLL (Shared Module)</option>
+                                    <option value="element" @selected(old('kind', 'element') === 'element')>Element (custom element with a window)</option>
+                                    <option value="library" @selected(old('kind') === 'library')>Library (functions for other packages, no DOM)</option>
                                 </select>
                             </div>
                         </div>
-
-                        <div class="form-group">
-                            <label for="template">Template Starter Preset</label>
-                            <select id="template" name="template" class="form-control">
-                                <option value="standard" {{ old('template') === 'standard' ? 'selected' : '' }}>Standard UI Component (Shadow DOM, SCSS, Counter Demo)</option>
-                                <option value="canvas" {{ old('template') === 'canvas' ? 'selected' : '' }}>2D Canvas / Game Starter (Game Loop & Animation)</option>
-                                <option value="minimal" {{ old('template') === 'minimal' ? 'selected' : '' }}>Minimal Boilerplate (Barebones Web Component)</option>
-                            </select>
-                        </div>
                     </fieldset>
 
-                    <fieldset class="form-section">
-                        <legend>Window Resolution & Sizing</legend>
+                    <fieldset class="form-section" data-element-only>
+                        <legend>Element</legend>
+
+                        <div class="form-group">
+                            <label for="template">Starter preset</label>
+                            <select id="template" name="template" class="form-control">
+                                <option value="standard" @selected(old('template', 'standard') === 'standard')>Standard — Settings / References / Properties / Renderer / Logic split, small counter demo</option>
+                                <option value="canvas" @selected(old('template') === 'canvas')>2D Canvas — same split, low-fps frame loop on a canvas</option>
+                                <option value="minimal" @selected(old('template') === 'minimal')>Minimal — one small class, nothing else</option>
+                            </select>
+                        </div>
 
                         <div class="form-row">
                             <div class="form-group col-half">
-                                <label for="width">Width (px)</label>
-                                <input
-                                    type="number"
-                                    id="width"
-                                    name="width"
-                                    value="{{ old('width', 400) }}"
-                                    min="50"
-                                    max="3840"
-                                    class="form-control"
-                                >
+                                <label for="width">Window width (px)</label>
+                                <input type="number" id="width" name="width" class="form-control" value="{{ old('width', 400) }}" min="50" max="3840">
                             </div>
-
                             <div class="form-group col-half">
-                                <label for="height">Height (px)</label>
-                                <input
-                                    type="number"
-                                    id="height"
-                                    name="height"
-                                    value="{{ old('height', 300) }}"
-                                    min="50"
-                                    max="2160"
-                                    class="form-control"
-                                >
+                                <label for="height">Window height (px)</label>
+                                <input type="number" id="height" name="height" class="form-control" value="{{ old('height', 300) }}" min="50" max="2160">
                             </div>
                         </div>
 
                         <div class="resolution-presets">
                             <span class="presets-label">Presets:</span>
-                            <button type="button" class="btn-preset" data-w="200" data-h="200">Compact (200x200)</button>
-                            <button type="button" class="btn-preset" data-w="400" data-h="300">Standard (400x300)</button>
-                            <button type="button" class="btn-preset" data-w="640" data-h="480">Retro 4:3 (640x480)</button>
-                            <button type="button" class="btn-preset" data-w="800" data-h="600">Game (800x600)</button>
-                            <button type="button" class="btn-preset" data-w="1280" data-h="720">HD 16:9 (1280x720)</button>
+                            <button type="button" class="btn-preset" data-w="240" data-h="240">240×240</button>
+                            <button type="button" class="btn-preset" data-w="400" data-h="300">400×300</button>
+                            <button type="button" class="btn-preset" data-w="640" data-h="480">640×480</button>
+                            <button type="button" class="btn-preset" data-w="800" data-h="600">800×600</button>
                         </div>
                     </fieldset>
                 </div>
 
-                <!-- Right Column: Icon, Dependencies & Preview -->
                 <div class="form-column">
                     <fieldset class="form-section">
-                        <legend>Icon & Media</legend>
-
+                        <legend>Icon</legend>
                         <div class="form-group">
-                            <label for="icon">Custom Icon File (Optional)</label>
-                            <input
-                                type="file"
-                                id="icon"
-                                name="icon"
-                                accept=".png,.jpg,.jpeg,.svg"
-                                class="form-control-file"
-                            >
+                            <label for="icon">Icon file (optional)</label>
+                            <input type="file" id="icon" name="icon" accept=".svg,.png" class="form-control-file">
                             <small class="form-text">
-                                PNG, JPG or SVG (max 2MB). If omitted, an icon will be generated automatically.
+                                64×64 SVG or PNG in the house palette. Without one, a placeholder icon is generated.
                             </small>
                         </div>
                     </fieldset>
 
                     <fieldset class="form-section">
-                        <legend>TCE Dependencies</legend>
-
+                        <legend>Dependencies</legend>
                         <p class="section-help-text">
-                            Select other TCE elements or libraries available on this server that your project depends on.
+                            Registry packages this project will declare and load at runtime. A library dependency gets a
+                            vendored contract file to fill in.
                         </p>
-
-                        <!-- Dropdown Selector and Add Row -->
-                        <div class="tce-dep-select-row">
-                            <div class="tce-dep-select-wrapper">
-                                <select id="tce-element-dropdown" class="form-control">
-                                    <option value="">-- Choose a TCE element / library --</option>
-                                    @php
-                                        $libraries = array_filter($availableTceElements ?? [], fn($el) => ($el['kind'] ?? '') === 'library');
-                                        $elements = array_filter($availableTceElements ?? [], fn($el) => ($el['kind'] ?? '') !== 'library');
-                                    @endphp
-
-                                    @if (!empty($libraries))
-                                        <optgroup label="Libraries & Core Modules">
-                                            @foreach ($libraries as $el)
-                                                <option
-                                                    value="{{ $el['name'] }}"
-                                                    data-name="{{ $el['name'] }}"
-                                                    data-version="^{{ $el['version'] }}"
-                                                    data-kind="{{ $el['kind'] }}"
-                                                    data-desc="{{ $el['description'] }}"
-                                                >
-                                                    {{ $el['name'] }} (v{{ $el['version'] }}) [library]
-                                                </option>
-                                            @endforeach
-                                        </optgroup>
-                                    @endif
-
-                                    @if (!empty($elements))
-                                        <optgroup label="TCE Elements & Games">
-                                            @foreach ($elements as $el)
-                                                <option
-                                                    value="{{ $el['name'] }}"
-                                                    data-name="{{ $el['name'] }}"
-                                                    data-version="^{{ $el['version'] }}"
-                                                    data-kind="{{ $el['kind'] }}"
-                                                    data-desc="{{ $el['description'] }}"
-                                                >
-                                                    {{ $el['name'] }} (v{{ $el['version'] }}) [element]
-                                                </option>
-                                            @endforeach
-                                        </optgroup>
-                                    @endif
-                                </select>
-                            </div>
-
-                            <div class="tce-dep-version-wrapper">
-                                <input
-                                    type="text"
-                                    id="tce-dep-version-input"
-                                    class="form-control"
-                                    placeholder="^1.0.0"
-                                    title="Version constraint"
-                                >
-                            </div>
-
-                            <button type="button" id="btn-add-tce-dep" class="btn btn-add-dep">
-                                + Add
-                            </button>
-                        </div>
-
-                        <!-- Quick Add Recommended Chips -->
-                        <div class="quick-add-chips">
-                            <span class="chips-label">Quick Add:</span>
-                            @foreach ($availableTceElements ?? [] as $el)
-                                @if (!empty($el['recommended']))
-                                    <button
-                                        type="button"
-                                        class="btn-chip"
-                                        data-name="{{ $el['name'] }}"
-                                        data-version="^{{ $el['version'] }}"
-                                        data-kind="{{ $el['kind'] }}"
-                                    >
-                                        + {{ $el['name'] }}
-                                    </button>
-                                @endif
-                            @endforeach
-                        </div>
-
-                        <!-- Active Dependencies List -->
-                        <div class="selected-deps-section">
-                            <label class="selected-deps-label">Configured TCE Dependencies (<span id="dep-count">0</span>):</label>
-                            <div id="selected-tce-dependencies-list" class="selected-deps-list">
-                                <!-- Populated dynamically by JS -->
-                            </div>
-                        </div>
-
-                        <!-- Collapsible Advanced / NPM Dependencies -->
-                        <details class="advanced-npm-deps">
-                            <summary>Additional NPM Dependencies (Optional)</summary>
-                            <div class="form-group" style="margin-top: 10px;">
-                                <textarea
-                                    id="custom_dependencies"
-                                    name="custom_dependencies"
-                                    rows="2"
-                                    placeholder="package-name:^1.0.0 (one per line or comma separated)"
-                                    class="form-control"
-                                >{{ old('custom_dependencies') }}</textarea>
-                                <small class="form-text">e.g. <code>three:^0.160.0</code> or <code>lodash-es:^4.17.21</code></small>
-                            </div>
-                        </details>
+                        @php
+                            $selected = (array) old('dependencies', []);
+                            $groups = collect($available_dependencies)->groupBy('kind');
+                        @endphp
+                        @forelse (['library' => 'Libraries', 'element' => 'Elements'] as $kind => $label)
+                            @if ($groups->has($kind))
+                                <label class="selected-deps-label">{{ $label }}</label>
+                                <div class="selected-deps-list">
+                                    @foreach ($groups[$kind] as $package)
+                                        @php $key = "{$package['namespace']}/{$package['name']}"; @endphp
+                                        <label class="selected-dep-card">
+                                            <input type="checkbox" name="dependencies[]" value="{{ $key }}" @checked(in_array($key, $selected, true))>
+                                            <span class="dep-meta">
+                                                <code class="dep-name">{{ $key }}</code>
+                                                <span class="dep-badge dep-badge-ver">{{ $package['version'] }}</span>
+                                                @if ($package['description'] !== '')
+                                                    <small class="form-text">{{ $package['description'] }}</small>
+                                                @endif
+                                            </span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            @endif
+                        @empty
+                        @endforelse
+                        @if ($groups->isEmpty())
+                            <div class="empty-deps-notice">No packages are published to this registry yet.</div>
+                        @endif
                     </fieldset>
 
-                    <!-- Live Summary Card -->
                     <div class="preview-card">
-                        <h3>Template Summary</h3>
+                        <h3>Summary</h3>
                         <div class="preview-item">
-                            <span class="preview-label">HTML Tag:</span>
-                            <code id="preview-tag">&lt;tce-my-element&gt;</code>
+                            <span class="preview-label">Identifier:</span>
+                            <code id="preview-identifier">{{ $default_namespace }}/tce-my-element</code>
                         </div>
                         <div class="preview-item">
                             <span class="preview-label">Class:</span>
-                            <code id="preview-class">MyElement</code>
+                            <code id="preview-class">TceMyElement</code>
                         </div>
                         <div class="preview-item">
-                            <span class="preview-label">Resolution:</span>
-                            <span id="preview-res">400 &times; 300 px</span>
+                            <span class="preview-label">Embed:</span>
+                            <code id="preview-embed">&lt;tce-my-element&gt;</code>
                         </div>
                         <div class="preview-item">
-                            <span class="preview-label">Dependencies:</span>
-                            <span id="preview-deps">0 elements</span>
-                        </div>
-                        <div class="preview-item">
-                            <span class="preview-label">Stack:</span>
-                            <span>TypeScript + Vite + SCSS</span>
+                            <span class="preview-label">SDK:</span>
+                            <span>{{ implode(', ', array_map(fn (array $sdk) => $sdk['npm_name'], config('tce.sdk_packages'))) }} (vendored)</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary btn-lg">
-                    Generate & Download TCE Project ZIP
+                <button type="submit" class="btn btn-primary btn-lg" @disabled(! $sdk_published)>
+                    Generate &amp; download project zip
                 </button>
             </div>
         </form>
 
-        <!-- Quick Workflow Guide -->
         <div class="generator-guide">
-            <h3>How to use your generated project</h3>
+            <h3>Afterwards</h3>
             <div class="guide-steps">
                 <div class="step">
                     <div class="step-number">1</div>
-                    <h4>Extract & Install</h4>
-                    <p>Unzip the downloaded archive and run <code>npm install</code> in the project directory.</p>
+                    <h4>Install &amp; run</h4>
+                    <p>Unzip, <code>npm install</code>, <code>npm start</code> opens the dev harness with live reload.</p>
                 </div>
                 <div class="step">
                     <div class="step-number">2</div>
-                    <h4>Develop Live</h4>
-                    <p>Run <code>npm start</code> to launch Vite with hot-reloading in the isolated harness.</p>
+                    <h4>Check</h4>
+                    <p><code>npm run check</code> runs tsc and eslint with the coding-standard rules of the specification.</p>
                 </div>
                 <div class="step">
                     <div class="step-number">3</div>
-                    <h4>Package & Upload</h4>
-                    <p>Run <code>make tce</code> to build and package. Upload via Nova or <code>/api/v1/tobidot-elements</code>.</p>
+                    <h4>Publish</h4>
+                    <p><code>npm run pack</code> builds and zips <code>dist/</code>; upload the zip via <code>POST /api/v1/tce-packages</code> (the README has the exact call).</p>
                 </div>
             </div>
         </div>
@@ -329,223 +218,38 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const nameInput = document.getElementById('element-name') || document.getElementById('name');
-            const widthInput = document.getElementById('width');
-            const heightInput = document.getElementById('height');
-            const previewTag = document.getElementById('preview-tag');
-            const previewClass = document.getElementById('preview-class');
-            const previewRes = document.getElementById('preview-res');
-            const previewDeps = document.getElementById('preview-deps');
-            const depCountSpan = document.getElementById('dep-count');
-            const selectedDepsContainer = document.getElementById('selected-tce-dependencies-list');
-            const tceDropdown = document.getElementById('tce-element-dropdown');
-            const tceVersionInput = document.getElementById('tce-dep-version-input');
-            const btnAddTceDep = document.getElementById('btn-add-tce-dep');
+            const namespace_input = document.getElementById('namespace');
+            const name_input = document.getElementById('name');
+            const kind_input = document.getElementById('kind');
+            const width_input = document.getElementById('width');
+            const height_input = document.getElementById('height');
+            const preview_identifier = document.getElementById('preview-identifier');
+            const preview_class = document.getElementById('preview-class');
+            const preview_embed = document.getElementById('preview-embed');
+            const element_sections = document.querySelectorAll('[data-element-only]');
 
-            // Dependency store: Map of name -> { name, version, kind }
-            const selectedDeps = new Map();
-
-            // Initial dependencies from server / defaults
-            const initialDeps = {!! json_encode(old('tce_dependencies', old('dependencies', ['@game.object/tce-common:^1.0.6', 'dll-tce-desktop:^1.0.0']))) !!};
-
-            if (Array.isArray(initialDeps)) {
-                initialDeps.forEach(function (item) {
-                    if (!item || typeof item !== 'string') return;
-                    let name = item;
-                    let ver = '^1.0.0';
-                    let kind = 'library';
-
-                    if (item.includes(':')) {
-                        const parts = item.split(':');
-                        name = parts[0].trim();
-                        ver = parts[1].trim();
-                    } else if (item.includes('@') && !item.startsWith('@')) {
-                        const parts = item.split('@');
-                        name = parts[0].trim();
-                        ver = parts[1].trim();
-                    }
-
-                    if (name) {
-                        // Attempt to deduce kind from dropdown options if available
-                        const opt = tceDropdown.querySelector(`option[value="${name}"]`);
-                        if (opt && opt.dataset.kind) {
-                            kind = opt.dataset.kind;
-                        } else if (name.startsWith('dll-') || name.startsWith('@game.object/')) {
-                            kind = 'library';
-                        } else {
-                            kind = 'element';
-                        }
-                        selectedDeps.set(name, { name: name, version: ver, kind: kind });
-                    }
-                });
+            function studly(name) {
+                return name.split('-').filter(Boolean).map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join('');
             }
 
-            function toStudly(str) {
-                return str
-                    .replace(/^[tce-]+/, '')
-                    .replace(/[-_]+(.)?/g, (_, c) => c ? c.toUpperCase() : '')
-                    .replace(/^(.)/, c => c.toUpperCase()) || 'CustomElement';
+            function update() {
+                const name = name_input.value.trim().toLowerCase();
+                const is_library = kind_input.value === 'library';
+                preview_identifier.textContent = `${namespace_input.value.trim()}/${name}`;
+                preview_class.textContent = studly(name) || '—';
+                preview_embed.textContent = is_library ? `<script src=".../tce-elements/${namespace_input.value.trim()}/${name}">` : `<${name}>`;
+                element_sections.forEach((section) => { section.hidden = is_library; });
             }
 
-            function updatePreview() {
-                let name = (nameInput.value || 'my-element').trim().toLowerCase().replace(/[^a-z0-9-_]/g, '-');
-                if (!name.includes('-')) {
-                    name = 'tce-' + name;
-                }
-                previewTag.textContent = '<' + name + '>';
-                previewClass.textContent = toStudly(name);
-
-                const w = widthInput.value || 400;
-                const h = heightInput.value || 300;
-                previewRes.innerHTML = w + ' &times; ' + h + ' px';
-
-                const count = selectedDeps.size;
-                previewDeps.textContent = count + (count === 1 ? ' element' : ' elements');
-            }
-
-            function renderDependencies() {
-                selectedDepsContainer.innerHTML = '';
-                const count = selectedDeps.size;
-                depCountSpan.textContent = count;
-
-                if (count === 0) {
-                    const emptyDiv = document.createElement('div');
-                    emptyDiv.className = 'empty-deps-notice';
-                    emptyDiv.textContent = 'No additional TCE dependencies selected. (Core @game.object/tce-common is always included).';
-                    selectedDepsContainer.appendChild(emptyDiv);
-                    updatePreview();
-                    return;
-                }
-
-                selectedDeps.forEach(function (dep) {
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'selected-dep-card';
-
-                    const infoDiv = document.createElement('div');
-                    infoDiv.className = 'dep-meta';
-
-                    const nameCode = document.createElement('code');
-                    nameCode.className = 'dep-name';
-                    nameCode.textContent = dep.name;
-                    infoDiv.appendChild(nameCode);
-
-                    const kindSpan = document.createElement('span');
-                    kindSpan.className = 'dep-badge dep-badge-' + (dep.kind || 'element');
-                    kindSpan.textContent = dep.kind || 'element';
-                    infoDiv.appendChild(kindSpan);
-
-                    const verSpan = document.createElement('span');
-                    verSpan.className = 'dep-badge dep-badge-ver';
-                    verSpan.textContent = dep.version || '^1.0.0';
-                    infoDiv.appendChild(verSpan);
-
-                    itemDiv.appendChild(infoDiv);
-
-                    // Hidden input for form submission
-                    const hiddenInput = document.createElement('input');
-                    hiddenInput.type = 'hidden';
-                    hiddenInput.name = 'tce_dependencies[]';
-                    hiddenInput.value = `${dep.name}:${dep.version}`;
-                    itemDiv.appendChild(hiddenInput);
-
-                    // Remove button
-                    const removeBtn = document.createElement('button');
-                    removeBtn.type = 'button';
-                    removeBtn.className = 'btn-remove-dep';
-                    removeBtn.innerHTML = '&times;';
-                    removeBtn.title = 'Remove ' + dep.name;
-                    removeBtn.addEventListener('click', function () {
-                        selectedDeps.delete(dep.name);
-                        renderDependencies();
-                    });
-                    itemDiv.appendChild(removeBtn);
-
-                    selectedDepsContainer.appendChild(itemDiv);
-                });
-
-                updatePreview();
-            }
-
-            // Dropdown change handler: autofill version input
-            tceDropdown.addEventListener('change', function () {
-                const selectedOpt = tceDropdown.options[tceDropdown.selectedIndex];
-                if (selectedOpt && selectedOpt.value) {
-                    tceVersionInput.value = selectedOpt.dataset.version || '^1.0.0';
-                } else {
-                    tceVersionInput.value = '';
-                }
-            });
-
-            // Add dependency handler
-            function addCurrentDependency() {
-                const selectedOpt = tceDropdown.options[tceDropdown.selectedIndex];
-                const depName = (selectedOpt && selectedOpt.value) ? selectedOpt.value : tceDropdown.value.trim();
-
-                if (!depName) {
-                    return;
-                }
-
-                let depVer = tceVersionInput.value.trim();
-                if (!depVer) {
-                    depVer = (selectedOpt && selectedOpt.dataset.version) ? selectedOpt.dataset.version : '^1.0.0';
-                }
-
-                const depKind = (selectedOpt && selectedOpt.dataset.kind) ? selectedOpt.dataset.kind : (depName.startsWith('dll-') ? 'library' : 'element');
-
-                selectedDeps.set(depName, {
-                    name: depName,
-                    version: depVer,
-                    kind: depKind
-                });
-
-                // Reset inputs
-                tceDropdown.selectedIndex = 0;
-                tceVersionInput.value = '';
-
-                renderDependencies();
-            }
-
-            btnAddTceDep.addEventListener('click', addCurrentDependency);
-
-            tceVersionInput.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    addCurrentDependency();
-                }
-            });
-
-            // Quick add chip click handler
-            document.querySelectorAll('.btn-chip').forEach(function (btn) {
-                btn.addEventListener('click', function () {
-                    const name = this.dataset.name;
-                    const ver = this.dataset.version || '^1.0.0';
-                    const kind = this.dataset.kind || 'library';
-
-                    if (name) {
-                        selectedDeps.set(name, {
-                            name: name,
-                            version: ver,
-                            kind: kind
-                        });
-                        renderDependencies();
-                    }
+            [namespace_input, name_input, kind_input].forEach((input) => input.addEventListener('input', update));
+            kind_input.addEventListener('change', update);
+            document.querySelectorAll('.btn-preset').forEach((button) => {
+                button.addEventListener('click', function () {
+                    width_input.value = this.dataset.w;
+                    height_input.value = this.dataset.h;
                 });
             });
-
-            nameInput.addEventListener('input', updatePreview);
-            widthInput.addEventListener('input', updatePreview);
-            heightInput.addEventListener('input', updatePreview);
-
-            document.querySelectorAll('.btn-preset').forEach(function (btn) {
-                btn.addEventListener('click', function () {
-                    widthInput.value = this.dataset.w;
-                    heightInput.value = this.dataset.h;
-                    updatePreview();
-                });
-            });
-
-            renderDependencies();
-            updatePreview();
+            update();
         });
     </script>
 </x-layouts.app>

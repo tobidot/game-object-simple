@@ -4,6 +4,7 @@ namespace App\Nova\Actions;
 
 use App\Helpers\AppHelper;
 use App\Models\Page;
+use App\Models\TcePackage;
 use App\Models\TobidotElement;
 use App\Services\Models\AttachmentService;
 use Illuminate\Bus\Queueable;
@@ -38,7 +39,7 @@ class UploadAttachment extends Action
 
         if ($models->isNotEmpty()) {
             foreach ($models as $model) {
-                if ($model instanceof TobidotElement) {
+                if ($model instanceof TobidotElement || $model instanceof TcePackage) {
                     $relation = $fields->relation ?? 'icon';
                     $model->attachments()->attach($attachment->id, ['relation' => $relation]);
                 } elseif ($model instanceof Page) {
@@ -76,7 +77,10 @@ class UploadAttachment extends Action
         $resourceClass = rescue(fn () => $request->resource(), null);
         $resourceKey = $request->route('resource');
 
-        if ($resourceClass === \App\Nova\TobidotElement::class || $resourceClass === TobidotElement::class || $resourceKey === 'tobidot-elements') {
+        if (
+            $resourceClass === \App\Nova\TobidotElement::class || $resourceClass === TobidotElement::class || $resourceKey === 'tobidot-elements'
+            || $resourceClass === \App\Nova\TcePackage::class || $resourceClass === TcePackage::class || $resourceKey === 'tce-packages'
+        ) {
             $fields[] = Select::make(__('Relation'), 'relation')
                 ->options([
                     'icon' => 'Icon',

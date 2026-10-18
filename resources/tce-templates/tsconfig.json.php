@@ -1,29 +1,14 @@
-<?php
-
-use App\DTO\TceGeneratorConfig;
-
-/** @var TceGeneratorConfig $config */
-$tsConfig = [
-    'compilerOptions' => [
-        'target' => 'ESNext',
-        'useDefineForClassFields' => true,
-        'module' => 'ESNext',
-        'lib' => ['ESNext', 'DOM', 'DOM.Iterable'],
-        'moduleResolution' => 'bundler',
-        'allowImportingTsExtensions' => false,
-        'resolveJsonModule' => true,
-        'isolatedModules' => true,
-        'noEmit' => false,
-        'strict' => true,
-        'noUnusedLocals' => true,
-        'noUnusedParameters' => true,
-        'noFallthroughCasesInSwitch' => true,
-        'skipLibCheck' => true,
-        'esModuleInterop' => true,
-        'allowSyntheticDefaultImports' => true,
-        'forceConsistentCasingInFileNames' => true,
-    ],
-    'include' => ['src/**/*.ts', 'src/**/*.d.ts'],
-];
-
-echo json_encode($tsConfig, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n";
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "skipLibCheck": true,
+        "noEmit": true
+    },
+    "include": ["src"]
+}
