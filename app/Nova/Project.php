@@ -2,9 +2,11 @@
 
 namespace App\Nova;
 
+use App\Enums\LiveSyncSection;
 use App\Enums\ProjectState;
 use App\Enums\PublishState;
 use App\Helpers\NovaHelper;
+use App\Nova\Actions\PullFromLive;
 use App\Nova\Actions\UploadRelease;
 use App\Nova\Metrics\ViewsPerDay;
 use Illuminate\Http\Request;
@@ -148,6 +150,7 @@ class Project extends Resource
     {
         return [
             new UploadRelease,
+            new PullFromLive(LiveSyncSection::CODE),
         ];
     }
 }

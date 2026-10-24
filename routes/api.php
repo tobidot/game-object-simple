@@ -1,6 +1,8 @@
 <?php
 
+use App\Enums\LiveSyncSection;
 use App\Http\Controllers\AttachmentController;
+use App\Http\Controllers\LiveSyncController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TceGeneratorController;
 use App\Http\Controllers\TcePackageController;
@@ -49,6 +51,12 @@ Route::group([
             TcePackageController::class,
             'upload',
         ])->name('tce-packages.upload');
+
+        Route::get('/live-sync/{section}', [
+            LiveSyncController::class,
+            'export',
+        ])->name('live-sync.export')
+            ->whereIn('section', array_column(LiveSyncSection::cases(), 'value'));
 
         Route::get(
             '/validate-token',

@@ -76,10 +76,14 @@ validated — lower-case, never `on*` — so a request cannot install inline eve
 
 `request_create_icon` with `attributes` asks for a *shortcut*: an icon that, when activated, opens
 the package with exactly those attributes set (and the given `title`, `width`, `height`), the way
-`request_open` would. The desktop validates the attributes with the same rule, remembers shortcut
-icons across reloads and offers "Remove shortcut" in their context menu; icons without
-`attributes` stand for the package itself and are not remembered. This is how a file in the file
-system gets an icon: the explorer and the code editor request a shortcut to the file's handler.
+`request_open` would. The desktop validates the attributes with the same rule. This is how a file
+in the file system gets an icon: the explorer and the code editor request a shortcut to the file's
+handler. An icon requested without `attributes` stands for the package itself; that is what the
+package manager's "Add to Desktop" asks for.
+
+The desktop remembers every requested icon, shortcut or not, across reloads, and offers to remove
+it in its context menu ("Remove shortcut", or "Remove from desktop" for a package icon). The
+icons the page itself declares (`data-apps`) are not remembered: the page sets them on every load.
 
 <a name="the-nearest-owner-claims-a-request"></a>
 ### The Nearest Owner Claims a Request

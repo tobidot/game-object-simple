@@ -14,6 +14,12 @@ return [
     |
     */
 
+    // The live site a local instance pulls its data from (Nova "Pull … from live", `php artisan live:pull`).
+    'live' => [
+        'url' => env('LIVE_URL', 'https://www.game-object.de'),
+        'token' => env('LIVE_API_TOKEN'),
+    ],
+
     'mailgun' => [
         'domain' => env('MAILGUN_DOMAIN'),
         'secret' => env('MAILGUN_SECRET'),

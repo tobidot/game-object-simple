@@ -26,7 +26,19 @@ class AttachmentService
         // Upload the zip file as an attachment
         $attachment = $this->createFromUploadedSingleFile($file, $prefix, $file_name);
 
-        // unpack zip
+        $this->unpackZip($attachment);
+
+        return $attachment;
+    }
+
+    /**
+     * Unpacks a zip attachment next to the zip itself and flattens a single top-level folder.
+     * Used for uploads and for zips pulled from the live site (see LiveSyncService).
+     *
+     * @throws DummyException
+     */
+    public function unpackZip(Attachment $attachment): int
+    {
         $disk = Storage::disk('public');
         $relative_folder_path = $attachment->path;
         $local_file_path = $disk->path(join_paths($relative_folder_path, $attachment->file_name));
@@ -66,7 +78,7 @@ class AttachmentService
         $count = count($files);
         Log::info("Attachment#$attachment->id unpacked from zip with $count files.");
 
-        return $attachment;
+        return $count;
     }
 
     public function createFromUploadedSingleFile(

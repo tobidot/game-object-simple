@@ -122,6 +122,11 @@ broken desktop. The same choices, and the attributes each composed element is cr
 edited in the properties dialog ("Desktop Properties…" on the desktop menu; `tce-inspector` is a
 dependency of the desktop) or in the Settings program, and are remembered across reloads.
 
+Everything the desktop remembers — background, composition, component and icon attributes,
+requested icons — is a file below `/system/tce-desktop/` in `dll-tce-file-system`, a dependency of
+the desktop. A file that cannot be read counts as missing and the page's defaults apply; storage
+never breaks the desktop.
+
 <a name="4-installing-packages-at-runtime"></a>
 ## 4. Installing Packages at Runtime
 
@@ -129,8 +134,15 @@ The desktop's package manager (`tce-bootloader`) reads the public registry
 ([Publishing & Discovery](./upload-and-registry#public-discovery-endpoint)), lists every package,
 and installs one by injecting its embed script with `TceRoot.load_script('/tce-elements/{namespace}/{name}')`
 — dependencies first, each only if not yet bound. Installing is therefore exactly the
-zero-script embed performed at runtime; there is no second loading mechanism. The installed set
-is remembered in the browser and re-installed on the next boot the same way.
+zero-script embed performed at runtime; there is no second loading mechanism.
+
+The installed set is recorded in `dll-tce-file-system` (a dependency of the package manager) as
+`/system/tce-bootloader/installed.json`: a JSON array of `namespace/name` in install order, every
+dependency before the packages that need it, and only what was installed through the package
+manager — never what the page itself embeds. The package manager's own boot (its `init()`, run
+when its script loads, not when a window opens) re-installs every recorded package the same way,
+in that order. A package that fails to re-install is reported and skipped; the others still
+install. Activating an installed package right after a reload simply waits for its binding.
 
 <a name="dos-and-donts"></a>
 ## Do's and Don'ts
@@ -141,6 +153,8 @@ is remembered in the browser and re-installed on the next boot the same way.
 - ✅ Do fail loudly, in the element's own rendered output, when a required dependency never
   binds.
 - ✅ Do pin a version in the embed URL for anything beyond a demo.
+- ✅ Do keep what the desktop and the package manager remember in `dll-tce-file-system`, never in
+  `localStorage`.
 - ❌ Don't auto-inject dependencies from a package script.
 - ❌ Don't write a page-specific bootstrap; the entry script is the bootstrap.
 - ❌ Don't rely on cross-origin cookies or authentication from an embedded element — the embed

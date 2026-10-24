@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Enums\LiveSyncSection;
 use App\Helpers\AppHelper;
 use App\Services\Models\AttachmentService;
 use Illuminate\Http\Request;
@@ -173,6 +174,7 @@ class TobidotElement extends Resource
                 __('View Fullscreen'),
                 fn (\App\Models\TobidotElement $model) => route('tobidot-elements.view', $model)
             )->sole(),
+            new Actions\PullFromLive(LiveSyncSection::CODE),
         ];
     }
 }

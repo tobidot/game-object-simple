@@ -26,6 +26,16 @@ The homepage `/` is the TCE v3 desktop; the v3 packages are built in the separat
   `TceGeneratorConfig` + templates in `resources/tce-templates/`. It vendors the latest `sdk` uploads into
   `vendor/` and lists dependencies from `tce_packages`; it refuses to run until the SDK is published.
 
+## Pulling live data into a local instance
+
+- `LiveSyncService` + `App\Enums\LiveSyncSection` (posts, media, code = projects and custom elements). The live
+  site serves a section's raw rows at `GET /api/v1/live-sync/{section}` (any Sanctum token, like the rest of `/api/v1`); the
+  local instance replaces its rows with them and downloads the files from live's `/storage/...`, sha256-checked
+  against `attachments.hash`, zips unpacked like an upload. Never runs in production.
+- Nova action `PullFromLive` (Pages = posts, Attachments = media, Projects / Tobidot Elements / TCE Packages = code)
+  or `php artisan live:pull {posts|media|code}... [--files-only]`. `--files-only` keeps the local rows (e.g. after
+  importing a live DB dump) and only fetches their files. Config: `LIVE_URL`, `LIVE_API_TOKEN` (`config/services.php`).
+
 ## Working here
 
 - Publish and verify against the local site only, never live, unless asked.

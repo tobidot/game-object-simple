@@ -3,6 +3,7 @@
 namespace App\Nova;
 
 use App\Enums\AttachmentType;
+use App\Enums\LiveSyncSection;
 use App\Enums\PublishState;
 use App\Helpers\AppHelper;
 use App\Helpers\NovaHelper;
@@ -141,6 +142,7 @@ class Attachment extends Resource
         return [
             new Actions\CleanupAttachment,
             (new Actions\UploadAttachment)->standalone(),
+            new Actions\PullFromLive(LiveSyncSection::MEDIA),
         ];
     }
 }

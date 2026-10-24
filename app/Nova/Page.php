@@ -2,9 +2,11 @@
 
 namespace App\Nova;
 
+use App\Enums\LiveSyncSection;
 use App\Enums\PublishState;
 use App\Helpers\AppHelper;
 use App\Helpers\NovaHelper;
+use App\Nova\Actions\PullFromLive;
 use App\Nova\Actions\UploadAttachment;
 use App\Nova\Metrics\ViewsPerDay;
 use App\Services\Models\AttachmentService;
@@ -170,6 +172,7 @@ class Page extends Resource
     {
         return [
             (new UploadAttachment)->showInline(),
+            new PullFromLive(LiveSyncSection::POSTS),
         ];
     }
 }

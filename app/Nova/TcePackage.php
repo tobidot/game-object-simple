@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Enums\LiveSyncSection;
 use App\Helpers\AppHelper;
 use App\Services\Models\AttachmentService;
 use Laravel\Nova\Actions\Action;
@@ -110,6 +111,7 @@ class TcePackage extends Resource
                 __('View Fullscreen'),
                 fn (\App\Models\TcePackage $model) => route('tce-packages.view', $model)
             )->sole(),
+            new Actions\PullFromLive(LiveSyncSection::CODE),
         ];
     }
 }
