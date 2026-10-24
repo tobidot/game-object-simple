@@ -15,6 +15,7 @@ class PullFromLiveCommand extends Command
     protected $signature = 'live:pull
                             {sections* : posts, media and/or code}
                             {--files-only : Keep the local rows and only download the files they point to}
+                            {--rows-only : Replace the rows but leave the files on live; missing files are served from there}
                             {--url= : The live site; defaults to LIVE_URL}
                             {--token= : A Sanctum token of the live admin; defaults to LIVE_API_TOKEN}';
 
@@ -31,6 +32,11 @@ class PullFromLiveCommand extends Command
             $this->error('Pulling from live overrides local data; it only runs on local instances.');
 
             return self::FAILURE;
+        }
+        if ($this->option('files-only') && $this->option('rows-only')) {
+            $this->error('--files-only and --rows-only exclude each other.');
+
+            return self::INVALID;
         }
         $sections = [];
         foreach ($this->argument('sections') as $name) {
@@ -51,7 +57,7 @@ class PullFromLiveCommand extends Command
 
         $status = self::SUCCESS;
         foreach ($sections as $section) {
-            $result = $service->pull($section, $url, $token, ! $this->option('files-only'));
+            $result = $service->pull($section, $url, $token, ! $this->option('files-only'), ! $this->option('rows-only'));
             $files = $result['files'];
             $this->info("$section->value: ".array_sum($result['rows'])." rows replaced, {$files['downloaded']} files downloaded, {$files['present']} already in place.");
             foreach ($files['failed'] as $failure) {

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CodeReleaseController;
 use App\Http\Controllers\CommentsController;
+use App\Http\Controllers\LiveSyncController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RawDocumentationController;
@@ -101,3 +102,10 @@ Route::get('/tce-elements/{namespace}/{name}', [TcePackageController::class, 'em
 Route::get('/tce-elements/{name}', [TcePackageController::class, 'embedScript'])
     ->where('name', '[0-9a-zA-Z\-_@.]+')
     ->name('tce-elements.embed.default');
+
+/**
+ * Public files a local instance pulled without downloading them come from live (LiveSyncService::liveFile()).
+ */
+Route::get('/storage/{path}', [LiveSyncController::class, 'storageFile'])
+    ->where('path', '.*')
+    ->name('live-sync.storage');

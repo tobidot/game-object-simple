@@ -132,6 +132,69 @@ class LiveSyncTest extends TestCase
         $this->assertSame(['downloaded' => 0, 'present' => 1, 'failed' => []], $result['files']);
     }
 
+    public function test_rows_only_leaves_the_files_on_live(): void
+    {
+        $page = Page::factory()->create();
+        $page->attachments()->attach($this->storedAttachment('media/rows-only', 'a.png', 'a')->id, ['relation' => 'thumbnail']);
+        $payload = $this->service()->export(LiveSyncSection::POSTS);
+        Storage::disk('public')->deleteDirectory('media/rows-only');
+
+        // Only the export is faked: preventStrayRequests() fails any download.
+        Http::fake(['live.test/api/v1/live-sync/posts' => Http::response($payload)]);
+        $result = $this->service()->pull(LiveSyncSection::POSTS, self::LIVE, 'live-token', with_files: false);
+
+        $this->assertSame(['downloaded' => 0, 'present' => 0, 'failed' => []], $result['files']);
+        $this->assertSame([$page->id], DB::table('pages')->pluck('id')->all());
+        $this->assertFalse(Storage::disk('public')->exists('media/rows-only/a.png'));
+        Http::assertSentCount(1);
+    }
+
+    public function test_a_missing_public_file_is_served_from_live(): void
+    {
+        config(['services.live.url' => self::LIVE]);
+        Http::fake(['live.test/storage/media/elsewhere/a.png' => Http::response('live image', 200, ['Content-Type' => 'image/png'])]);
+
+        $response = $this->get('/storage/media/elsewhere/a.png')->assertOk();
+
+        $this->assertSame('live image', $response->streamedContent());
+        $this->assertSame('image/png', $response->headers->get('Content-Type'));
+        $this->assertFalse(Storage::disk('public')->exists('media/elsewhere/a.png'));
+    }
+
+    public function test_a_file_live_does_not_have_stays_a_404(): void
+    {
+        config(['services.live.url' => self::LIVE]);
+        Http::fake(['live.test/*' => Http::response('', 404)]);
+
+        $this->get('/storage/media/nowhere/a.png')->assertNotFound();
+    }
+
+    public function test_only_local_instances_serve_files_from_live(): void
+    {
+        config(['services.live.url' => self::LIVE]);
+        $this->app['env'] = 'production';
+        Http::fake();
+
+        $this->get('/storage/media/elsewhere/a.png')->assertNotFound();
+        Http::assertNothingSent();
+    }
+
+    public function test_the_embed_script_of_a_package_pulled_without_files_comes_from_live(): void
+    {
+        config(['services.live.url' => self::LIVE]);
+        $code = $this->storedAttachment('tce-packages/rows-only', 'tobidot-tce-clock.zip', 'zip', AttachmentType::ZIP);
+        $package = TcePackage::query()->create([
+            'namespace' => 'tobidot', 'name' => 'tce-clock', 'kind' => 'element', 'major' => 0, 'minor' => 0, 'patch' => 1,
+        ]);
+        $package->attachments()->attach($code->id, ['relation' => 'code']);
+        Storage::disk('public')->deleteDirectory('tce-packages/rows-only');
+        Http::fake(['live.test/storage/tce-packages/rows-only/index.global.js' => Http::response('(function(){})();')]);
+
+        $this->get('/tce-elements/tobidot/tce-clock')
+            ->assertOk()
+            ->assertSee('(function(){})();', false);
+    }
+
     public function test_files_only_downloads_and_unpacks_a_package_zip_without_a_token(): void
     {
         $zip = $this->zipContent(['dist/index.js' => 'export {};', 'dist/index.global.js' => '(function(){})();']);

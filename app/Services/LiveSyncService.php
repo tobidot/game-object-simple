@@ -7,6 +7,8 @@ use App\Enums\LiveSyncSection;
 use App\Models\Attachment;
 use App\Services\Models\AttachmentService;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
@@ -79,11 +81,15 @@ class LiveSyncService
      * Replaces the local section with the live one and downloads the files it points to.
      *
      * @param  bool  $with_rows  false keeps the local rows (e.g. after importing a live DB dump) and only downloads their files.
+     * @param  bool  $with_files  false leaves the files on live; liveFile() serves the missing ones from there.
      * @return array{rows: array<string, int>, files: array{downloaded: int, present: int, failed: list<string>}}
      */
-    public function pull(LiveSyncSection $section, string $live_url, ?string $token, bool $with_rows = true): array
+    public function pull(LiveSyncSection $section, string $live_url, ?string $token, bool $with_rows = true, bool $with_files = true): array
     {
         $live_url = $this->assertPullTarget($live_url);
+        if (! $with_rows && ! $with_files) {
+            throw new InvalidArgumentException('Pull rows, files or both.');
+        }
         set_time_limit(0);
 
         $rows = [];
@@ -98,13 +104,37 @@ class LiveSyncService
                 ->throw();
             $rows = $this->replaceRows($section, $this->validatedTables($section, $response->json()));
         }
-        $files = $this->downloadFiles($section, $live_url);
+        $files = $with_files
+            ? $this->downloadFiles($section, $live_url)
+            : ['downloaded' => 0, 'present' => 0, 'failed' => []];
 
         $failed = count($files['failed']);
         Log::info("Pulled $section->value from $live_url: ".json_encode($rows)
             ." rows, {$files['downloaded']} files downloaded, {$files['present']} present, $failed failed.");
 
         return ['rows' => $rows, 'files' => $files];
+    }
+
+    /**
+     * A file of the live site's public disk, for a local instance that pulled rows without their
+     * files. Null when this instance doesn't pull, the path is unsafe, or live doesn't answer with it.
+     *
+     * @param  string  $path  relative to the public disk
+     */
+    public function liveFile(string $path): ?Response
+    {
+        $path = $this->safePath($path);
+        if ($path === null || ! self::pullAllowed()) {
+            return null;
+        }
+        $live_url = $this->assertPullTarget((string) config('services.live.url'));
+        try {
+            $response = Http::withOptions(['stream' => true])->timeout(60)->get($this->liveUrl($live_url, "storage/$path"));
+        } catch (ConnectionException) {
+            return null;
+        }
+
+        return $response->successful() ? $response : null;
     }
 
     private function assertPullTarget(string $live_url): string

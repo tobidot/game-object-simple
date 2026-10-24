@@ -33,8 +33,10 @@ The homepage `/` is the TCE v3 desktop; the v3 packages are built in the separat
   local instance replaces its rows with them and downloads the files from live's `/storage/...`, sha256-checked
   against `attachments.hash`, zips unpacked like an upload. Only local instances pull (`LiveSyncService::pullAllowed()`: env `local`/`testing`); elsewhere the action and command are hidden and the service refuses.
 - Nova action `PullFromLive` (Pages = posts, Attachments = media, Projects / Tobidot Elements / TCE Packages = code)
-  or `php artisan live:pull {posts|media|code}... [--files-only]`. `--files-only` keeps the local rows (e.g. after
-  importing a live DB dump) and only fetches their files. Config: `LIVE_URL`, `LIVE_API_TOKEN` (`config/services.php`).
+  or `php artisan live:pull {posts|media|code}... [--files-only|--rows-only]`. `--files-only` keeps the local rows (e.g. after
+  importing a live DB dump) and only fetches their files; files already in place (same sha256) are skipped. `--rows-only`
+  leaves the files on live: on local instances a missing `/storage/...` file (route `live-sync.storage`) and a missing
+  embed script are fetched from live per request (`LiveSyncService::liveFile()`). Config: `LIVE_URL`, `LIVE_API_TOKEN` (`config/services.php`).
 
 ## Working here
 

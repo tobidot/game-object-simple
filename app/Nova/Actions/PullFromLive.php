@@ -11,8 +11,8 @@ use Illuminate\Support\Collection;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Actions\ActionResponse;
 use Laravel\Nova\Fields\ActionFields;
-use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\Password;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Throwable;
@@ -53,7 +53,8 @@ class PullFromLive extends Action
                 $this->section,
                 (string) $fields->live_url,
                 $fields->token ?: config('services.live.token'),
-                ! $fields->files_only,
+                $fields->mode !== 'files',
+                $fields->mode !== 'rows',
             );
         } catch (Throwable $exception) {
             report($exception);
@@ -87,8 +88,15 @@ class PullFromLive extends Action
                 // Password hashes what it fills; the token has to reach live as typed.
                 ->fillUsing(fn (NovaRequest $request, object $model, string $attribute, string $request_attribute) => $model->{$attribute} = $request->input($request_attribute))
                 ->help(__('A Sanctum token of the live admin (Users → Generate API Token on live). Empty: LIVE_API_TOKEN from .env.')),
-            Boolean::make(__('Files only'), 'files_only')
-                ->help(__('Keep the local rows (e.g. after importing a live DB dump) and only download the files they point to.')),
+            Select::make(__('What to pull'), 'mode')
+                ->options([
+                    'all' => __('Rows and files'),
+                    'rows' => __('Rows only: missing files are served from live'),
+                    'files' => __('Files only: keep the local rows'),
+                ])
+                ->default('all')
+                ->rules(['required', 'in:all,rows,files'])
+                ->help(__('Files only suits a local DB imported from a live dump. Files that are already in place (same sha256) are never downloaded again.')),
         ];
     }
 }

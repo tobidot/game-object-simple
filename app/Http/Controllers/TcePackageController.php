@@ -6,6 +6,7 @@ use App\Helpers\AppHelper;
 use App\Http\Requests\UploadTcePackageRequest;
 use App\Http\Resources\TcePackageResource;
 use App\Models\TcePackage;
+use App\Services\LiveSyncService;
 use App\Services\Models\AttachmentService;
 use App\Services\Models\TcePackageService;
 use Illuminate\Contracts\View\View;
@@ -215,7 +216,11 @@ class TcePackageController extends Controller
         $disk = Storage::disk('public');
         $script_path = join_paths($attachment->path, 'index.global.js');
 
-        if (! $disk->exists($script_path)) {
+        // A local instance that pulled the package without its files reads the script from live.
+        $script = $disk->exists($script_path)
+            ? $disk->get($script_path)
+            : AppHelper::resolve(LiveSyncService::class)->liveFile(ltrim($script_path, '/'))?->body();
+        if ($script === null) {
             abort(404, "'$namespace/$name' has no IIFE build (index.global.js) — see \"Assets & Build: Dual Build Output\".");
         }
 
@@ -229,7 +234,7 @@ class TcePackageController extends Controller
             json_encode($content_root, $json_flags),
         );
 
-        return response($register_root.$disk->get($script_path), 200, [
+        return response($register_root.$script, 200, [
             'Content-Type' => 'application/javascript',
             'Cache-Control' => $version !== null ? 'public, max-age=31536000, immutable' : 'public, max-age=60',
         ]);
