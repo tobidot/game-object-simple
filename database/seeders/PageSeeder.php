@@ -23,49 +23,81 @@ class PageSeeder extends Seeder
             [
                 'uri' => 'home',
                 'title' => 'Home',
-                'content' => '<h1>Welcome to Game Object</h1><p>Game Object is an open sandbox and experimental game development platform dedicated to modern web-based rendering, physics simulation, and interactive experiences.</p><p>Explore our active project prototypes, try out web releases directly in your browser, or dive into our technical documentation and engine architecture articles.</p>',
+                'content' => '## Welcome to Game Object
+
+Game Object is an open sandbox and experimental game development platform dedicated to modern web-based rendering, physics simulation, and interactive experiences.
+
+Explore our active project prototypes, try out web releases directly in your browser, or dive into our technical documentation and engine architecture articles.',
                 'publish_state' => PublishState::PUBLISHED,
                 'has_thumbnail' => true,
             ],
             [
                 'uri' => 'about',
                 'title' => 'About Game Object',
-                'content' => '<h2>Our Mission</h2><p>Game Object focuses on exploring the limits of browser-based game engines using WebGL, WebGPU, WebAssembly, and high-performance JavaScript runtimes.</p><p>We build open prototypes, experimental sandbox tools, and modular desktop shell elements that empower developers to create rich interactive applications.</p>',
+                'content' => '## Our Mission
+
+Game Object focuses on exploring the limits of browser-based game engines using WebGL, WebGPU, WebAssembly, and high-performance JavaScript runtimes.
+
+We build open prototypes, experimental sandbox tools, and modular desktop shell elements that empower developers to create rich interactive applications.',
                 'publish_state' => PublishState::PUBLISHED,
                 'has_thumbnail' => true,
             ],
             [
                 'uri' => 'getting-started',
                 'title' => 'Getting Started with Game Development',
-                'content' => '<h2>Getting Started</h2><p>Discover how to integrate and build with our game elements and interactive components.</p><h3>Key Steps:</h3><ul><li>Browse through our published projects and inspect live web releases.</li><li>Review the modular element definitions and script integrations.</li><li>Experiment with custom physics parameters and shader uniforms.</li></ul>',
+                'content' => '## Getting Started
+
+Discover how to integrate and build with our game elements and interactive components.
+
+### Key Steps:
+
+- Browse through our published projects and inspect live web releases.
+- Review the modular element definitions and script integrations.
+- Experiment with custom physics parameters and shader uniforms.',
                 'publish_state' => PublishState::PUBLISHED,
                 'has_thumbnail' => false,
             ],
             [
                 'uri' => 'engine-architecture',
                 'title' => 'Game Engine Architecture',
-                'content' => '<h2>Engine Architecture & Core Systems</h2><p>Our custom engine utilizes a cache-friendly Entity Component System (ECS) paired with decoupled worker threads for heavy mathematical computations and physics simulations.</p><h3>Core Subsystems:</h3><ul><li><strong>Render Graph:</strong> Dynamic pass management and deferred shading pipeline.</li><li><strong>Physics Worker:</strong> Deterministic step calculation running on off-main-thread workers.</li><li><strong>Asset Streamer:</strong> Progressive texture decoding and geometry streaming.</li></ul>',
+                'content' => '## Engine Architecture & Core Systems
+
+Our custom engine utilizes a cache-friendly Entity Component System (ECS) paired with decoupled worker threads for heavy mathematical computations and physics simulations.
+
+### Core Subsystems:
+
+- **Render Graph:** Dynamic pass management and deferred shading pipeline.
+- **Physics Worker:** Deterministic step calculation running on off-main-thread workers.
+- **Asset Streamer:** Progressive texture decoding and geometry streaming.',
                 'publish_state' => PublishState::PUBLISHED,
                 'has_thumbnail' => true,
             ],
             [
                 'uri' => 'tutorials/shaders',
                 'title' => 'Tutorial: WebGL Shaders & Lighting',
-                'content' => '<h2>Introduction to Shader Programming</h2><p>Learn how to craft performant vertex and fragment shaders that bring depth, reflections, and atmospheric volumetric effects to your scenes.</p><p>We walk through basic phong illumination, normal mapping, and screen-space ambient occlusion (SSAO) implementations.</p>',
+                'content' => '## Introduction to Shader Programming
+
+Learn how to craft performant vertex and fragment shaders that bring depth, reflections, and atmospheric volumetric effects to your scenes.
+
+We walk through basic phong illumination, normal mapping, and screen-space ambient occlusion (SSAO) implementations.',
                 'publish_state' => PublishState::PUBLISHED,
                 'has_thumbnail' => true,
             ],
             [
                 'uri' => 'community-guidelines',
                 'title' => 'Community Guidelines & Collaboration',
-                'content' => '<h2>Community Standards</h2><p>We are committed to providing a friendly, safe, and welcoming environment for all creators, developers, and game designers.</p><p>Please share constructive feedback in project comments and adhere to collaborative open-source best practices.</p>',
+                'content' => '## Community Standards
+
+We are committed to providing a friendly, safe, and welcoming environment for all creators, developers, and game designers.
+
+Please share constructive feedback in project comments and adhere to collaborative open-source best practices.',
                 'publish_state' => PublishState::PUBLISHED,
                 'has_thumbnail' => false,
             ],
             [
                 'uri' => 'draft-asset-pipeline',
                 'title' => 'Internal Draft: Next-Gen Asset Streaming',
-                'content' => '<p>Confidential working draft detailing plans for chunked mesh streaming over HTTP/3 and WebTransport.</p>',
+                'content' => 'Confidential working draft detailing plans for chunked mesh streaming over HTTP/3 and WebTransport.',
                 'publish_state' => PublishState::PRIVATE,
                 'has_thumbnail' => false,
             ],

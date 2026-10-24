@@ -26,6 +26,13 @@ The homepage `/` is the TCE v3 desktop; the v3 packages are built in the separat
   `TceGeneratorConfig` + templates in `resources/tce-templates/`. It vendors the latest `sdk` uploads into
   `vendor/` and lists dependencies from `tce_packages`; it refuses to run until the SDK is published.
 
+## Pages
+
+- Page content is GitHub-flavored markdown (Nova `Markdown` field, MCP `create_page`/`update_page`). `MarkdownService::toHtml()`
+  is the only renderer (`Page::$content_html`, excerpts, Nova preview via `SiteMarkdownPreset`): line breaks stay `<br>`,
+  `#` renders as `<h2>` under the title. `fromTrixHtml()` converted the former Trix HTML (migration
+  `convert_page_content_to_markdown`); the HTML is kept in `pages.content_html_legacy` until a later release drops it.
+
 ## Pulling live data into a local instance
 
 - `LiveSyncService` + `App\Enums\LiveSyncSection` (posts, media, code = projects and custom elements). The live

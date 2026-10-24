@@ -68,7 +68,7 @@ class ViewsAndBemTest extends TestCase
         $page = Page::factory([
             'uri' => 'my-test-page',
             'title' => 'My Test Page',
-            'content' => '<p>Test page content</p>',
+            'content' => '**Test** page content',
             'publish_state' => PublishState::PUBLISHED,
         ])->create();
 
@@ -92,6 +92,7 @@ class ViewsAndBemTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('page__content', false);
+        $response->assertSee('<p><strong>Test</strong> page content</p>', false);
         $response->assertSee('page__related', false);
         $response->assertSee('page__comments', false);
         $response->assertSee('comment-section', false);

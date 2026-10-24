@@ -10,14 +10,6 @@ use App\Models\Project;
  */
 trait WritesPages
 {
-    /**
-     * Pages render their own title as the only <h1>, so content headings are demoted (same as Nova).
-     */
-    protected function normalizeContent(string $content): string
-    {
-        return str_replace(['<h1>', '</h1>'], ['<h2>', '</h2>'], $content);
-    }
-
     protected function findPage(int $id): ?Page
     {
         return Page::query()->withoutGlobalScopes()->find($id);

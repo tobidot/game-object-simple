@@ -19,8 +19,9 @@ use Laravel\Mcp\Server\Tool;
 
 #[Name('create_page')]
 #[Description(<<<'TEXT'
-Create a new page (blog post / article). Content is HTML; <h1> headings are converted to <h2> because the page title is the <h1>.
-To embed images, upload them with upload_media first and use the returned url in an <img> tag.
+Create a new page (blog post / article). Content is GitHub-flavored markdown: a line break stays a line break,
+an empty line starts a paragraph, and "#" headings render as <h2> because the page title is the <h1>.
+To embed images, upload them with upload_media first and use the returned url: ![alt text](url).
 New pages default to "private" so they can be reviewed before publishing.
 TEXT)]
 class CreatePageTool extends Tool
@@ -43,7 +44,7 @@ class CreatePageTool extends Tool
             $page = new Page;
             $page->title = $validated['title'];
             $page->uri = $validated['uri'];
-            $page->content = $this->normalizeContent($validated['content']);
+            $page->content = $validated['content'];
             $page->publish_state = PublishState::tryFrom($validated['publish_state'] ?? '') ?? PublishState::PRIVATE;
             $page->allow_comments = $validated['allow_comments'] ?? true;
             $page->save();
@@ -65,7 +66,7 @@ class CreatePageTool extends Tool
             'title' => $schema->string()->max(255)->required(),
             'uri' => $schema->string()->max(255)->pattern('^[a-z0-9\-/]+$')->required()
                 ->description('URL slug, lowercase letters, digits, "-" and "/". Must be unique.'),
-            'content' => $schema->string()->required()->description('HTML body of the page.'),
+            'content' => $schema->string()->required()->description('Markdown body of the page.'),
             'publish_state' => $schema->string()->enum(array_column(PublishState::cases(), 'value'))
                 ->description('Defaults to "private".'),
             'allow_comments' => $schema->boolean()->description('Defaults to true.'),

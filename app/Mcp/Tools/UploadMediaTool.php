@@ -24,7 +24,7 @@ Upload a media file (image, video, zip, ...) as an attachment and optionally att
 Provide exactly one of "content_base64" (file bytes, base64 encoded) or "source_url" (public http(s) URL the server downloads).
 Base64 is only practical for small files; for large local files POST multipart/form-data to /api/v1/attachments instead (same Bearer token, field "file").
 Identical files are deduplicated: re-uploading returns the existing attachment.
-Returns the attachment including its public "url", ready to be used in page HTML, e.g. <img src="...">.
+Returns the attachment including its public "url", ready to be used in page markdown, e.g. ![alt](...).
 TEXT)]
 class UploadMediaTool extends Tool
 {

@@ -23,7 +23,7 @@ use Laravel\Mcp\Server\Attributes\Version;
 #[Version('1.0.0')]
 #[Instructions(<<<'TEXT'
 Manage the content of the game-object.de website: pages (blog posts / articles) and media (attachments such as images).
-Typical flow for a post with images: upload_media (get the url) -> create_page or update_page with <img src="url"> in the HTML content
+Typical flow for a post with images: upload_media (get the url) -> create_page or update_page with ![alt](url) in the markdown content
 -> attach_media with relation "thumbnail" to set the cover image. New pages are private until publish_state is set to "published".
 TCE packages (desktop elements and libraries): list_tce_packages shows the registry; upload_tce_package publishes a built package,
 dependencies first.

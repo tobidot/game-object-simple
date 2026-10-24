@@ -69,8 +69,8 @@ curl -X POST http://localhost/mcp \
 | Tool | Purpose |
 | --- | --- |
 | `list_pages` | List pages, newest first. Filters: `search` (title/uri), `publish_state`, `page`, `per_page` (max 100). Without content. |
-| `get_page` | One page by `id` or `uri`, including HTML `content`, attachments, `related_page_ids` and `project_ids`. |
-| `create_page` | Create a page: `title`, `uri` (unique, `[a-z0-9-/]`), `content` (HTML), optional `publish_state`, `allow_comments`, `related_page_ids`, `project_ids`. |
+| `get_page` | One page by `id` or `uri`, including markdown `content`, attachments, `related_page_ids` and `project_ids`. |
+| `create_page` | Create a page: `title`, `uri` (unique, `[a-z0-9-/]`), `content` (markdown), optional `publish_state`, `allow_comments`, `related_page_ids`, `project_ids`. |
 | `update_page` | Change only the fields that are passed. `content` replaces the whole body; relation lists replace the full set. |
 
 ### Media (attachments)
@@ -92,7 +92,7 @@ There are **no delete tools** on purpose. Deleting pages and media is still done
 Writing a post with a cover image:
 
 1. `upload_media` with the image. Note the returned `attachment.id` and `attachment.url`.
-2. `create_page` with `<img src="{url}">` in the HTML content. It is created as `private`.
+2. `create_page` with `![alt]({url})` in the markdown content. It is created as `private`.
 3. `attach_media` with `relation: "thumbnail"` to use the image as the page thumbnail in excerpts.
 4. Review the page in the browser (logged in), then `update_page` with `publish_state: "published"`.
 
@@ -123,7 +123,8 @@ Responds with `201` and the same attachment fields as `upload_media`.
 <a name="behaviour-and-limits"></a>
 ## Behaviour and limits
 
-- **Same rules as Nova:** `<h1>` in page content becomes `<h2>`, because the page title is the only `<h1>`.
+- **Markdown content:** GitHub-flavored, rendered like Nova's preview (`MarkdownService`): a line break stays a
+  line break, and `#` headings render as `<h2>`, because the page title is the only `<h1>`.
 - **Private by default:** `create_page` creates pages as `private` unless `publish_state` is given.
   Authenticated requests see private pages and media too.
 - **Deduplication:** uploads go through `AttachmentService::createFromUploadedSingleFile`. Uploading

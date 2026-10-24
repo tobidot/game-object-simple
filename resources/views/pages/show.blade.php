@@ -39,7 +39,7 @@
     @endif
 
     <div class="page__content">
-        {!! $page->content !!}
+        {!! $page->content_html !!}
     </div>
 
     @if($relatedItems !== null && $relatedItems->count() > 0)

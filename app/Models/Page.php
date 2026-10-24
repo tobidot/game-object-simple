@@ -6,10 +6,12 @@ use App\Enums\AttachmentType;
 use App\Enums\PublishState;
 use App\Helpers\AppHelper;
 use App\Models\Scopes\VisibleScope;
+use App\Services\MarkdownService;
 use App\Services\Models\AttachmentService;
 use Barryvdh\LaravelIdeHelper\Eloquent;
 use Database\Factories\PageFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,7 +28,9 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property string $uri
  * @property string $title
- * @property string $content
+ * @property string $content markdown, see MarkdownService
+ * @property string|null $content_html_legacy the Trix HTML before the move to markdown
+ * @property-read string $content_html
  * @property PublishState $publish_state
  * @property-read Collection<int, LogEvent> $logEvents
  *
@@ -69,6 +73,12 @@ class Page extends Model
     {
         parent::booted();
         self::addGlobalScope(new VisibleScope);
+    }
+
+    /** The content rendered to HTML. */
+    protected function contentHtml(): Attribute
+    {
+        return Attribute::get(fn () => AppHelper::resolve(MarkdownService::class)->toHtml($this->content ?? ''))->shouldCache();
     }
 
     public function getRouteKeyName(): string

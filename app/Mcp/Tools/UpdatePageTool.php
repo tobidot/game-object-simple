@@ -22,7 +22,7 @@ use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
 #[IsIdempotent]
 #[Description(<<<'TEXT'
 Update an existing page. Only the fields you pass are changed.
-"content" replaces the whole HTML body, so fetch it with get_page first when making partial edits.
+"content" replaces the whole markdown body, so fetch it with get_page first when making partial edits.
 "related_page_ids" / "project_ids" replace the full list of relations when given.
 TEXT)]
 class UpdatePageTool extends Tool
@@ -55,7 +55,7 @@ class UpdatePageTool extends Tool
                 $page->uri = $validated['uri'];
             }
             if (array_key_exists('content', $validated)) {
-                $page->content = $this->normalizeContent($validated['content']);
+                $page->content = $validated['content'];
             }
             if (array_key_exists('publish_state', $validated)) {
                 $page->publish_state = PublishState::from($validated['publish_state']);
@@ -80,7 +80,7 @@ class UpdatePageTool extends Tool
             'id' => $schema->integer()->required()->description('Id of the page to update.'),
             'title' => $schema->string()->max(255),
             'uri' => $schema->string()->max(255)->pattern('^[a-z0-9\-/]+$'),
-            'content' => $schema->string()->description('Full replacement HTML body.'),
+            'content' => $schema->string()->description('Full replacement markdown body.'),
             'publish_state' => $schema->string()->enum(array_column(PublishState::cases(), 'value')),
             'allow_comments' => $schema->boolean(),
             'related_page_ids' => $schema->array()->items($schema->integer()),

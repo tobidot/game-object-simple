@@ -49,17 +49,18 @@ class McpContentServerTest extends TestCase
             ->assertJsonFragment(['name' => 'upload_media']);
     }
 
-    public function test_create_page_defaults_to_private_and_demotes_h1(): void
+    public function test_create_page_defaults_to_private_and_stores_markdown(): void
     {
         ContentServer::tool(CreatePageTool::class, [
             'title' => 'Hello World',
             'uri' => 'hello-world',
-            'content' => '<h1>Intro</h1><p>Text</p>',
+            'content' => "# Intro\n\nText",
         ])->assertOk()->assertHasNoErrors();
 
         $page = Page::query()->withoutGlobalScopes()->where('uri', 'hello-world')->firstOrFail();
         $this->assertSame(PublishState::PRIVATE, $page->publish_state);
-        $this->assertSame('<h2>Intro</h2><p>Text</p>', $page->content);
+        $this->assertSame("# Intro\n\nText", $page->content);
+        $this->assertSame("<h2>Intro</h2>\n<p>Text</p>\n", $page->content_html);
     }
 
     public function test_create_page_rejects_duplicate_uri(): void

@@ -16,10 +16,10 @@ use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Image;
+use Laravel\Nova\Fields\Markdown;
 use Laravel\Nova\Fields\MorphMany;
 use Laravel\Nova\Fields\MorphToMany;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class Page extends Resource
@@ -102,26 +102,13 @@ class Page extends Resource
 
                 return $resource->views()->count();
             })->exceptOnForms(),
-            Trix::make(__('Content'), 'content')
+            Markdown::make(__('Content'), 'content')
+                ->preset('site', SiteMarkdownPreset::class)
                 ->rules(['required', 'string', 'max:65535'])
                 ->required()
                 ->withFiles('media-library')
                 ->alwaysShow()
-                ->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
-                    $value = $request->input($attribute);
-                    if (is_string($attribute)) {
-                        $value = str_replace(['<h1>', '</h1>'], ['<h2>', '</h2>'], $value);
-                    }
-                    $model->{$attribute} = $value;
-                })
-                ->resolveUsing(function () {
-                    $value = $this->content ?? '';
-                    if (! is_string($value)) {
-                        return $value;
-                    }
-
-                    return str_replace(['<h2>', '</h2>'], ['<h1>', '</h1>'], $value);
-                }),
+                ->help(__('Markdown (GitHub flavor). A line break stays a line break, an empty line starts a new paragraph; "#" headings render as <h2>, below the page title.')),
             Boolean::make(__('Allow Comments'), 'allow_comments')->default(true),
             MorphMany::make(__('Log Events'), 'logEvents', LogEvent::class),
             MorphMany::make(__('Comments'), 'comments', Comment::class),

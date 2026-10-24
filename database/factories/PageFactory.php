@@ -21,7 +21,7 @@ class PageFactory extends Factory
         return [
             'uri' => $this->faker->unique()->slug(2),
             'title' => $this->faker->sentence($this->faker->numberBetween(2, 6)),
-            'content' => $this->faker->randomHtml(4, 4),
+            'content' => '## '.$this->faker->sentence()."\n\n".implode("\n\n", $this->faker->paragraphs(3)),
             'publish_state' => $this->faker->randomElement(PublishState::cases()),
         ];
     }
