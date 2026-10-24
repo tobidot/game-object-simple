@@ -9916,12 +9916,19 @@
             "dist": {
                 "type": "path",
                 "url": "./nova-components/ChunkedUpload",
-                "reference": "79b1ae82f65122eab278606456c2d45abc756490"
+                "reference": "a17c1ecc76e0bd2f1a526987e1278ea277fb3645"
             },
             "require": {
                 "php": "^8.2|^8.3|^8.4|^8.5"
             },
             "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Tobidot\\ChunkedUpload\\ChunkedUploadServiceProvider"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Tobidot\\ChunkedUpload\\": "src/"
