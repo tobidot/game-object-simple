@@ -31,7 +31,7 @@ The homepage `/` is the TCE v3 desktop; the v3 packages are built in the separat
 - `LiveSyncService` + `App\Enums\LiveSyncSection` (posts, media, code = projects and custom elements). The live
   site serves a section's raw rows at `GET /api/v1/live-sync/{section}` (any Sanctum token, like the rest of `/api/v1`); the
   local instance replaces its rows with them and downloads the files from live's `/storage/...`, sha256-checked
-  against `attachments.hash`, zips unpacked like an upload. Never runs in production.
+  against `attachments.hash`, zips unpacked like an upload. Only local instances pull (`LiveSyncService::pullAllowed()`: env `local`/`testing`); elsewhere the action and command are hidden and the service refuses.
 - Nova action `PullFromLive` (Pages = posts, Attachments = media, Projects / Tobidot Elements / TCE Packages = code)
   or `php artisan live:pull {posts|media|code}... [--files-only]`. `--files-only` keeps the local rows (e.g. after
   importing a live DB dump) and only fetches their files. Config: `LIVE_URL`, `LIVE_API_TOKEN` (`config/services.php`).

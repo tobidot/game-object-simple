@@ -44,6 +44,15 @@ class LiveSyncService
     public function __construct(private readonly AttachmentService $attachment_service) {}
 
     /**
+     * Whether this instance may pull: only local and testing ones. Everything else (production,
+     * staging, ...) is a site whose data must never be overridden by another one.
+     */
+    public static function pullAllowed(): bool
+    {
+        return app()->environment(['local', 'testing']);
+    }
+
+    /**
      * The section's rows, as the live site serves them to a pulling instance.
      *
      * @return array{section: string, tables: array<string, list<array<string, mixed>>>}
@@ -100,8 +109,8 @@ class LiveSyncService
 
     private function assertPullTarget(string $live_url): string
     {
-        if (app()->isProduction()) {
-            throw new RuntimeException('Pulling from live overrides local data; it never runs in production.');
+        if (! self::pullAllowed()) {
+            throw new RuntimeException('Pulling from live overrides local data; it only runs on local instances.');
         }
         $live_url = rtrim(trim($live_url), '/');
         $host = parse_url($live_url, PHP_URL_HOST);

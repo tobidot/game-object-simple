@@ -35,6 +35,7 @@ class LiveSyncTest extends TestCase
     {
         parent::setUp();
         Storage::fake('public');
+        Http::preventStrayRequests();
     }
 
     private function service(): LiveSyncService
@@ -197,12 +198,23 @@ class LiveSyncTest extends TestCase
         $this->service()->pull(LiveSyncSection::POSTS, (string) config('app.url'), 'live-token');
     }
 
-    public function test_never_pulls_in_production(): void
+    public function test_only_local_instances_pull(): void
     {
-        $this->app['env'] = 'production';
+        foreach (['production', 'staging'] as $environment) {
+            $this->app['env'] = $environment;
 
-        $this->expectException(RuntimeException::class);
-        $this->service()->pull(LiveSyncSection::POSTS, self::LIVE, 'live-token');
+            $this->assertFalse(LiveSyncService::pullAllowed());
+            try {
+                $this->service()->pull(LiveSyncSection::POSTS, self::LIVE, 'live-token');
+                $this->fail("Pulled in $environment.");
+            } catch (RuntimeException) {
+            }
+            $this->artisan('live:pull', ['sections' => ['posts'], '--url' => self::LIVE, '--token' => 'live-token'])
+                ->expectsOutputToContain('only runs on local instances')
+                ->assertFailed();
+        }
+        $this->app['env'] = 'local';
+        $this->assertTrue(LiveSyncService::pullAllowed());
     }
 
     public function test_the_command_pulls_the_given_sections(): void

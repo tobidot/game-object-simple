@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 
 /**
  * The console twin of the Nova action PullFromLive — for large media pulls that would outlast a
- * web request.
+ * web request. Like the action, it only exists on local instances.
  */
 class PullFromLiveCommand extends Command
 {
@@ -20,8 +20,18 @@ class PullFromLiveCommand extends Command
 
     protected $description = 'Replace local blog posts, media and/or code with the live data';
 
+    public function isHidden(): bool
+    {
+        return ! LiveSyncService::pullAllowed() || parent::isHidden();
+    }
+
     public function handle(LiveSyncService $service): int
     {
+        if (! LiveSyncService::pullAllowed()) {
+            $this->error('Pulling from live overrides local data; it only runs on local instances.');
+
+            return self::FAILURE;
+        }
         $sections = [];
         foreach ($this->argument('sections') as $name) {
             $section = LiveSyncSection::tryFrom($name);

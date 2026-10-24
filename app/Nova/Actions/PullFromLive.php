@@ -19,7 +19,7 @@ use Throwable;
 
 /**
  * Replaces one section of the local data with the live site's (see LiveSyncService). Local
- * instances only: the action is hidden in production and the service refuses to run there.
+ * instances only: the action is hidden everywhere else and the service refuses to run there.
  */
 class PullFromLive extends Action
 {
@@ -33,7 +33,7 @@ class PullFromLive extends Action
             'section' => $section->label(),
         ]);
         $this->confirmButtonText = __('Pull from live');
-        $this->canSee(fn () => ! app()->isProduction());
+        $this->canSee(fn () => LiveSyncService::pullAllowed());
     }
 
     public function name(): string
@@ -84,6 +84,8 @@ class PullFromLive extends Action
                 ->default(config('services.live.url'))
                 ->rules(['required', 'url']),
             Password::make(__('Live API token'), 'token')
+                // Password hashes what it fills; the token has to reach live as typed.
+                ->fillUsing(fn (NovaRequest $request, object $model, string $attribute, string $request_attribute) => $model->{$attribute} = $request->input($request_attribute))
                 ->help(__('A Sanctum token of the live admin (Users → Generate API Token on live). Empty: LIVE_API_TOKEN from .env.')),
             Boolean::make(__('Files only'), 'files_only')
                 ->help(__('Keep the local rows (e.g. after importing a live DB dump) and only download the files they point to.')),
