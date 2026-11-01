@@ -2,7 +2,16 @@
 
 ## Quick Start
 
-`docker compose up -d` starts all services locally.
+`docker compose up -d` starts all services locally. The app uses four PHP development-server workers by default; set `PHP_CLI_SERVER_WORKERS` in `.env` to change the count.
+
+The app runs with Laravel's server reload watcher disabled so PHP workers can serve requests concurrently. Restart the app after changing `.env` values, and recreate it after changing Compose configuration:
+
+```bash
+docker compose restart app
+docker compose up -d --force-recreate app
+```
+
+CLI OPcache is enabled with timestamp validation and immediate revalidation, so PHP changes remain visible during local development.
 
 ## Deploy
 

@@ -8,10 +8,10 @@
         "build-api-token-copier-prod": "cd nova-components/ApiTokenCopier && npm run build"
     },
     "devDependencies": {
-        "laravel-vite-plugin": "^1.3.0",
+        "laravel-vite-plugin": "^2.1.0",
         "lodash": "^4.17.21",
         "postcss": "^8.4.23",
-        "vite": "^5.4.21"
+        "vite": "^7.3.7"
     },
     "dependencies": {
         "@game.object/tce-common": "^1.0.6",

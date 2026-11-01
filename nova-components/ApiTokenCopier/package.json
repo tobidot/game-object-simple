@@ -6,8 +6,8 @@
     "nova:install": "npm --prefix='../../vendor/laravel/nova' ci"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.1",
-    "vite": "^6.0.7"
+    "@vitejs/plugin-vue": "^6.0.10",
+    "vite": "^7.3.7"
   },
   "dependencies": {}
 }

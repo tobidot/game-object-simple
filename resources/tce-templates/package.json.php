@@ -6,11 +6,13 @@ foreach ($config->sdk as $sdk) {
 }
 ksort($dependencies);
 
+// Vite 7 is the floor for every TCE project (Vite 5 is out of support and had a security advisory);
+// it needs Node 20.19+ or 22.12+.
 $dev_dependencies = [
     'eslint' => '^10.13.0',
     'typescript' => '^5.9.3',
     'typescript-eslint' => '^8.71.2',
-    'vite' => '^5.4.21',
+    'vite' => '^7.3.7',
 ];
 if ($config->kind === 'element') {
     $dev_dependencies['sass'] = '^1.77.0';

@@ -40,7 +40,7 @@
         "league/html-to-markdown": "^5.2",
         "livewire/livewire": "^4.2",
         "tobidot/api-token-copier": "@dev",
-        "tobidot/chunked-upload": "@dev"
+        "tobidot/chunked-upload": "dev-master"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.7",
