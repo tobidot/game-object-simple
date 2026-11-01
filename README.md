@@ -13,6 +13,14 @@ docker compose up -d --force-recreate app
 
 CLI OPcache is enabled with timestamp validation and immediate revalidation, so PHP changes remain visible during local development.
 
+`vendor/` lives in the Docker volume `app-vendor`, not in the Windows checkout: file checks across the Windows bind mount cost milliseconds each, and a request loads hundreds of vendor files. Run Composer inside the container so it writes into that volume (and creates real symlinks for the `nova-components` path packages):
+
+```bash
+docker compose exec app composer install
+```
+
+The `vendor/` folder on the host is no longer used by the app; refresh it only if your IDE needs it for autocompletion.
+
 ## Deploy
 
 The project is synced to git and the server just pulls the latest version.

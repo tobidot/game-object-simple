@@ -20,8 +20,9 @@ class TcePackageResource extends JsonResource
 
         $attachmentService = AppHelper::resolve(AttachmentService::class);
 
-        $codeAttachment = $package->codeAttachment()->first();
-        $iconAttachment = $package->iconAttachment()->first();
+        // The registry eager loads both relations for all packages; single packages query them here.
+        $codeAttachment = $package->relationLoaded('codeAttachment') ? $package->codeAttachment->first() : $package->codeAttachment()->first();
+        $iconAttachment = $package->relationLoaded('iconAttachment') ? $package->iconAttachment->first() : $package->iconAttachment()->first();
 
         return [
             'namespace' => $package->namespace,

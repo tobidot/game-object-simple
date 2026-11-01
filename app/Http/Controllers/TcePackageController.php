@@ -143,7 +143,7 @@ class TcePackageController extends Controller
             // packages are build-time only (vendored by the generator), never loaded at runtime.
             ->whereHas('codeAttachment')
             ->whereIn('kind', ['element', 'library'])
-            ->with('dependencies')
+            ->with(['dependencies', 'codeAttachment', 'iconAttachment'])
             ->get()
             ->groupBy(fn (TcePackage $package) => "$package->namespace/$package->name")
             ->map(

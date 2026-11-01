@@ -14,6 +14,7 @@ services:
             XDEBUG_CONFIG: '${XDEBUG_CONFIG:-client_host=host.docker.internal}'
         volumes:
             - '.:/var/www/html'
+            - 'app-vendor:/var/www/html/vendor'
             - './docker/app/php.ini:/usr/local/etc/php/conf.d/zz-app.ini:ro'
         networks:
             - app
@@ -90,4 +91,6 @@ volumes:
     app-redis:
         driver: local
     app-meilisearch:
+        driver: local
+    app-vendor:
         driver: local

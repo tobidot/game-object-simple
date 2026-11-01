@@ -210,9 +210,11 @@ class AttachmentService
             'index.es.js',
         ];
 
+        // One directory listing instead of an exists() per candidate: on slow (network) disks
+        // every filesystem call costs milliseconds, and the registry resolves this per package.
+        $files = array_flip(array_map(basename(...), $disk->files($attachment->path)));
         foreach ($candidates as $candidate) {
-            $full_path = join_paths($attachment->path, $candidate);
-            if ($disk->exists($full_path)) {
+            if (isset($files[$candidate])) {
                 return $candidate;
             }
         }
