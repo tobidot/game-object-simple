@@ -27,7 +27,7 @@ script and the registry must agree, and the manifest is what tooling trusts.
 | `name`                     | string            | Package name = tag name ([Naming](./naming#package-names)). Required. |
 | `title`                    | string            | Human-readable title.                                     |
 | `informal.description`     | string            | Shown in the package manager and the registry.            |
-| `informal.categories`      | string[]          | Tags. Must contain exactly one kind: `element`, `library` or `sdk`; the generator also adds `custom-element` and `tce`. |
+| `informal.categories`      | string[]          | Tags. Must contain exactly one kind: `element`, `library` or `sdk`; the generator also adds `custom-element` and `tce`. Everything else is published as the package's [tags](./upload-and-registry#tags), which the package manager filters by. |
 | `development.status`       | string            | `draft` → `beta` → `stable`, maintained by hand.          |
 | `execution.type`           | string            | `website` for runtime packages, `npm` for SDK packages.    |
 | `execution.resources`      | string            | What gets published: `dist` (runtime packages) or `src` (SDK). |
@@ -49,7 +49,7 @@ script and the registry must agree, and the manifest is what tooling trusts.
     "title": "Tce Notepad",
     "informal": {
         "description": "A simple text editor for .txt and .md files.",
-        "categories": ["custom-element", "tce", "element"]
+        "categories": ["custom-element", "tce", "element", "tool", "files"]
     },
     "development": { "status": "draft" },
     "execution": { "type": "website", "resources": "dist", "index": "index.js" },
@@ -77,6 +77,8 @@ then ships `package.json` plus `src/` instead of `dist/`, which is what the
   script passes to `bind_self()` — tooling publishes the manifest's values.
 - ✅ Do add a dependency here the moment you add it to the entry script.
 - ✅ Do keep `development.status` current by hand; nothing automates it.
+- ✅ Do give every runtime package one or two topic tags in `informal.categories` (`game`,
+  `tool`, `effect`, …), lower-case words joined by hyphens, reusing the tags other packages use.
 - ❌ Don't list more than one kind in `informal.categories`.
 - ❌ Don't read or write `history` from code — it is reserved.
 - ❌ Don't ship a large binary in the upload when `assets.external` can reference it by URL.

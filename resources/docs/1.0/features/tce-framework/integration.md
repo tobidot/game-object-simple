@@ -131,8 +131,10 @@ never breaks the desktop.
 ## 4. Installing Packages at Runtime
 
 The desktop's package manager (`tce-bootloader`) reads the public registry
-([Publishing & Discovery](./upload-and-registry#public-discovery-endpoint)), lists every package,
-and installs one by injecting its embed script with `TceRoot.load_script('/tce-elements/{namespace}/{name}')`
+([Publishing & Discovery](./upload-and-registry#public-discovery-endpoint)), lists every package
+— narrowed by a search over name, namespace, description and tags, and by
+[tag](./upload-and-registry#tags) filters — and shows the selected one's full details
+(description, version, kind, tags, dependencies and dependents) beside the list. It installs one by injecting its embed script with `TceRoot.load_script('/tce-elements/{namespace}/{name}')`
 — dependencies first, each only if not yet bound. Installing is therefore exactly the
 zero-script embed performed at runtime; there is no second loading mechanism.
 

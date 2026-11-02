@@ -37,6 +37,7 @@ class TcePackageResource extends JsonResource
             'icon' => $iconAttachment ? $attachmentService->getUrl($iconAttachment) : null,
             'width' => (int) $package->width,
             'height' => (int) $package->height,
+            'tags' => $package->extra['tags'] ?? [],
             'extra' => $package->extra ?? [],
             'created_at' => $package->created_at,
             'dependencies' => $this->dependencies($package),

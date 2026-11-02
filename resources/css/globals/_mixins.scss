@@ -229,6 +229,76 @@
 }
 
 @mixin trix-content {
+    overflow-wrap: break-word;
+
+    img,
+    video,
+    iframe,
+    canvas,
+    svg {
+        max-width: 100%;
+    }
+
+    img,
+    video {
+        height: auto;
+        max-height: 70vh;
+        object-fit: contain;
+        image-rendering: pixelated;
+    }
+
+    table {
+        display: block;
+        width: max-content;
+        max-width: 100%;
+        overflow-x: auto;
+        border-collapse: collapse;
+        margin: 1rem 0;
+        font-size: 0.9rem;
+        @include win95-inset(variables.$color-white);
+    }
+
+    th,
+    td {
+        padding: 0.35rem 0.6rem;
+        border: 1px solid variables.$color-win95-shadow;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    th {
+        background-color: variables.$color-blue;
+        color: variables.$color-white;
+        font-weight: bold;
+    }
+
+    tbody tr:nth-child(even) td {
+        background-color: variables.$color-win95-highlight;
+    }
+
+    :not(pre) > code {
+        background-color: variables.$color-win95-highlight;
+        border: 1px solid variables.$color-win95-shadow;
+        padding: 0 0.25rem;
+        font-family: variables.$font-family-mono;
+        font-size: 0.9em;
+    }
+
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: variables.$color-blue;
+        margin: 1.25rem 0 0.5rem;
+    }
+
+    hr {
+        border: none;
+        border-top: 1px solid variables.$color-win95-shadow;
+        border-bottom: 1px solid variables.$color-win95-light;
+        margin: 1.5rem 0;
+    }
+
     figure {
         display: flex;
         width: 100%;

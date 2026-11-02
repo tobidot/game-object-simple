@@ -34,7 +34,7 @@
         @endisset
     </div>
     <div class="excerpt__content">
-        {{ substr( strip_tags( html_entity_decode( str_replace("<br>"," ", $page->content_html) ) ) , 0, 255) }}
+        <p class="excerpt__text">{{ ViewHelper::excerpt($page->content_html) }}</p>
     </div>
     <div class="excerpt__actions">
         <x-link :href="route('pages.show', ['page' => $page])">

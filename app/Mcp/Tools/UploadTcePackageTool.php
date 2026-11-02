@@ -22,7 +22,7 @@ Publish a new version of a v3 TCE package to the package registry.
 "zip_base64" is the package zipped, base64 encoded: the built dist/ folder for an element or library (one top-level folder is flattened),
 or package.json plus the TypeScript src/ folder for an "sdk" package (the build-time SDK the project generator vendors into new projects).
 Without "version" the patch number of the latest version is bumped; an explicit version must be higher than the latest.
-Dependencies must already be uploaded, so publish packages in dependency order. Omitted icon/width/height/dependencies carry over from the previous version.
+Dependencies must already be uploaded, so publish packages in dependency order. Omitted icon/width/height/dependencies/tags carry over from the previous version.
 Returns the published package as the public registry (/api/public/tce-packages) lists it.
 TEXT)]
 class UploadTcePackageTool extends Tool
@@ -46,6 +46,8 @@ class UploadTcePackageTool extends Tool
             'dependencies' => ['nullable', 'array'],
             'dependencies.*.namespace' => ['required', ...$identifier_rule],
             'dependencies.*.name' => ['required', ...$identifier_rule],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['required', 'string', 'max:50'],
         ]);
 
         $namespace = $validated['namespace'] ?? config('tce.default_namespace');
@@ -97,6 +99,7 @@ class UploadTcePackageTool extends Tool
                     $validated['width'] ?? null,
                     $validated['height'] ?? null,
                     $dependencies,
+                    $validated['tags'] ?? null,
                 );
             } catch (\InvalidArgumentException $exception) {
                 return Response::error($exception->getMessage());
@@ -143,6 +146,7 @@ class UploadTcePackageTool extends Tool
                 'namespace' => $schema->string()->required(),
                 'name' => $schema->string()->required(),
             ]))->description('Packages this one needs, resolved to their latest uploaded version. Replaces the previous list; omit to keep it, pass [] to clear it.'),
+            'tags' => $schema->array()->items($schema->string())->description('Tags the package manager filters by, e.g. ["game", "retro"]: lower-case words joined by hyphens. Replaces the previous list; omit to keep it, pass [] to clear it.'),
         ];
     }
 }

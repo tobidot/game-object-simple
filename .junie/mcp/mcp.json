@@ -1,0 +1,16 @@
+{
+    "mcpServers": {
+        "game-object-local": {
+            "url": "http://localhost/mcp",
+            "headers": {
+                "Authorization": "Bearer ${GAME_OBJECT_LOCAL_TOKEN}"
+            }
+        },
+        "game-object-live": {
+            "url": "https://www.game-object.de/mcp",
+            "headers": {
+                "Authorization": "Bearer ${GAME_OBJECT_LIVE_TOKEN}"
+            }
+        }
+    }
+}

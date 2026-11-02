@@ -19,18 +19,25 @@ class TcePackageService
     /** A valid custom-element name: lower-case, at least one hyphen ("Naming & Identifiers"). */
     public const string NAME_PATTERN = '/^[a-z][a-z0-9]*(-[a-z0-9]+)+$/';
 
+    /** A tag: lower-case words joined by hyphens ("Publishing & Discovery: Tags"). */
+    public const string TAG_PATTERN = '/^[a-z0-9]+(-[a-z0-9]+)*$/';
+
+    /** Manifest categories every package carries; they say nothing about the package, so they are no tags. */
+    public const array NON_TAG_CATEGORIES = ['custom-element', 'tce', ...self::KINDS];
+
     /**
      * Publishes a new version of `(namespace, name)`.
      *
      * Everything optional carries over from the previous version when omitted (`null`): kind,
-     * description, icon, width/height and the dependency list. Pass `[]` as `$dependencies` to
-     * clear the list. Dependencies are declared by identifier and resolved to their latest
-     * uploaded version; a dependency that was never uploaded rejects the whole upload, so a
-     * published version can never miss part of its dependency list.
+     * description, icon, width/height, the dependency list and the tags. Pass `[]` as
+     * `$dependencies` or `$tags` to clear the list. Dependencies are declared by identifier and
+     * resolved to their latest uploaded version; a dependency that was never uploaded rejects
+     * the whole upload, so a published version can never miss part of its dependency list.
      *
      * @param  array<int, array{namespace: string, name: string}>|null  $dependencies
+     * @param  array<int, string>|null  $tags
      *
-     * @throws InvalidArgumentException on a bad version or a missing dependency
+     * @throws InvalidArgumentException on a bad version, a missing dependency or a malformed tag
      * @throws \Throwable
      */
     public function upload(
@@ -44,6 +51,7 @@ class TcePackageService
         ?int $width = null,
         ?int $height = null,
         ?array $dependencies = null,
+        ?array $tags = null,
     ): TcePackage {
         if ($kind !== null && ! in_array($kind, self::KINDS, true)) {
             throw new InvalidArgumentException("Unknown package kind '$kind'");
@@ -66,6 +74,8 @@ class TcePackageService
             ? ($last_package?->dependencies->all() ?? [])
             : $this->resolveDependencies($dependencies);
 
+        $tags = $tags === null ? null : $this->normalizeTags($tags);
+
         return DB::transaction(function () use (
             $namespace,
             $name,
@@ -80,6 +90,7 @@ class TcePackageService
             $width,
             $height,
             $resolved_dependencies,
+            $tags,
         ) {
             $attachmentService = AppHelper::resolve(AttachmentService::class);
             $attachment = $attachmentService->createFromUploadedZipFile(
@@ -108,6 +119,9 @@ class TcePackageService
             $package->width = $width ?? ($last_package?->width ?? 200);
             $package->height = $height ?? ($last_package?->height ?? 200);
             $package->extra = $last_package?->extra ?? null;
+            if ($tags !== null) {
+                $package->extra = [...($package->extra ?? []), 'tags' => $tags];
+            }
 
             $package->save();
 
@@ -128,6 +142,37 @@ class TcePackageService
 
             return $package;
         });
+    }
+
+    /**
+     * The tags of a package manifest: its `informal.categories` without the categories every
+     * package carries.
+     *
+     * @param  array<int, string>  $categories
+     * @return array<int, string>
+     */
+    public function tagsFromCategories(array $categories): array
+    {
+        return array_values(array_diff($categories, self::NON_TAG_CATEGORIES));
+    }
+
+    /**
+     * Lower-cased, de-duplicated, in the given order.
+     *
+     * @param  array<int, string>  $tags
+     * @return array<int, string>
+     *
+     * @throws InvalidArgumentException naming every malformed tag
+     */
+    protected function normalizeTags(array $tags): array
+    {
+        $normalized = array_values(array_unique(array_map(fn (string $tag) => strtolower(trim($tag)), $tags)));
+        $malformed = array_filter($normalized, fn (string $tag) => ! preg_match(self::TAG_PATTERN, $tag));
+        if ($malformed) {
+            throw new InvalidArgumentException('Malformed tags (lower-case words joined by hyphens): '.implode(', ', $malformed));
+        }
+
+        return $normalized;
     }
 
     /**

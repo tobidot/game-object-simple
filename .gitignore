@@ -20,3 +20,5 @@ yarn-error.log
 *.plb
 ./bin/update-fast.sh
 ./bin/update.sh
+
+.claude/settings.local.json

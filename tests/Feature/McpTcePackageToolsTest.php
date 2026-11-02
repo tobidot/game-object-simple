@@ -99,6 +99,33 @@ class McpTcePackageToolsTest extends TestCase
         $this->assertSame([], $third->dependencies->pluck('name')->all());
     }
 
+    public function test_tags_are_normalized_carry_over_and_empty_list_clears_them(): void
+    {
+        ContentServer::tool(UploadTcePackageTool::class, [
+            'name' => 'tce-pong', 'zip_base64' => $this->zipBase64(), 'tags' => ['Game', 'retro', 'game'],
+        ])->assertOk()->assertHasNoErrors();
+        $this->assertSame(['game', 'retro'], TcePackage::query()->where('name', 'tce-pong')->firstOrFail()->extra['tags']);
+
+        ContentServer::tool(UploadTcePackageTool::class, ['name' => 'tce-pong', 'zip_base64' => $this->zipBase64()])
+            ->assertOk()->assertHasNoErrors();
+        $second = TcePackage::query()->where('name', 'tce-pong')->where('patch', 2)->firstOrFail();
+        $this->assertSame(['game', 'retro'], $second->extra['tags']);
+
+        ContentServer::tool(UploadTcePackageTool::class, ['name' => 'tce-pong', 'zip_base64' => $this->zipBase64(), 'tags' => []])
+            ->assertOk()->assertHasNoErrors();
+        $third = TcePackage::query()->where('name', 'tce-pong')->where('patch', 3)->firstOrFail();
+        $this->assertSame([], $third->extra['tags']);
+    }
+
+    public function test_upload_rejects_malformed_tags_without_creating_the_package(): void
+    {
+        ContentServer::tool(UploadTcePackageTool::class, [
+            'name' => 'tce-pong', 'zip_base64' => $this->zipBase64(), 'tags' => ['two words'],
+        ])->assertHasErrors(['two words']);
+
+        $this->assertDatabaseMissing('tce_packages', ['name' => 'tce-pong']);
+    }
+
     public function test_upload_rejects_missing_dependency_without_creating_the_package(): void
     {
         ContentServer::tool(UploadTcePackageTool::class, [

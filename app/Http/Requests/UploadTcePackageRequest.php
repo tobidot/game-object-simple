@@ -41,6 +41,8 @@ class UploadTcePackageRequest extends FormRequest
             'dependencies' => ['sometimes', 'array'],
             'dependencies.*.namespace' => ['required', ...$identifier_rule],
             'dependencies.*.name' => ['required', ...$identifier_rule],
+            'tags' => ['sometimes', 'array'],
+            'tags.*' => ['required', 'string', 'max:50'],
         ];
     }
 
@@ -59,5 +61,15 @@ class UploadTcePackageRequest extends FormRequest
             fn (array $dependency) => ['namespace' => $dependency['namespace'], 'name' => $dependency['name']],
             $this->validated('dependencies', []),
         );
+    }
+
+    /**
+     * The declared tags, or `null` when the field was omitted (carry over).
+     *
+     * @return array<int, string>|null
+     */
+    public function tags(): ?array
+    {
+        return $this->has('tags') ? array_values($this->validated('tags', [])) : null;
     }
 }

@@ -55,6 +55,7 @@ class TcePackageUploadTest extends TestCase
             'height' => 360,
             'icon' => UploadedFile::fake()->createWithContent('icon.svg', self::SVG),
             'dependencies' => [['namespace' => 'tobidot', 'name' => 'dll-tce-file-system']],
+            'tags' => ['tool', 'files'],
             'zip' => $this->distZip(),
         ]);
 
@@ -62,12 +63,15 @@ class TcePackageUploadTest extends TestCase
             ->assertJsonPath('package.major', 0)
             ->assertJsonPath('package.minor', 2)
             ->assertJsonPath('package.width', 480)
-            ->assertJsonPath('package.dependencies.0.identifier.name', 'dll-tce-file-system');
+            ->assertJsonPath('package.dependencies.0.identifier.name', 'dll-tce-file-system')
+            ->assertJsonPath('package.tags', ['tool', 'files']);
         $this->assertNotNull($response->json('package.icon'));
 
         $registry = $this->getJson('/api/public/tce-packages')->assertOk();
         $this->assertArrayHasKey('tobidot/tce-notepad', $registry->json('packages'));
         $this->assertSame('tobidot', $registry->json('packages.tobidot/tce-notepad.0.namespace'));
+        $this->assertSame(['tool', 'files'], $registry->json('packages.tobidot/tce-notepad.0.tags'));
+        $this->assertSame([], $registry->json('packages.tobidot/dll-tce-file-system.0.tags'));
     }
 
     public function test_missing_dependency_and_bad_version_are_rejected(): void

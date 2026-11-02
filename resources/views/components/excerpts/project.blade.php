@@ -40,7 +40,7 @@
         @endisset
     </div>
     <div class="excerpt__content">
-        {{ substr( strip_tags( html_entity_decode( str_replace("<br>"," ", $project->description) ) ) , 0, 255) }}
+        <p class="excerpt__text">{{ ViewHelper::excerpt($project->description) }}</p>
     </div>
     <div class="excerpt__actions">
         <x-link :href="route('projects.show', ['project' => $project])">

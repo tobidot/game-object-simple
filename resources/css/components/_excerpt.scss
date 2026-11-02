@@ -87,6 +87,17 @@
         line-height: 1.4;
         position: relative;
         z-index: 20;
+        min-width: 0;
+    }
+
+    &__text {
+        margin: 0;
+        overflow-wrap: anywhere;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 5;
+        line-clamp: 5;
+        overflow: hidden;
     }
 
     &__actions {

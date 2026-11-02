@@ -16,7 +16,7 @@ use ZipArchive;
  * trusted because it's a console command run by whoever has shell access to this app.
  *
  * Every package directory carries a `tobidot-project.json` (see "The tobidot-project.json
- * Manifest"); namespace, name, kind, size and dependencies are read from it. Packages are
+ * Manifest"); namespace, name, kind, size, dependencies and tags are read from it. Packages are
  * uploaded dependencies-first, in the order the manifests imply; a dependency that is in
  * neither the import folder nor the registry fails the import loudly.
  *
@@ -85,6 +85,7 @@ class ImportV3PackagesCommand extends Command
                     $width > 0 && $height > 0 ? $width : null,
                     $width > 0 && $height > 0 ? $height : null,
                     array_map(fn (array $dependency) => $dependency['identifier'], $manifest['dependencies'] ?? []),
+                    $service->tagsFromCategories($manifest['informal']['categories'] ?? []),
                 );
 
                 $uploaded[] = "$namespace/$name";

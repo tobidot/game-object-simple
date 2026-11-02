@@ -19,7 +19,7 @@ The homepage `/` is the TCE v3 desktop; the v3 packages are built in the separat
   - zero-script embed `/tce-elements/{namespace}/{name}[@x.y.z]`. It prefixes the script with its content root.
   - `/tce/{name}` (latest element, legacy fallback while porting), `/tce-packages/{id}/view`, homepage `/`, `/v3`.
 - `/documentation/{path}` serves the raw docs markdown to the `tce-documentation` element.
-- Publishing: `POST /api/v1/tce-packages` (with `dependencies[i][namespace|name]`, `width`, `height`),
+- Publishing: `POST /api/v1/tce-packages` (with `dependencies[i][namespace|name]`, `width`, `height`, `tags[i]` → `extra.tags`),
   MCP tools `upload_tce_package` / `list_tce_packages`, or `php artisan tce:import-v3-packages`
   from the gitignored staging folder `storage/app/v3-import/packages` (manifest-driven, sorted by dependencies).
 - Generator (`/tce-generator`, `tce:generate`, `POST /api/public/tce-generator`): `TceGeneratorService` +

@@ -121,6 +121,20 @@ class ViewHelper
     }
 
     /**
+     * Plain-text teaser of rendered content: headings, code blocks, tables and images are left out,
+     * block boundaries become spaces and the text is cut at a word boundary (multibyte-safe).
+     */
+    public static function excerpt(?string $html, int $limit = 200): string
+    {
+        $html = (string) preg_replace('/<(h[1-6]|pre|table|figure|script|style)\b.*?<\/\1>/is', ' ', $html ?? '');
+        $html = (string) preg_replace('/<(br|\/p|\/li|\/div|\/blockquote)\b[^>]*>/i', ' ', $html);
+        $text = html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = trim((string) preg_replace('/\s+/u', ' ', $text));
+
+        return Str::limit($text, $limit, '…', preserveWords: true);
+    }
+
+    /**
      * Get the url for a model
      */
     public static function modelUrl(Model $model): string

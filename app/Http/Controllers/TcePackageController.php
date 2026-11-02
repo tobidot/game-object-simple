@@ -174,6 +174,7 @@ class TcePackageController extends Controller
                     $request->has('width') ? (int) $request->width : null,
                     $request->has('height') ? (int) $request->height : null,
                     $request->dependencies(),
+                    $request->tags(),
                 );
         } catch (\InvalidArgumentException $exception) {
             throw ValidationException::withMessages(['version' => [$exception->getMessage()]]);
