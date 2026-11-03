@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use Tobidot\ChunkedUpload\ChunkManager;
 
 use function Illuminate\Filesystem\join_paths;
 
@@ -25,6 +26,11 @@ use function Illuminate\Filesystem\join_paths;
  */
 class TcePackageController extends Controller
 {
+    /** Chunked package uploads: at most this many chunks of at most this size (500 MB in all). */
+    public const int MAX_CHUNKS = 50;
+
+    public const int MAX_CHUNK_KILOBYTES = 10 * 1024;
+
     /**
      * This deployment's own default publisher namespace (`config/tce.php`) — used only as a
      * convenience default for the short-form routes (`/tce/{name}`, `/tce-elements/{name}`).
@@ -159,14 +165,24 @@ class TcePackageController extends Controller
     /**
      * @throws ValidationException|\Exception
      */
-    public function upload(UploadTcePackageRequest $request): JsonResponse
+    public function upload(UploadTcePackageRequest $request, ChunkManager $chunks): JsonResponse
     {
+        $zip = $request->file('zip');
+        $chunk_upload_id = null;
+        if (! $zip) {
+            $chunk_upload_id = $this->chunkUploadId($request, $request->input('zip_upload_id'));
+            $zip = $chunks->createUploadedFile($chunk_upload_id, "{$request->name}.zip", 'application/zip');
+            if (! $zip) {
+                throw ValidationException::withMessages(['zip_upload_id' => ['No complete upload with this id: send every chunk to /api/v1/tce-packages/chunks first.']]);
+            }
+        }
+
         try {
             $package = AppHelper::resolve(TcePackageService::class)
                 ->upload(
                     $request->namespace,
                     $request->name,
-                    $request->zip,
+                    $zip,
                     $request->version ?? null,
                     $request->kind ?? null,
                     $request->description ?? null,
@@ -178,12 +194,47 @@ class TcePackageController extends Controller
                 );
         } catch (\InvalidArgumentException $exception) {
             throw ValidationException::withMessages(['version' => [$exception->getMessage()]]);
+        } finally {
+            if ($chunk_upload_id !== null) {
+                $chunks->cleanupUpload($chunk_upload_id);
+            }
         }
 
         return response()->json([
             'message' => 'Tce package uploaded successfully',
             'package' => new TcePackageResource($package->fresh('dependencies')),
         ]);
+    }
+
+    /**
+     * One chunk of a package zip too large for a single request (PHP's post_max_size), stored
+     * through the same `ChunkManager` the Nova upload uses; the last chunk assembles the zip.
+     * `POST /api/v1/tce-packages` then names it by `zip_upload_id` — see "Publishing &
+     * Discovery: Large Uploads".
+     */
+    public function uploadChunk(Request $request, ChunkManager $chunks): JsonResponse
+    {
+        $validated = $request->validate([
+            'upload_id' => ['required', 'string', 'max:100', 'regex:/^[A-Za-z0-9_-]+$/'],
+            'chunk_index' => ['required', 'integer', 'min:0', 'lt:total_chunks'],
+            'total_chunks' => ['required', 'integer', 'min:1', 'max:'.self::MAX_CHUNKS],
+            'chunk' => ['required', 'file', 'max:'.self::MAX_CHUNK_KILOBYTES],
+        ]);
+
+        $id = $this->chunkUploadId($request, $validated['upload_id']);
+        $chunks->saveChunk($id, (int) $validated['chunk_index'], $request->file('chunk'));
+        if (! $chunks->hasAllChunks($id, (int) $validated['total_chunks'])) {
+            return response()->json(['status' => 'chunk_uploaded', 'chunk_index' => (int) $validated['chunk_index']]);
+        }
+        $path = $chunks->assembleChunks($id, (int) $validated['total_chunks'], 'package.zip');
+
+        return response()->json(['status' => 'completed', 'upload_id' => $validated['upload_id'], 'size' => filesize($path)]);
+    }
+
+    /** Chunk sessions are scoped to the token's user: an upload id never reaches another user's chunks. */
+    protected function chunkUploadId(Request $request, string $upload_id): string
+    {
+        return 'tce-package-'.$request->user()->id.'-'.$upload_id;
     }
 
     /**

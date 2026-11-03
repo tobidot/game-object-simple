@@ -6,9 +6,12 @@ use App\Models\TcePackage;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Testing\TestResponse;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
+use Tobidot\ChunkedUpload\ChunkManager;
 use ZipArchive;
 
 /**
@@ -18,6 +21,8 @@ class TcePackageUploadTest extends TestCase
 {
     use RefreshDatabase;
 
+    private string $chunk_dir;
+
     private const SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8"><rect width="8" height="8"/></svg>';
 
     protected function setUp(): void
@@ -25,6 +30,14 @@ class TcePackageUploadTest extends TestCase
         parent::setUp();
         Storage::fake('public');
         Sanctum::actingAs(User::factory()->create());
+        $this->chunk_dir = sys_get_temp_dir().'/tce-chunks-'.uniqid();
+        $this->app->instance(ChunkManager::class, new ChunkManager($this->chunk_dir));
+    }
+
+    protected function tearDown(): void
+    {
+        File::deleteDirectory($this->chunk_dir);
+        parent::tearDown();
     }
 
     private function distZip(): UploadedFile
@@ -72,6 +85,66 @@ class TcePackageUploadTest extends TestCase
         $this->assertSame('tobidot', $registry->json('packages.tobidot/tce-notepad.0.namespace'));
         $this->assertSame(['tool', 'files'], $registry->json('packages.tobidot/tce-notepad.0.tags'));
         $this->assertSame([], $registry->json('packages.tobidot/dll-tce-file-system.0.tags'));
+    }
+
+    /** Posts `$bytes` as `$count` chunks of upload `$upload_id`; returns the last response. */
+    private function postChunks(string $bytes, string $upload_id, int $count): TestResponse
+    {
+        $size = (int) ceil(strlen($bytes) / $count);
+        $response = null;
+        foreach (str_split($bytes, $size) as $index => $part) {
+            $response = $this->post('/api/v1/tce-packages/chunks', [
+                'upload_id' => $upload_id,
+                'chunk_index' => $index,
+                'total_chunks' => $count,
+                'chunk' => UploadedFile::fake()->createWithContent("chunk_$index", $part),
+            ], ['Accept' => 'application/json']);
+        }
+
+        return $response;
+    }
+
+    public function test_a_zip_sent_in_chunks_is_published_and_its_chunks_cleaned_up(): void
+    {
+        $zip = $this->distZip();
+        $bytes = file_get_contents($zip->getPathname());
+
+        $this->postChunks($bytes, 'abc-123', 3)->assertOk()->assertJsonPath('status', 'completed')->assertJsonPath('size', strlen($bytes));
+
+        $this->postJson('/api/v1/tce-packages', [
+            'namespace' => 'tobidot', 'name' => 'tce-big-game', 'version' => '1.0.0', 'zip_upload_id' => 'abc-123',
+        ])->assertOk()->assertJsonPath('package.name', 'tce-big-game');
+        $this->getJson('/api/public/tce-packages')->assertOk()->assertJsonPath('packages.tobidot/tce-big-game.0.major', 1);
+
+        // The session is gone: the same id cannot publish twice.
+        $this->postJson('/api/v1/tce-packages', [
+            'namespace' => 'tobidot', 'name' => 'tce-big-game', 'version' => '1.0.1', 'zip_upload_id' => 'abc-123',
+        ])->assertStatus(422)->assertJsonValidationErrors('zip_upload_id');
+    }
+
+    public function test_chunk_uploads_are_scoped_to_the_user_and_need_every_chunk(): void
+    {
+        $bytes = file_get_contents($this->distZip()->getPathname());
+        $this->postChunks($bytes, 'shared-id', 2)->assertJsonPath('status', 'completed');
+
+        Sanctum::actingAs(User::factory()->create());
+        $this->postJson('/api/v1/tce-packages', [
+            'namespace' => 'tobidot', 'name' => 'tce-big-game', 'zip_upload_id' => 'shared-id',
+        ])->assertStatus(422)->assertJsonValidationErrors('zip_upload_id');
+
+        // Only the first of two chunks: not assembled, not publishable.
+        $this->post('/api/v1/tce-packages/chunks', [
+            'upload_id' => 'half', 'chunk_index' => 0, 'total_chunks' => 2,
+            'chunk' => UploadedFile::fake()->createWithContent('chunk_0', substr($bytes, 0, 10)),
+        ], ['Accept' => 'application/json'])->assertOk()->assertJsonPath('status', 'chunk_uploaded');
+        $this->postJson('/api/v1/tce-packages', [
+            'namespace' => 'tobidot', 'name' => 'tce-big-game', 'zip_upload_id' => 'half',
+        ])->assertStatus(422)->assertJsonValidationErrors('zip_upload_id');
+
+        $this->post('/api/v1/tce-packages/chunks', [
+            'upload_id' => 'bad', 'chunk_index' => 2, 'total_chunks' => 2,
+            'chunk' => UploadedFile::fake()->createWithContent('chunk_2', 'x'),
+        ], ['Accept' => 'application/json'])->assertStatus(422)->assertJsonValidationErrors('chunk_index');
     }
 
     public function test_missing_dependency_and_bad_version_are_rejected(): void

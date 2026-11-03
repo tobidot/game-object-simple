@@ -134,8 +134,11 @@ The desktop's package manager (`tce-bootloader`) reads the public registry
 ([Publishing & Discovery](./upload-and-registry#public-discovery-endpoint)), lists every package
 — narrowed by a search over name, namespace, description and tags, and by
 [tag](./upload-and-registry#tags) filters — and shows the selected one's full details
-(description, version, kind, tags, dependencies and dependents) beside the list. It installs one by injecting its embed script with `TceRoot.load_script('/tce-elements/{namespace}/{name}')`
-— dependencies first, each only if not yet bound. Installing is therefore exactly the
+(description, version, kind, tags, dependents, and every dependency with its required version,
+the registry's latest and the version loaded on the page) beside the list. A dependency the
+registry cannot satisfy stops the install before anything loads. It installs one by injecting its embed script with `TceRoot.load_script('/tce-elements/{namespace}/{name}')`
+— dependencies first, each only if not yet bound, and awaited even when already recorded (its
+boot re-install may still be running). Installing is therefore exactly the
 zero-script embed performed at runtime; there is no second loading mechanism.
 
 The installed set is recorded in `dll-tce-file-system` (a dependency of the package manager) as
@@ -144,7 +147,11 @@ dependency before the packages that need it, and only what was installed through
 manager — never what the page itself embeds. The package manager's own boot (its `init()`, run
 when its script loads, not when a window opens) re-installs every recorded package the same way,
 in that order. A package that fails to re-install is reported and skipped; the others still
-install. Activating an installed package right after a reload simply waits for its binding.
+install. Activating an installed package right after a reload simply waits for its binding; while
+it waits the desktop shows a progress pointer. A package that cannot be opened — not bound in
+time, typically because it was uninstalled — gets a message window, not only a console error:
+it names the package and offers the package manager (opened with `data-search` set to the
+package) and, when an icon was activated, removing that icon.
 
 <a name="dos-and-donts"></a>
 ## Do's and Don'ts

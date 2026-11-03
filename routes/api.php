@@ -52,6 +52,11 @@ Route::group([
             'upload',
         ])->name('tce-packages.upload');
 
+        Route::post('/tce-packages/chunks', [
+            TcePackageController::class,
+            'uploadChunk',
+        ])->name('tce-packages.upload-chunk');
+
         Route::get('/live-sync/{section}', [
             LiveSyncController::class,
             'export',

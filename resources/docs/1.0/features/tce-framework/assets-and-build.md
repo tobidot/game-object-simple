@@ -143,7 +143,10 @@ self-contained once built.
 
 A project whose zip is large goes through the site's chunked attachment upload, not a single
 multipart request; a publishing path accepting large uploads reuses that one chunk-assembly
-mechanism rather than introducing a second.
+mechanism rather than introducing a second. The REST upload does: its zip may be sent in chunks
+first and then named by `zip_upload_id`
+([Publishing & Discovery: Large Uploads](./upload-and-registry#large-uploads)), which publishing
+tooling does by itself for a zip above a few megabytes.
 
 <a name="dos-and-donts"></a>
 ## Do's and Don'ts

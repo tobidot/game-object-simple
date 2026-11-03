@@ -31,7 +31,9 @@ class UploadTcePackageRequest extends FormRequest
         return [
             'namespace' => ['required', ...$identifier_rule],
             'name' => ['required', ...$identifier_rule],
-            'zip' => ['required', 'file'],
+            'zip' => ['required_without:zip_upload_id', 'file'],
+            // A zip sent in chunks to POST /api/v1/tce-packages/chunks, by its upload id.
+            'zip_upload_id' => ['required_without:zip', 'string', 'max:100', 'regex:/^[A-Za-z0-9_-]+$/'],
             'icon' => ['sometimes', 'file', 'image:allow_svg'],
             'version' => ['sometimes', 'string', 'regex:/^\d+\.\d+\.\d+$/', 'max:255'],
             'kind' => ['sometimes', 'string', 'in:'.implode(',', TcePackageService::KINDS)],

@@ -10,7 +10,7 @@
 ## Purpose
 
 Every project ships a `tobidot-project.json` at its root. It is the metadata publishing tooling
-reads — the v3 workspace's `publish.py`, the site's `tce:import-v3-packages` command — to
+reads — a package's `npm run publish`, the site's `tce:import-v3-packages` command — to
 upload a package without being told anything on the command line: who publishes it, what it is
 called, what kind it is, its description, window size and dependencies. The browser runtime never
 reads it; at runtime the same facts come from the entry script's `bind_self()` call and from the
