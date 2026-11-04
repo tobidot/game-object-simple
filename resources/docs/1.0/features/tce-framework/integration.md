@@ -147,7 +147,8 @@ dependency before the packages that need it, and only what was installed through
 manager — never what the page itself embeds. The package manager's own boot (its `init()`, run
 when its script loads, not when a window opens) re-installs every recorded package the same way,
 in that order. A package that fails to re-install is reported and skipped; the others still
-install. Activating an installed package right after a reload simply waits for its binding; while
+install. A failed package the registry answers without listing is gone for good and is forgotten
+instead; when the registry cannot be asked, the record stays as it is. Activating an installed package right after a reload simply waits for its binding; while
 it waits the desktop shows a progress pointer. A package that cannot be opened — not bound in
 time, typically because it was uninstalled — gets a message window, not only a console error:
 it names the package and offers the package manager (opened with `data-search` set to the

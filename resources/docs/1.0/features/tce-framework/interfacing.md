@@ -60,6 +60,8 @@ Requests (child → owner, dispatched with the helper):
 | `tce.desktop.layout-request`     | `request_layout`        | `{ on_layout }` — a query, answered through the callback ([below](#queries-answer-through-a-callback)) | the nearest desktop |
 | `tce.desktop.composition-request`| `request_composition`   | `{ on_composition }` — a query: what fills each switchable slot, with attributes | the nearest desktop |
 | `tce.desktop.configure-request`  | `request_configure`     | `{ target: icon \| component, enabled?, attributes? }` — change an icon's boot attributes, or switch a component on/off and set its attributes | the nearest desktop |
+| `tce.desktop.intro-preference-request` | `request_intro_preference` | `{ on_answer }` — a query: whether games play their intro; the function returns the answer, `null` without a desktop | the nearest desktop |
+| `tce.desktop.intro-preference-change` | `request_intro_preference_change` | `{ play_intros }` — remember that choice | the nearest desktop |
 
 Notifications (dispatched by an implementation so an owner can react without a build-time
 dependency on that implementation):
@@ -102,11 +104,15 @@ not match the schema. Nobody casts `event as CustomEvent<Detail>`; the lint rule
 <a name="queries-answer-through-a-callback"></a>
 ### Queries Answer Through a Callback
 
-A request is fire-and-forget: the sender gets no acknowledgment. Two requests are different in
-kind — **queries**: `tce.desktop.layout-request` (`request_layout`) and
-`tce.desktop.composition-request` (`request_composition`). A query's detail carries a function
-(`on_layout`, `on_composition`), and the owner that claims the query calls it **synchronously,
-exactly once, inside its handler**. The layout query answers with a `TceDesktopLayout`:
+A request is fire-and-forget: the sender gets no acknowledgment. Three requests are different in
+kind — **queries**: `tce.desktop.layout-request` (`request_layout`),
+`tce.desktop.composition-request` (`request_composition`) and
+`tce.desktop.intro-preference-request` (`request_intro_preference`). A query's detail carries a
+function (`on_layout`, `on_composition`, `on_answer`), and the owner that claims the query calls it
+**synchronously, exactly once, inside its handler**. A game that plays an intro asks the intro
+preference when it connects: its own attribute decides first, then the desktop's answer, and
+without a desktop its own default applies. The desktop's answer is the user's stored choice, else
+its `data-play-intros` attribute, else `true`. The layout query answers with a `TceDesktopLayout`:
 the viewport rectangles of the desktop surface, the taskbar, every visible (not minimized)
 window with its title, stacking order and an opaque stable `id`, and every icon with its label,
 package identifier and `id`. When `request_layout` returns, the sender either has the answer or
