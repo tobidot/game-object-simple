@@ -93,6 +93,18 @@ class McpContentServerTest extends TestCase
         $this->assertSame([$related->id], $page->pages()->withoutGlobalScopes()->pluck('pages.id')->all());
     }
 
+    public function test_update_page_sets_created_at_and_rejects_a_non_date(): void
+    {
+        $page = Page::factory()->create();
+
+        ContentServer::tool(UpdatePageTool::class, ['id' => $page->id, 'created_at' => '2026-11-01T22:11:22+00:00'])
+            ->assertOk()->assertHasNoErrors();
+        $this->assertSame('2026-11-01 22:11:22', Page::query()->withoutGlobalScopes()->findOrFail($page->id)->created_at->toDateTimeString());
+
+        ContentServer::tool(UpdatePageTool::class, ['id' => $page->id, 'created_at' => 'yesterday-ish'])
+            ->assertHasErrors(['created at']);
+    }
+
     public function test_list_and_get_pages_include_private_pages(): void
     {
         $page = Page::factory()->create(['title' => 'Secret Draft', 'uri' => 'secret', 'publish_state' => PublishState::PRIVATE, 'content' => '<p>Draft body</p>']);

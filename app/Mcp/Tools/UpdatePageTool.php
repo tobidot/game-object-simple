@@ -6,6 +6,7 @@ use App\Enums\PublishState;
 use App\Mcp\Concerns\PresentsModels;
 use App\Mcp\Concerns\WritesPages;
 use App\Models\Page;
+use Carbon\Carbon;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\JsonSchema\Types\Type;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +25,7 @@ use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
 Update an existing page. Only the fields you pass are changed.
 "content" replaces the whole markdown body, so fetch it with get_page first when making partial edits.
 "related_page_ids" / "project_ids" replace the full list of relations when given.
+"created_at" moves the page in the pages list, which is sorted by it, newest first.
 TEXT)]
 class UpdatePageTool extends Tool
 {
@@ -44,6 +46,7 @@ class UpdatePageTool extends Tool
             'content' => ['sometimes', 'string', 'max:65535'],
             'publish_state' => ['sometimes', Rule::enum(PublishState::class)],
             'allow_comments' => ['sometimes', 'boolean'],
+            'created_at' => ['sometimes', 'date'],
             ...$this->relationRules(),
         ]);
 
@@ -62,6 +65,9 @@ class UpdatePageTool extends Tool
             }
             if (array_key_exists('allow_comments', $validated)) {
                 $page->allow_comments = $validated['allow_comments'];
+            }
+            if (array_key_exists('created_at', $validated)) {
+                $page->created_at = Carbon::parse($validated['created_at']);
             }
             $page->save();
 
@@ -83,6 +89,7 @@ class UpdatePageTool extends Tool
             'content' => $schema->string()->description('Full replacement markdown body.'),
             'publish_state' => $schema->string()->enum(array_column(PublishState::cases(), 'value')),
             'allow_comments' => $schema->boolean(),
+            'created_at' => $schema->string()->description('ISO 8601 date; the pages list is sorted by it, newest first.'),
             'related_page_ids' => $schema->array()->items($schema->integer()),
             'project_ids' => $schema->array()->items($schema->integer()),
         ];
