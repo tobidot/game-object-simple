@@ -48,4 +48,7 @@ The homepage `/` is the TCE v3 desktop; the v3 packages are built in the separat
 
 - Publish and verify against the local site only, never live, unless asked.
 - PHP tests: `docker compose exec app php artisan test` (the app runs in Docker on the host).
-- `php artisan app:clean-storage` reports stored files that no page or package references; `--delete` removes them.
+- `StorageCleaner` finds stored files that no page or package references. It runs by hand only, never on a schedule: Nova actions
+  "Report Unused Storage" and "Delete Unused Storage" (Attachments, TCE Packages), or `php artisan app:clean-storage [--delete]`.
+- Nova action "Delete Older Versions" (TCE Packages) removes old versions; deleting a version moves its dependents to the newest
+  remaining one. Its files stay until the storage cleanup runs.

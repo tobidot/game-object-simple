@@ -3,6 +3,7 @@
 namespace App\Nova\Dashboards;
 
 use App\Nova\Metrics\DiskUsage;
+use App\Nova\Metrics\StorageUsage;
 use App\Nova\Metrics\ViewsPerDay;
 use App\Nova\Metrics\ViewsPerUrl;
 use Laravel\Nova\Cards\Help;
@@ -17,6 +18,7 @@ class Main extends Dashboard
     {
         return [
             //            new Help,
+            new StorageUsage,
             new DiskUsage,
             new ViewsPerDay,
             new ViewsPerUrl,

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Attachment;
 use App\Models\Page;
 use App\Models\TcePackage;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -140,6 +141,48 @@ class CleanStorageTest extends TestCase
 
         $this->artisan('app:clean-storage', ['--delete' => true])->assertFailed();
 
+        Storage::disk('public')->assertExists('tce-packages/kept/index.js');
+    }
+
+    public function test_nova_can_report_without_deleting(): void
+    {
+        $response = $this->actingAs(User::factory()->create(['email' => 'object.name@live.de']))
+            ->postJson('/nova-api/attachments/action?action=report-unused-storage', ['resources' => '']);
+
+        $response->assertOk();
+        $this->assertStringContainsString('tobidot-elements: 1 files', $response->json('message'));
+        foreach (self::REMOVED as $file) {
+            Storage::disk('public')->assertExists($file);
+        }
+    }
+
+    public function test_nova_can_delete_from_both_resources(): void
+    {
+        $user = User::factory()->create(['email' => 'object.name@live.de']);
+
+        $this->actingAs($user)
+            ->postJson('/nova-api/tce-packages/action?action=delete-unused-storage', ['resources' => ''])
+            ->assertOk();
+        foreach (self::REMOVED as $file) {
+            Storage::disk('public')->assertMissing($file);
+        }
+        foreach (self::KEPT as $file) {
+            Storage::disk('public')->assertExists(urldecode($file));
+        }
+
+        $this->actingAs($user)
+            ->postJson('/nova-api/attachments/action?action=delete-unused-storage', ['resources' => ''])
+            ->assertOk();
+    }
+
+    public function test_nova_reports_the_refusal_instead_of_failing(): void
+    {
+        DB::table('attachables')->delete();
+
+        $response = $this->actingAs(User::factory()->create(['email' => 'object.name@live.de']))
+            ->postJson('/nova-api/attachments/action?action=delete-unused-storage', ['resources' => '']);
+
+        $this->assertStringContainsString('Refusing', $response->json('danger'));
         Storage::disk('public')->assertExists('tce-packages/kept/index.js');
     }
 

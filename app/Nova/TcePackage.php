@@ -5,6 +5,7 @@ namespace App\Nova;
 use App\Enums\LiveSyncSection;
 use App\Helpers\AppHelper;
 use App\Services\Models\AttachmentService;
+use Illuminate\Http\Request;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Code;
@@ -68,6 +69,12 @@ class TcePackage extends Resource
                 ->readonly()
                 ->showOnIndex()
                 ->showOnDetail(),
+            Number::make(__('Versions'), function () {
+                return static::$model::query()
+                    ->where('namespace', $this->namespace)
+                    ->where('name', $this->name)
+                    ->count();
+            })->onlyOnIndex(),
             Number::make(__('Major'), 'major')->required()->default(0),
             Number::make(__('Minor'), 'minor')->required()->default(1),
             Number::make(__('Patch'), 'patch')->required()->default(0),
@@ -87,6 +94,18 @@ class TcePackage extends Resource
         ];
     }
 
+    /**
+     * The last version of a package others depend on cannot go: they would silently lose the dependency.
+     */
+    public function authorizedToDelete(Request $request): bool
+    {
+        if (! parent::authorizedToDelete($request)) {
+            return false;
+        }
+
+        return $this->resource->hasOtherVersions() || ! $this->resource->hasDependents();
+    }
+
     public function cards(NovaRequest $request): array
     {
         return [];
@@ -94,7 +113,9 @@ class TcePackage extends Resource
 
     public function filters(NovaRequest $request): array
     {
-        return [];
+        return [
+            new Filters\TcePackagesWithOlderVersions,
+        ];
     }
 
     public function lenses(NovaRequest $request): array
@@ -110,6 +131,9 @@ class TcePackage extends Resource
                 __('View Fullscreen'),
                 fn (\App\Models\TcePackage $model) => route('tce-packages.view', $model)
             )->sole(),
+            new Actions\DeleteOlderPackageVersions,
+            new Actions\ReportUnusedStorage,
+            new Actions\DeleteUnusedStorage,
             new Actions\PullFromLive(LiveSyncSection::CODE),
         ];
     }

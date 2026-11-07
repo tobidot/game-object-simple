@@ -107,6 +107,7 @@ class Attachment extends Resource
     public function cards(NovaRequest $request): array
     {
         return [
+            new Metrics\StorageUsage,
             new Metrics\DiskUsage,
         ];
     }
@@ -139,6 +140,8 @@ class Attachment extends Resource
     {
         return [
             new Actions\CleanupAttachment,
+            new Actions\ReportUnusedStorage,
+            new Actions\DeleteUnusedStorage,
             (new Actions\UploadAttachment)->standalone(),
             new Actions\PullFromLive(LiveSyncSection::MEDIA),
         ];

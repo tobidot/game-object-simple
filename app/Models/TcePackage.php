@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\TcePackage
@@ -47,6 +48,48 @@ class TcePackage extends Model
     protected $casts = [
         'extra' => 'json',
     ];
+
+    /**
+     * A dependency points at one version's row and goes with it (cascade), so dependents move to the
+     * newest remaining version first. Only the row and its links go here: `StorageCleaner` frees the files.
+     */
+    protected static function booted(): void
+    {
+        static::deleting(function (TcePackage $package): void {
+            $survivor = $package->otherVersions()
+                ->orderByDesc('major')
+                ->orderByDesc('minor')
+                ->orderByDesc('patch')
+                ->first();
+            if ($survivor !== null) {
+                DB::table('tce_package_dependencies')
+                    ->where('dependency_id', $package->id)
+                    ->update(['dependency_id' => $survivor->id]);
+            }
+            $package->attachments()->detach();
+        });
+    }
+
+    /**
+     * @return Builder<TcePackage>
+     */
+    public function otherVersions(): Builder
+    {
+        return static::query()
+            ->where('namespace', $this->namespace)
+            ->where('name', $this->name)
+            ->whereKeyNot($this->getKey());
+    }
+
+    public function hasOtherVersions(): bool
+    {
+        return $this->otherVersions()->exists();
+    }
+
+    public function hasDependents(): bool
+    {
+        return DB::table('tce_package_dependencies')->where('dependency_id', $this->id)->exists();
+    }
 
     public function attachments(): MorphToMany
     {

@@ -190,6 +190,50 @@ class TcePackageService
     }
 
     /**
+     * Deletes all but the `$keep` newest versions of `$package`. A version something pins stays:
+     * a dependency with a version requirement, or a page embedding `name@x.y.z`.
+     *
+     * @return array{deleted: int, still_needed: array<int, string>}
+     */
+    public function deleteOlderVersions(TcePackage $package, int $keep = 1): array
+    {
+        $versions = TcePackage::query()
+            ->where('namespace', $package->namespace)
+            ->where('name', $package->name)
+            ->orderByDesc('major')
+            ->orderByDesc('minor')
+            ->orderByDesc('patch')
+            ->get();
+
+        $deleted = 0;
+        $still_needed = [];
+        foreach ($versions->slice(max(1, $keep)) as $version) {
+            if ($this->isPinned($version)) {
+                $still_needed[] = "$version->name@$version->major.$version->minor.$version->patch";
+
+                continue;
+            }
+            $version->delete();
+            $deleted++;
+        }
+
+        return ['deleted' => $deleted, 'still_needed' => $still_needed];
+    }
+
+    private function isPinned(TcePackage $version): bool
+    {
+        $pinned_by_package = DB::table('tce_package_dependencies')
+            ->where('dependency_id', $version->id)
+            ->whereNotNull('required_major')
+            ->exists();
+
+        // Unpublished pages count too, so the query skips the model's visibility scope.
+        return $pinned_by_package || DB::table('pages')
+            ->where('content', 'like', "%$version->name@$version->major.$version->minor.$version->patch%")
+            ->exists();
+    }
+
+    /**
      * Resolves declared dependencies — by identifier — to their latest uploaded version.
      *
      * @param  array<int, array{namespace: string, name: string}>  $dependencies

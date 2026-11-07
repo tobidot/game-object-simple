@@ -45,6 +45,6 @@ class DiskUsage extends Partition
 
     public function name()
     {
-        return __('Disk Usage (Public)');
+        return __('Whole Disk (not just this site)');
     }
 }
