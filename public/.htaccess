@@ -14,6 +14,17 @@
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
+
+    # Check if maintenance.html exists
+    RewriteCond %{DOCUMENT_ROOT}/maintenance.html -f
+    # Prevent infinite redirect loops if already viewing maintenance.html
+    RewriteCond %{REQUEST_URI} !/maintenance\.html$ [NC]
+    # Optional: Exclude specific IP addresses if you want to bypass maintenance mode
+    # RewriteCond %{REMOTE_ADDR} !=123.45.67.89
+    # Redirect all traffic to maintenance.html with a 503 Temporary Redirect
+    RewriteRule ^(.*)$ /maintenance.html [R=503,L]
+
+
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
