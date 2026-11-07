@@ -5,6 +5,11 @@
 
     RewriteEngine On
 
+    # One public address: storage URLs always point at www and send no CORS header,
+    # so assets fetched from a page on the bare domain would be blocked.
+    RewriteCond %{HTTP_HOST} ^game-object\.de$ [NC]
+    RewriteRule ^ https://www.game-object.de%{REQUEST_URI} [L,R=301]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
