@@ -1,10 +1,6 @@
 {
-  "_root-uXqBkw2-.js": {
-    "file": "assets/root-uXqBkw2-.js",
-    "name": "root"
-  },
   "resources/css/app.scss": {
-    "file": "assets/app-Cf8M-Zr8.css",
+    "file": "assets/app-Bi2jVvqa.css",
     "src": "resources/css/app.scss",
     "isEntry": true,
     "name": "app",
@@ -12,46 +8,10 @@
       "app.css"
     ]
   },
-  "resources/css/desktop.scss": {
-    "file": "assets/desktop-BayfVMAj.css",
-    "src": "resources/css/desktop.scss",
-    "isEntry": true,
-    "name": "desktop",
-    "names": [
-      "desktop.css"
-    ]
-  },
-  "resources/css/tobidot-element-viewer.scss": {
-    "file": "assets/tobidot-element-viewer-B38tUVDX.css",
-    "src": "resources/css/tobidot-element-viewer.scss",
-    "isEntry": true,
-    "name": "tobidot-element-viewer",
-    "names": [
-      "tobidot-element-viewer.css"
-    ]
-  },
   "resources/js/app.ts": {
     "file": "assets/app-CGUrXbfM.js",
     "name": "app",
     "src": "resources/js/app.ts",
     "isEntry": true
-  },
-  "resources/js/desktop.ts": {
-    "file": "assets/desktop-BJZ9flju.js",
-    "name": "desktop",
-    "src": "resources/js/desktop.ts",
-    "isEntry": true,
-    "imports": [
-      "_root-uXqBkw2-.js"
-    ]
-  },
-  "resources/js/tobidot-element-viewer.ts": {
-    "file": "assets/tobidot-element-viewer-DbtMpvoN.js",
-    "name": "tobidot-element-viewer",
-    "src": "resources/js/tobidot-element-viewer.ts",
-    "isEntry": true,
-    "imports": [
-      "_root-uXqBkw2-.js"
-    ]
   }
 }

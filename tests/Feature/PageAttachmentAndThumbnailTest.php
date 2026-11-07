@@ -7,7 +7,6 @@ use App\Enums\PublishState;
 use App\Helpers\ViewHelper;
 use App\Models\Attachment;
 use App\Models\Page;
-use App\Models\Project;
 use App\Nova\Actions\UploadAttachment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -225,33 +224,5 @@ class PageAttachmentAndThumbnailTest extends TestCase
         $view->assertSee('<img', false);
         $view->assertSee('attached-thumb.png', false);
         $view->assertDontSee('excerpt__thumbnail--placeholder', false);
-    }
-
-    public function test_project_excerpt_renders_placeholder_and_image(): void
-    {
-        Storage::fake('public');
-
-        /** @var Project $projectWithoutThumb */
-        $projectWithoutThumb = Project::factory()->create([
-            'title' => 'Project No Thumb',
-            'publish_state' => PublishState::PUBLISHED,
-            'thumbnail' => null,
-        ]);
-
-        $viewWithout = $this->blade('<x-excerpts.project :model="$project" />', ['project' => $projectWithoutThumb]);
-        $viewWithout->assertSee('excerpt__thumbnail--placeholder', false);
-        $viewWithout->assertSee('excerpt__placeholder', false);
-
-        /** @var Project $projectWithThumb */
-        $projectWithThumb = Project::factory()->create([
-            'title' => 'Project With Thumb',
-            'publish_state' => PublishState::PUBLISHED,
-            'thumbnail' => '/storage/media/project-thumb.png',
-        ]);
-
-        $viewWith = $this->blade('<x-excerpts.project :model="$project" />', ['project' => $projectWithThumb]);
-        $viewWith->assertSee('<img', false);
-        $viewWith->assertSee('project-thumb.png', false);
-        $viewWith->assertDontSee('excerpt__thumbnail--placeholder', false);
     }
 }

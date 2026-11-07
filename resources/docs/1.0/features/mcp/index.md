@@ -69,8 +69,8 @@ curl -X POST http://localhost/mcp \
 | Tool | Purpose |
 | --- | --- |
 | `list_pages` | List pages, newest first. Filters: `search` (title/uri), `publish_state`, `page`, `per_page` (max 100). Without content. |
-| `get_page` | One page by `id` or `uri`, including markdown `content`, attachments, `related_page_ids` and `project_ids`. |
-| `create_page` | Create a page: `title`, `uri` (unique, `[a-z0-9-/]`), `content` (markdown), optional `publish_state`, `allow_comments`, `related_page_ids`, `project_ids`. |
+| `get_page` | One page by `id` or `uri`, including markdown `content`, attachments and `related_page_ids`. |
+| `create_page` | Create a page: `title`, `uri` (unique, `[a-z0-9-/]`), `content` (markdown), optional `publish_state`, `allow_comments`, `related_page_ids`. |
 | `update_page` | Change only the fields that are passed. `content` replaces the whole body; relation lists replace the full set. |
 
 ### Media (attachments)

@@ -24,15 +24,9 @@ class CleanupAttachment extends Action
     {
         foreach ($models as $model) {
             // Detach from attachables (MorphToMany)
-            // This covers TobidotElement, CodeRelease etc using this table
             DB::table('attachables')
                 ->where('attachment_id', $model->id)
                 ->delete();
-
-            // Clear Project thumbnails if they use this attachment's URL
-            DB::table('projects')
-                ->where('thumbnail', $model->url)
-                ->update(['thumbnail' => null]);
 
             // Delete files from disk
             $path = ltrim($model->path, '/');

@@ -71,7 +71,6 @@ class CreatePageTool extends Tool
                 ->description('Defaults to "private".'),
             'allow_comments' => $schema->boolean()->description('Defaults to true.'),
             'related_page_ids' => $schema->array()->items($schema->integer())->description('Ids of related pages.'),
-            'project_ids' => $schema->array()->items($schema->integer())->description('Ids of related projects.'),
         ];
     }
 }

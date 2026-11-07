@@ -114,7 +114,7 @@ generator refuses with a message saying so rather than producing a project that 
 The dependency picker lists the latest version of every element and library published to
 `tce_packages`, with its namespace. A declared dependency ends up in three places that must
 agree: the manifest, the entry script's `bind_self()` metadata, and (for libraries) a contract
-file. Nothing is read from the legacy table and no dependency list is hardcoded.
+file. No dependency list is hardcoded.
 
 <a name="from-zip-to-upload"></a>
 ## From Zip to Upload

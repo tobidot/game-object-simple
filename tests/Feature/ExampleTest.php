@@ -18,7 +18,6 @@ class ExampleTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('<header', false);
-        $response->assertSee('id="desktop"', false);
-        $response->assertSee('desktop', false);
+        $response->assertSee(route('pages'), false);
     }
 }

@@ -24,7 +24,7 @@ use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
 #[Description(<<<'TEXT'
 Update an existing page. Only the fields you pass are changed.
 "content" replaces the whole markdown body, so fetch it with get_page first when making partial edits.
-"related_page_ids" / "project_ids" replace the full list of relations when given.
+"related_page_ids" replaces the full list of related pages when given.
 "created_at" moves the page in the pages list, which is sorted by it, newest first.
 TEXT)]
 class UpdatePageTool extends Tool
@@ -91,7 +91,6 @@ class UpdatePageTool extends Tool
             'allow_comments' => $schema->boolean(),
             'created_at' => $schema->string()->description('ISO 8601 date; the pages list is sorted by it, newest first.'),
             'related_page_ids' => $schema->array()->items($schema->integer()),
-            'project_ids' => $schema->array()->items($schema->integer()),
         ];
     }
 }

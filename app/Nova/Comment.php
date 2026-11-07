@@ -57,7 +57,6 @@ class Comment extends Resource
                 ->filterable(),
             MorphTo::make('Commentable', 'commentable')->types([
                 Page::class,
-                Project::class,
             ])->searchable(),
         ];
     }

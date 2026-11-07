@@ -21,8 +21,7 @@ use Tobidot\ChunkedUpload\ChunkManager;
 use function Illuminate\Filesystem\join_paths;
 
 /**
- * Serves v3 packages — see "Publishing & Discovery: Data Model". Never reads from the legacy
- * `tobidot_elements` table; that table is kept read-only, for porting reference only.
+ * Serves v3 packages — see "Publishing & Discovery: Data Model".
  */
 class TcePackageController extends Controller
 {
@@ -56,8 +55,6 @@ class TcePackageController extends Controller
     /**
      * Fullscreen play page for the latest version of an element, addressed by name within this
      * deployment's own default namespace — see "Publishing & Discovery: Fullscreen Play Routes".
-     * While elements are still being ported, a name with no v3 package yet falls back to the
-     * legacy element of that name so existing links keep working.
      */
     public function play(string $name): View
     {
@@ -69,7 +66,7 @@ class TcePackageController extends Controller
             ->first();
 
         if ($package === null) {
-            return AppHelper::resolve(TobidotElementController::class)->play($name);
+            abort(404);
         }
 
         return $this->view($package);
@@ -89,7 +86,7 @@ class TcePackageController extends Controller
 
     /**
      * The v3 desktop as the site's actual homepage — same desktop, rendered below the normal
-     * page header/nav, the way the previous desktop.ts-based homepage was.
+     * page header/nav.
      */
     public function home(): View
     {

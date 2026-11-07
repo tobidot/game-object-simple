@@ -16,7 +16,7 @@ use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 
 #[Name('get_page')]
 #[IsReadOnly]
-#[Description('Get a single page including its markdown content, attachments (media), related pages and projects. Look it up by id or by uri.')]
+#[Description('Get a single page including its markdown content, attachments (media) and related pages. Look it up by id or by uri.')]
 class GetPageTool extends Tool
 {
     use PresentsModels;

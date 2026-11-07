@@ -24,7 +24,7 @@ class PageController extends Controller
     public function show(Page $page): View
     {
         AppHelper::resolve(ViewService::class)->associate($page);
-        $relatedItems = $page->projects->merge($page->pages)->sortByDesc('created_at');
+        $relatedItems = $page->pages->sortByDesc('created_at');
         $relatingItems = $page->relatingPages->sortByDesc('created_at');
 
         return view('pages.show', [

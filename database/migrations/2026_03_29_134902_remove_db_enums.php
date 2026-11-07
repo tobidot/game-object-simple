@@ -2,7 +2,6 @@
 
 use App\Enums\AttachmentType;
 use App\Enums\LogEventTypes;
-use App\Enums\ProjectState;
 use App\Enums\PublishState;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -46,7 +45,7 @@ return new class extends Migration
             });
         }
         Schema::table('projects', function (Blueprint $table) {
-            $table->string('state')->default(ProjectState::DRAFT->value);
+            $table->string('state')->default('draft');
             $table->string('publish_state')->default(PublishState::PRIVATE->value);
         });
 

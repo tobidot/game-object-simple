@@ -36,10 +36,6 @@ class UnusedAttachments extends Lens
                 $query->select(DB::raw(1))
                     ->from('attachables')
                     ->whereColumn('attachables.attachment_id', 'attachments.id');
-            })->whereNotExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('projects')
-                    ->whereColumn('projects.thumbnail', 'attachments.url');
             })
         ));
     }

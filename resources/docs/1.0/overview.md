@@ -15,29 +15,20 @@ The documentation is rendered using LaRecipe.
 
 ## Capabilities
 
-Currently, three primary content resources exist.
-
-### Projects + Releases
-
-Old way to upload and share big projects.
-Each project would have multiple releases.
-Each `Release` had its dedicated route where it would play the project in full screen.
-The `Project` was adding some description, context and or documentation to the project.
+Currently, two primary content resources exist.
 
 ### Page
 
 A simple blog-page where i can write about my projects, ideas and other stuff.
-This will in future replace the `Projects` resource.
 
 Pages and their media can also be created and edited by AI agents through the MCP server.
 
 [More](./features/mcp/index)
 
-### Tobidot Elements
+### TCE Packages
 
-An entry to the `Tobidot Element`s library.
-Each item represents a single element (version) that can be loaded via the desktop on the [home page](/).
-All my projects will be compatible with `Tobidot Element`s.
+An entry to the registry of Tobidot Custom Elements.
+Each item represents a single package version that can be loaded via the desktop on the [home page](/).
 
 [More](./features/tce-framework/index)
 

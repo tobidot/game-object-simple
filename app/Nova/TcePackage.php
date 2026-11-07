@@ -18,8 +18,7 @@ use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 /**
- * The v3 package resource — see "Publishing & Discovery: Data Model". The legacy
- * `App\Nova\TobidotElement` resource is kept, read-only in spirit, for porting reference.
+ * The v3 package resource — see "Publishing & Discovery: Data Model".
  */
 class TcePackage extends Resource
 {
@@ -77,7 +76,7 @@ class TcePackage extends Resource
             Code::make(__('Extra'), 'extra')->nullable()->json(),
             MorphToMany::make(__('Code Attachment'), 'codeAttachment', Attachment::class),
             MorphToMany::make(__('Icon Attachment'), 'iconAttachment', Attachment::class),
-            BelongsToMany::make(__('Dependencies'), 'dependencies', \App\Nova\TcePackage::class)
+            BelongsToMany::make(__('Dependencies'), 'dependencies', TcePackage::class)
                 ->fields(function () {
                     return [
                         Number::make(__('Required Major'), 'required_major'),

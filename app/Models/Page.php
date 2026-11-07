@@ -49,8 +49,6 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $log_events_count
  * @property-read Collection<int, Page> $pages
  * @property-read int|null $pages_count
- * @property-read Collection<int, Project> $projects
- * @property-read int|null $projects_count
  * @property-read Collection<int, Page> $relatingPages
  * @property-read int|null $related_pages_count
  *
@@ -89,11 +87,6 @@ class Page extends Model
     public function logEvents(): MorphMany
     {
         return $this->morphMany(LogEvent::class, 'loggable');
-    }
-
-    public function projects(): BelongsToMany
-    {
-        return $this->belongsToMany(Project::class);
     }
 
     public function pages(): BelongsToMany

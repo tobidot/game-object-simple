@@ -15,8 +15,7 @@ use Illuminate\Support\Carbon;
  *
  * The v3 data model for a published Tobidot Custom Element or library — see the "Publishing &
  * Discovery: Data Model" specification. Namespace is real, required data (never defaulted to
- * 'tobidot' in application code); the legacy `TobidotElement` table is kept read-only and is
- * never a source for this model or anything that resolves from it.
+ * 'tobidot' in application code).
  *
  * @property int $id
  * @property Carbon|null $created_at

@@ -49,8 +49,6 @@ class View extends Resource
             MorphTo::make('Viewable', 'viewable')
                 ->types([
                     Page::class,
-                    Project::class,
-                    CodeRelease::class,
                     User::class,
                 ])
                 ->filterable(),

@@ -7,7 +7,6 @@ use App\Enums\PublishState;
 use App\Models\Attachment;
 use App\Models\Comment;
 use App\Models\Page;
-use App\Models\Project;
 use App\Models\View;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
@@ -168,13 +167,6 @@ Please share constructive feedback in project comments and adhere to collaborati
             if ($otherPageIds->isNotEmpty()) {
                 $randomRelatedIds = $otherPageIds->random(min(fake()->numberBetween(1, 3), $otherPageIds->count()));
                 $page->pages()->syncWithoutDetaching($randomRelatedIds);
-            }
-
-            // Link to existing projects if available
-            $projectIds = Project::query()->pluck('id');
-            if ($projectIds->isNotEmpty()) {
-                $randomProjectIds = $projectIds->random(min(fake()->numberBetween(1, 3), $projectIds->count()));
-                $page->projects()->syncWithoutDetaching($randomProjectIds);
             }
         }
     }

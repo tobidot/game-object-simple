@@ -12,8 +12,6 @@ class DummySeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            TobidotElementSeeder::class,
-            ProjectSeeder::class,
             PageSeeder::class,
         ]);
     }

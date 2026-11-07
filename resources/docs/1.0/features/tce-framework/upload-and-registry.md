@@ -23,10 +23,6 @@ Every published version is one row of `tce_packages` (`App\Models\TcePackage`): 
 dependencies are rows of `tce_package_dependencies`, pointing at the dependency's row, with
 optional `required_major/minor/patch` constraints.
 
-The pre-v3 `tobidot_elements` table is read-only reference material for porting. Nothing in v3
-— the registry, the generator, the loader, the routes — reads from it, and there is no
-migration; a legacy element appears in v3 only when it is deliberately ported and uploaded.
-
 <a name="what-gets-uploaded"></a>
 ## What Gets Uploaded
 
@@ -200,5 +196,4 @@ The embed route answers 404 for a version without an IIFE build and for SDK pack
 - ✅ Do link externally to `/tce/{name}`, not an `{id}`, unless you want to pin a version.
 - ✅ Do change `TcePackageResource` and `registry_response_schema` together.
 - ❌ Don't re-upload a version number; bump the patch.
-- ❌ Don't read `tobidot_elements` from anything in v3.
 - ❌ Don't list or load SDK packages at runtime.

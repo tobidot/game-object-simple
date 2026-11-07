@@ -1,11 +1,7 @@
-<x-layouts.app class="home desktop-view" title="Home">
-    <x-slot name="head">
-        @vite(['resources/css/desktop.scss'])
-    </x-slot>
-    <x-slot name="foot">
-        @vite(['resources/js/desktop.ts'])
-    </x-slot>
-    <div id="desktop">
-
+<x-layouts.app class="page home" title="Home">
+    <div class="page__content">
+        <p>
+            The desktop is not published yet. Until then, have a look at the <a href="{{ route('pages') }}">pages</a>.
+        </p>
     </div>
 </x-layouts.app>

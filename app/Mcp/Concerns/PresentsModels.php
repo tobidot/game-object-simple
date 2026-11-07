@@ -36,7 +36,6 @@ trait PresentsModels
                 ->values()
                 ->all();
             $data['related_page_ids'] = $page->pages()->withoutGlobalScopes()->pluck('pages.id')->all();
-            $data['project_ids'] = $page->projects()->withoutGlobalScopes()->pluck('projects.id')->all();
         }
 
         return $data;

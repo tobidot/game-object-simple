@@ -1,5 +1,5 @@
 @php use App\Helpers\ViewHelper; @endphp
-@php use App\Models\Page;use App\Models\Project;use Illuminate\Database\Eloquent\Collection; @endphp
+@php use App\Models\Page;use Illuminate\Database\Eloquent\Collection; @endphp
 @props([
     'page',
     'relatedItems' => collect([]),
@@ -8,7 +8,7 @@
 @php
     /**
      * @var Page $page
-     * @var Collection<Project|Page> $relatedItems
+     * @var Collection<Page> $relatedItems
      * @var Collection<Page> $relatingItems
      */
 @endphp

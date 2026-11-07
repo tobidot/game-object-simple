@@ -83,7 +83,7 @@ class LiveSyncTest extends TestCase
             ->assertOk()
             ->assertJsonPath('section', 'posts')
             ->assertJsonPath('tables.pages.0.id', $private_page->id)
-            ->assertJsonStructure(['tables' => ['pages', 'page_page', 'page_project', 'attachables', 'nova_trix_attachments', 'attachments']]);
+            ->assertJsonStructure(['tables' => ['pages', 'page_page', 'attachables', 'nova_trix_attachments', 'attachments']]);
         $this->getJson('/api/v1/live-sync/users')->assertNotFound();
     }
 

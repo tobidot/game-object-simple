@@ -3,10 +3,8 @@
 use App\Enums\LiveSyncSection;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\LiveSyncController;
-use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TceGeneratorController;
 use App\Http\Controllers\TcePackageController;
-use App\Http\Controllers\TobidotElementController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,21 +29,10 @@ Route::group([
     Route::group([
         'middleware' => 'auth:sanctum',
     ], function () {
-        Route::post('/projects/{project}/releases', [
-            ProjectController::class,
-            'release',
-        ])->name('projects.release')
-            ->whereNumber('project');
-
         Route::post('/attachments', [
             AttachmentController::class,
             'upload',
         ])->name('attachments.upload');
-
-        Route::post('/tobidot-elements', [
-            TobidotElementController::class,
-            'upload',
-        ])->name('tobidot-elements.upload');
 
         Route::post('/tce-packages', [
             TcePackageController::class,
@@ -77,11 +64,6 @@ Route::group([
 Route::group([
     'prefix' => 'public',
 ], function () {
-    Route::get('/tobidot-elements', [
-        TobidotElementController::class,
-        'index',
-    ])->name('tobidot-elements.index');
-
     Route::get('/tce-packages', [
         TcePackageController::class,
         'index',

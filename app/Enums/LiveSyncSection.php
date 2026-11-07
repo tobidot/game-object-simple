@@ -2,11 +2,8 @@
 
 namespace App\Enums;
 
-use App\Models\CodeRelease;
 use App\Models\Page;
-use App\Models\Project;
 use App\Models\TcePackage;
-use App\Models\TobidotElement;
 
 /**
  * The parts of the site that can be pulled from the live site into a local instance
@@ -23,13 +20,9 @@ enum LiveSyncSection: string
     public function tables(): array
     {
         return match ($this) {
-            self::POSTS => ['pages', 'page_page', 'page_project'],
+            self::POSTS => ['pages', 'page_page'],
             self::MEDIA => ['attachments'],
-            self::CODE => [
-                'projects', 'project_project', 'code_releases',
-                'tobidot_elements', 'tobidot_element_dependencies',
-                'tce_packages', 'tce_package_dependencies',
-            ],
+            self::CODE => ['tce_packages', 'tce_package_dependencies'],
         };
     }
 
@@ -39,7 +32,7 @@ enum LiveSyncSection: string
         $models = match ($this) {
             self::POSTS => [Page::class],
             self::MEDIA => [],
-            self::CODE => [Project::class, CodeRelease::class, TobidotElement::class, TcePackage::class],
+            self::CODE => [TcePackage::class],
         };
 
         return array_map(fn (string $model) => (new $model)->getMorphClass(), $models);
@@ -50,7 +43,7 @@ enum LiveSyncSection: string
         return match ($this) {
             self::POSTS => 'blog posts',
             self::MEDIA => 'media',
-            self::CODE => 'projects and custom elements',
+            self::CODE => 'TCE packages',
         };
     }
 }

@@ -97,8 +97,6 @@ class Attachment extends Resource
                 ->rules(['required'])
                 ->required(),
 
-            MorphToMany::make(__('Tobidot Elements'), 'tobidotElements', TobidotElement::class),
-            MorphToMany::make(__('Code Releases'), 'codeReleases', CodeRelease::class),
             MorphToMany::make(__('Pages'), 'pages', Page::class),
         ];
     }

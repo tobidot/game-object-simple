@@ -58,4 +58,4 @@ This is a documentation of all my attempts to build a personal website over the 
 ### [My Home (Current)](./my-home)
 - **Timestamp:** January 2023 - Present
 - **Thought:** The latest iteration, built with Laravel, Nova, and LaRecipe for comprehensive documentation and project management.
-- **Content:** CMS for pages and projects, documentation hub, and a platform for live demos.
+- **Content:** CMS for pages and TCE packages, documentation hub, and a platform for live demos.

@@ -30,10 +30,6 @@ class Navigation extends Component
                     'href' => route('pages'),
                 ]),
                 new LinkType([
-                    'label' => 'Projects',
-                    'href' => route('projects'),
-                ]),
-                new LinkType([
                     'label' => 'TCE Generator',
                     'href' => route('tce-generator.index'),
                 ]),

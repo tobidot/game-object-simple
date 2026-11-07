@@ -15,8 +15,8 @@ use function Illuminate\Filesystem\join_paths;
  * Renders a complete, building v3 project — see "TCE Project Generator" in the specification.
  * The Web UI, the CLI and the REST API are thin wrappers around `generateZip()` /
  * `generateProjectFiles()`. Everything registry-related (which packages can be declared as
- * dependencies, which SDK packages get vendored) comes from `tce_packages`, never from the
- * legacy table and never from constants.
+ * dependencies, which SDK packages get vendored) comes from `tce_packages`, never from
+ * constants.
  */
 class TceGeneratorService
 {

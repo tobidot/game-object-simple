@@ -119,7 +119,6 @@ class Page extends Resource
                     ];
                 }),
             BelongsToMany::make(__('Pages'), 'pages', Page::class),
-            BelongsToMany::make(__('Projects'), 'projects', Project::class),
         ];
     }
 
