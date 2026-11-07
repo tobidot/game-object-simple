@@ -133,8 +133,8 @@ never breaks the desktop.
 The desktop's package manager (`tce-bootloader`) reads the public registry
 ([Publishing & Discovery](./upload-and-registry#public-discovery-endpoint)), lists every package
 — narrowed by a search over name, namespace, description and tags, and by
-[tag](./upload-and-registry#tags) filters — and shows the selected one's full details
-(description, version, kind, tags, dependents, and every dependency with its required version,
+[tag](./upload-and-registry#tags) filters, by name or newest upload first — and shows the selected
+one's full details (description, version, kind, upload date, tags, dependents, and every dependency with its required version,
 the registry's latest and the version loaded on the page) beside the list. A dependency the
 registry cannot satisfy stops the install before anything loads. It installs one by injecting its embed script with `TceRoot.load_script('/tce-elements/{namespace}/{name}')`
 — dependencies first, each only if not yet bound, and awaited even when already recorded (its
