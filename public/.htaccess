@@ -36,6 +36,8 @@
     RewriteRule ^ index.php [L]
 </IfModule>
 
+ErrorDocument 503 /maintenance.html
+
 # Deny direct access to .user.ini and other sensitive dotfiles
 <FilesMatch "^\.(user\.ini|php\.ini|env|git|htaccess|htpasswd)">
     <IfModule !mod_authz_core.c>
